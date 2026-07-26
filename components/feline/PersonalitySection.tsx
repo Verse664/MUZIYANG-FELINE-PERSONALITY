@@ -15,13 +15,11 @@ const personalities = [
     bg: "linear-gradient(135deg, #F4E2E5 0%, #E8D3D8 50%, #D8C4C8 100%)",
     visual: "丝绸 · 镜面 · 舞台光影",
     motif: (
-      <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        <ellipse cx="40" cy="40" rx="32" ry="18" stroke="#D8A7B1" strokeWidth="0.8" opacity="0.6" />
-        <ellipse cx="40" cy="40" rx="24" ry="14" stroke="#D8A7B1" strokeWidth="0.6" opacity="0.4" />
-        <line x1="40" y1="8" x2="40" y2="72" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5" />
-        <line x1="8" y1="40" x2="72" y2="40" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5" />
-        <circle cx="40" cy="40" r="4" fill="#D8A7B1" opacity="0.8" />
-      </svg>
+      <img 
+        src="/KWINmanmiao.jpg" 
+        alt="曼妙猫 象征图案"
+        style={{ width: 800, height: 350, objectFit: "contain" }}
+        />
     ),
   },
   {
@@ -36,12 +34,11 @@ const personalities = [
     bg: "linear-gradient(135deg, #EEF5EE 0%, #DDE8DC 50%, #C4D6C4 100%)",
     visual: "苔藓绿意 · 守护感",
     motif: (
-      <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        <circle cx="40" cy="40" r="28" stroke="#7C9B7E" strokeWidth="0.8" opacity="0.5" strokeDasharray="4 3" />
-        <circle cx="40" cy="40" r="18" fill="#7C9B7E" opacity="0.15" />
-        <path d="M40 22 C30 28 28 38 32 48 C36 58 48 60 56 52 C64 44 60 30 46 26 C42 24 41 22 40 22Z" fill="#7C9B7E" opacity="0.45" />
-        <circle cx="40" cy="40" r="3.5" fill="#5F7C64" opacity="0.8" />
-      </svg>
+      <img 
+        src="/KWINwenrou.jpg" 
+        alt="温柔猫 象征图案"
+        style={{ width: 800, height: 350, objectFit: "contain" }}
+        />
     ),
   },
   {
