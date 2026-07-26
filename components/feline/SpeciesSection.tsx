@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image";
+
 const speciesParams = [
   { label: "观察周期", value: "1994 — 2026 · ongoing", unit: "" },
   { label: "情绪维度", value: "4", unit: "核心维度" },
@@ -84,48 +86,19 @@ export default function SpeciesSection() {
                 boxShadow: "0 8px 32px rgba(28,28,30,0.15), inset 0 1px 0 rgba(255,255,255,0.4)",
               }}
             >
-              {/* Cat silhouette illustration */}
+              <Image
+                src="/KWINxiaoxiang.jpg"
+                alt="木子洋 KWIN 肖像"
+                fill
+                style={{ objectFit: "cover" }}
+              />
+              {/* Film overlay */}
               <div
+                className="absolute inset-0"
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  background: "linear-gradient(180deg, #D8A7B1 0%, #C49099 60%, #A07080 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
+                  background: "linear-gradient(180deg, transparent 40%, rgba(28,28,30,0.15) 100%)",
                 }}
-              >
-                {/* Stylized cat SVG */}
-                <svg viewBox="0 0 120 160" width="80" height="107" fill="none" style={{ opacity: 0.55 }}>
-                  {/* Body */}
-                  <ellipse cx="60" cy="110" rx="34" ry="40" fill="#FAF7F5" />
-                  {/* Head */}
-                  <ellipse cx="60" cy="62" rx="28" ry="25" fill="#FAF7F5" />
-                  {/* Ears */}
-                  <polygon points="36,46 28,20 50,38" fill="#FAF7F5" />
-                  <polygon points="84,46 92,20 70,38" fill="#FAF7F5" />
-                  {/* Inner ears */}
-                  <polygon points="39,44 33,27 50,39" fill="#E8D3D8" opacity="0.7" />
-                  <polygon points="81,44 87,27 70,39" fill="#E8D3D8" opacity="0.7" />
-                  {/* Eyes */}
-                  <ellipse cx="50" cy="62" rx="6" ry="7" fill="#1C1C1E" />
-                  <ellipse cx="70" cy="62" rx="6" ry="7" fill="#1C1C1E" />
-                  <ellipse cx="47.5" cy="59.5" rx="2" ry="3" fill="white" opacity="0.7" />
-                  <ellipse cx="67.5" cy="59.5" rx="2" ry="3" fill="white" opacity="0.7" />
-                  {/* Nose */}
-                  <polygon points="60,73 57,77 63,77" fill="#D8A7B1" />
-                  {/* Tail */}
-                  <path d="M94,140 Q130,130 118,100 Q110,80 100,95" stroke="#FAF7F5" strokeWidth="6" strokeLinecap="round" fill="none" />
-                </svg>
-                {/* Film overlay */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(180deg, transparent 40%, rgba(28,28,30,0.15) 100%)",
-                  }}
-                />
-              </div>
+              />
             </div>
 
             {/* Photo caption */}

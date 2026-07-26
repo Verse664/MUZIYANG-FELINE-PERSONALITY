@@ -32,15 +32,15 @@ const personalities = [
     keywords: ["陪伴", "治愈", "靠近"],
     keywordsEn: "Companionship · Healing · Closeness",
     desc: "他的存在本身就是一种治愈。不需要任何解释，只是在场，就能让空间变得温暖而安全。",
-    accent: "#E8C4B0",
-    bg: "linear-gradient(135deg, #FAF0EA 0%, #F4DDD0 50%, #ECC9B5 100%)",
-    visual: "暖粉阳光 · 柔软织物",
+    accent: "#7C9B7E",
+    bg: "linear-gradient(135deg, #EEF5EE 0%, #DDE8DC 50%, #C4D6C4 100%)",
+    visual: "苔藓绿意 · 守护感",
     motif: (
       <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        <circle cx="40" cy="40" r="28" stroke="#E8C4B0" strokeWidth="0.8" opacity="0.5" strokeDasharray="4 3" />
-        <circle cx="40" cy="40" r="18" fill="#E8C4B0" opacity="0.15" />
-        <path d="M40 28 C36 32 30 36 28 40 C26 44 32 52 40 52 C48 52 54 44 52 40 C50 36 44 32 40 28Z" fill="#E8C4B0" opacity="0.5" />
-        <circle cx="40" cy="40" r="3.5" fill="#D4AF37" opacity="0.7" />
+        <circle cx="40" cy="40" r="28" stroke="#7C9B7E" strokeWidth="0.8" opacity="0.5" strokeDasharray="4 3" />
+        <circle cx="40" cy="40" r="18" fill="#7C9B7E" opacity="0.15" />
+        <path d="M40 22 C30 28 28 38 32 48 C36 58 48 60 56 52 C64 44 60 30 46 26 C42 24 41 22 40 22Z" fill="#7C9B7E" opacity="0.45" />
+        <circle cx="40" cy="40" r="3.5" fill="#5F7C64" opacity="0.8" />
       </svg>
     ),
   },
@@ -82,15 +82,15 @@ const personalities = [
     keywords: ["坚定", "守护", "责任"],
     keywordsEn: "Resolve · Protection · Responsibility",
     desc: "有时候软软的，有时候却是最稳定的锚。他不声张，但你总能在最重要的时刻感知到他的重量。",
-    accent: "#9BA8A0",
-    bg: "linear-gradient(135deg, #F0F2EE 0%, #E0E6E0 50%, #C8D4CC 100%)",
-    visual: "夜晚 · 城市 · 力量感",
+    accent: "#5F7CA8",
+    bg: "linear-gradient(135deg, #EAF2F8 0%, #D7E4F1 50%, #BDD2E8 100%)",
+    visual: "海洋深蓝 · 坚韧感",
     motif: (
       <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        <rect x="24" y="24" width="32" height="32" stroke="#9BA8A0" strokeWidth="0.8" opacity="0.5" transform="rotate(45 40 40)" />
-        <rect x="30" y="30" width="20" height="20" stroke="#9BA8A0" strokeWidth="0.5" opacity="0.35" transform="rotate(45 40 40)" />
-        <circle cx="40" cy="40" r="5" fill="#9BA8A0" opacity="0.3" />
-        <circle cx="40" cy="40" r="2.5" fill="#D4AF37" opacity="0.7" />
+        <rect x="24" y="24" width="32" height="32" stroke="#5F7CA8" strokeWidth="0.8" opacity="0.5" transform="rotate(45 40 40)" />
+        <rect x="30" y="30" width="20" height="20" stroke="#5F7CA8" strokeWidth="0.5" opacity="0.35" transform="rotate(45 40 40)" />
+        <circle cx="40" cy="40" r="5" fill="#5F7CA8" opacity="0.3" />
+        <circle cx="40" cy="40" r="2.5" fill="#314F75" opacity="0.7" />
       </svg>
     ),
   },
