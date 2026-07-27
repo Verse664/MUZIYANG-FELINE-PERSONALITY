@@ -1,5 +1,6 @@
 "use client"
 
+import path from "path/win32"
 import { useState } from "react"
 
 const personalities = [
@@ -8,17 +9,16 @@ const personalities = [
     number: "01",
     label: "曼妙猫",
     labelEn: "Graceful",
-    keywords: ["优雅", "魅力", "表达"],
-    keywordsEn: "Elegance · Charm · Expression",
+    keywords: ["优雅", "魅力", "曼妙"],
+    keywordsEn: "Elegance · Charm · Gracefulness",
     desc: "像丝绸般流动的存在。他知道如何在光影之间移动，舞台不是外界给予的，而是他抵达任何地方时自带的气场。",
     accent: "#D8A7B1",
     bg: "linear-gradient(135deg, #F4E2E5 0%, #E8D3D8 50%, #D8C4C8 100%)",
-    visual: "丝绸 · 镜面 · 舞台光影",
     motif: (
       <img 
         src="/KWINmanmiao.jpg" 
         alt="曼妙猫 象征图案"
-        style={{ width: 800, height: 350, objectFit: "contain" }}
+        style={{ width: 800, height: 320, objectFit: "contain" }}
         />
     ),
   },
@@ -32,43 +32,30 @@ const personalities = [
     desc: "他的存在本身就是一种治愈。不需要任何解释，只是在场，就能让空间变得温暖而安全。",
     accent: "#7C9B7E",
     bg: "linear-gradient(135deg, #EEF5EE 0%, #DDE8DC 50%, #C4D6C4 100%)",
-    visual: "苔藓绿意 · 守护感",
     motif: (
       <img 
         src="/KWINwenrou.jpg" 
         alt="温柔猫 象征图案"
-        style={{ width: 800, height: 350, objectFit: "contain" }}
+        style={{ width: 800, height: 320, objectFit: "contain" }}
         />
     ),
   },
   {
-    id: "romantic",
+    id: "mischievous",
     number: "03",
-    label: "浪漫猫",
-    labelEn: "Romantic",
-    keywords: ["想象", "艺术", "自由"],
-    keywordsEn: "Imagination · Art · Freedom",
-    desc: "他活在比现实更深的地方。脑海中有无数平行宇宙，每一个都值得被描述，每一朵花都有故事。",
-    accent: "#B0AEE0",
-    bg: "linear-gradient(135deg, #EEE8F8 0%, #E0DAEE 50%, #CEC8E4 100%)",
-    visual: "星空 · 花朵 · 梦境",
+    label: "捣蛋猫",
+    labelEn: "Mischievous",
+    keywords: ["好奇", "玩心", "灵动"],
+    keywordsEn: "Curiosity · Playfulness · Spirit",
+    desc: "他总会在不经意间制造一点惊喜。偶尔调皮，偶尔幼稚，喜欢用玩笑打破安静，也让身边的人忍不住跟着笑起来。这份捣蛋，从不是任性，而是对世界始终保留的一点天真。",
+    accent: "#B8BCC8",
+    bg: "linear-gradient(135deg, #F7F8FA 0%, #ECEEF2 50%, #D9DEE7 100%)",
     motif: (
-      <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        {[0, 60, 120, 180, 240, 300].map((deg, i) => {
-          const angle = (deg * Math.PI) / 180
-          const x = 40 + 25 * Math.cos(angle)
-          const y = 40 + 25 * Math.sin(angle)
-          return <circle key={i} cx={x} cy={y} r="2.5" fill="#B0AEE0" opacity="0.7" />
-        })}
-        <circle cx="40" cy="40" r="5" fill="#B0AEE0" opacity="0.4" />
-        <circle cx="40" cy="40" r="2" fill="#D4AF37" opacity="0.8" />
-        {[0, 60, 120, 180, 240, 300].map((deg, i) => {
-          const angle = (deg * Math.PI) / 180
-          const x2 = 40 + 25 * Math.cos(angle)
-          const y2 = 40 + 25 * Math.sin(angle)
-          return <line key={i} x1="40" y1="40" x2={x2} y2={y2} stroke="#B0AEE0" strokeWidth="0.5" opacity="0.35" />
-        })}
-      </svg>
+       <img 
+        src="/KWINdaodan.png" 
+        alt="捣蛋猫 象征图案"
+        style={{ width: 800, height: 320, objectFit: "contain" }}
+        />
     ),
   },
   {
@@ -81,14 +68,12 @@ const personalities = [
     desc: "有时候软软的，有时候却是最稳定的锚。他不声张，但你总能在最重要的时刻感知到他的重量。",
     accent: "#5F7CA8",
     bg: "linear-gradient(135deg, #EAF2F8 0%, #D7E4F1 50%, #BDD2E8 100%)",
-    visual: "海洋深蓝 · 坚韧感",
     motif: (
-      <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-        <rect x="24" y="24" width="32" height="32" stroke="#5F7CA8" strokeWidth="0.8" opacity="0.5" transform="rotate(45 40 40)" />
-        <rect x="30" y="30" width="20" height="20" stroke="#5F7CA8" strokeWidth="0.5" opacity="0.35" transform="rotate(45 40 40)" />
-        <circle cx="40" cy="40" r="5" fill="#5F7CA8" opacity="0.3" />
-        <circle cx="40" cy="40" r="2.5" fill="#314F75" opacity="0.7" />
-      </svg>
+      <img 
+        src="/KWINdandang.jpg" 
+        alt="担当猫 象征图案"
+        style={{ width: 800, height: 320, objectFit: "contain" }}
+        />
     ),
   },
 ]
@@ -121,7 +106,7 @@ export default function PersonalitySection() {
                 color: "#8E8E93",
               }}
             >
-              03 — PERSONALITY DIMENSIONS
+              08 — EIGHTH ANNIVERSARY
             </span>
             <span style={{ flex: 1, height: 1, backgroundColor: "#D8A7B1" }} />
           </div>
@@ -135,7 +120,7 @@ export default function PersonalitySection() {
               letterSpacing: "0.04em",
             }}
           >
-            猫格展厅
+            八周年猫格展厅
           </h2>
           <p
             className="reveal delay-2 mt-3"
@@ -146,7 +131,18 @@ export default function PersonalitySection() {
               color: "#8E8E93",
             }}
           >
-            THE PERSONALITY DIMENSIONS · GALLERY EXHIBITION
+            THE EIGHTH ANNIVERSARY · PERSONALITY EXHIBITION
+          </p>
+          <p
+            className="reveal delay-2 mt-4"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.72rem",
+              letterSpacing: "0.28em",
+              color: "#D4AF37",
+            }}
+          >
+            出道八周年特别纪念版
           </p>
         </div>
 
@@ -338,7 +334,7 @@ export default function PersonalitySection() {
                     opacity: 0.5,
                   }}
                 >
-                  dimension {current.number} of 04
+                  八周年纪念 · dimension {current.number} of 04
                 </span>
                 <div className="flex gap-2">
                   {personalities.map((_, i) => (

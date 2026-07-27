@@ -113,25 +113,51 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           THE SELF-CONSISTENT FELINE
         </p>
 
-        {/* Fusion visual */}
-        <div className="reveal delay-2 my-16 flex items-center justify-center">
-          <FusionOrb />
-        </div>
-
         {/* Concept description */}
-        <p
-          className="reveal delay-2 mx-auto mb-10"
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
-            lineHeight: 2.2,
-            color: "#3C3C3E",
-            letterSpacing: "0.08em",
-            maxWidth: 560,
-          }}
-        >
-          四种猫格并非分裂，而是同一个人格在不同维度的显现。曼妙是他的表达，温柔是他的回应，浪漫是他的内核，担当是他的选择。四者共存，才成为完整的洋洋。
-        </p>
+      <div
+        className="reveal delay-2 mx-auto mb-10"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
+          lineHeight: 2.2,
+          color: "#3C3C3E",
+          letterSpacing: "0.08em",
+          maxWidth: 560,
+          textAlign: "center",
+        }}
+      >
+        <span className="block">
+          有人喜欢给猫命名
+        </span>
+
+        <span className="block">
+          有人喜欢给人定义
+        </span>
+
+        <span className="block">
+          可是有些猫，拥有很多种模样
+        </span>
+
+        <span className="block mt-6">
+          曼妙时是他
+        </span>
+
+        <span className="block">
+          温柔时是他
+        </span>
+
+        <span className="block">
+          捣蛋时是他
+        </span>
+
+        <span className="block">
+          担当时也是他
+        </span>
+
+        <span className="block mt-6">
+          万千猫格，皆是洋洋
+        </span>
+        </div>
 
         {/* Gold quote */}
         <div
@@ -277,9 +303,9 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         {/* Four color stripe */}
         <div className="mt-20 flex h-1 w-full overflow-hidden">
           <div style={{ flex: 1, backgroundColor: "#D8A7B1" }} />
-          <div style={{ flex: 1, backgroundColor: "#E8C4B0" }} />
-          <div style={{ flex: 1, backgroundColor: "#B0AEE0" }} />
           <div style={{ flex: 1, backgroundColor: "#9BA8A0" }} />
+          <div style={{ flex: 1, backgroundColor: "#B8BCC8" }} />
+          <div style={{ flex: 1, backgroundColor: "#5F7CA8" }} />
         </div>
 
         {/* Footer note */}
@@ -301,8 +327,8 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
 }
 
 function FusionOrb() {
-  const colors = ["#D8A7B1", "#E8C4B0", "#B0AEE0", "#9BA8A0"]
-  const labels = ["曼妙", "温柔", "浪漫", "担当"]
+  const colors = ["#D8A7B1", "#9BA8A0", "#B8BCC8", "#5F7CA8"]
+  const labels = ["曼妙", "温柔", "捣蛋", "担当"]
 
   return (
     <div className="relative" style={{ width: "min(320px, 80vw)", height: "min(320px, 80vw)" }}>
