@@ -99,7 +99,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             lineHeight: 1.2,
           }}
         >
-          自洽猫
+          猫格万千
         </h2>
         <p
           className="reveal delay-2 mt-2"
@@ -110,7 +110,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             color: "#8E8E93",
           }}
         >
-          THE SELF-CONSISTENT FELINE
+          ONE CAT, ONE WORLD
         </p>
 
         {/* Concept description */}
@@ -275,14 +275,14 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
               style={{ border: "1px solid rgba(216,167,177,0.3)" }}
             />
             <p style={{ fontFamily: "var(--font-serif)", fontSize: "0.55rem", letterSpacing: "0.2em", color: "#D8A7B1" }}>
-              YANGYANG
+              MUZIYANG
             </p>
             <div style={{ width: 24, height: 0.5, backgroundColor: "#D8A7B1", opacity: 0.5 }} />
             <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#D8A7B1", opacity: 0.7 }}>
-              自洽猫
+              猫格万千
             </p>
             <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", letterSpacing: "0.2em", color: "#8E8E93" }}>
-              2026
+              8th
             </p>
           </div>
         </button>
