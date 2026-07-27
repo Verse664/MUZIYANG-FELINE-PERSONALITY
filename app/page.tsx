@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import HeroSection from "@/components/feline/HeroSection"
 import SpeciesSection from "@/components/feline/SpeciesSection"
 import PersonalitySection from "@/components/feline/PersonalitySection"
@@ -9,7 +9,7 @@ import EasterEggModal from "@/components/feline/EasterEggModal"
 import FilmGrainOverlay from "@/components/feline/FilmGrainOverlay"
 import CustomCursor from "@/components/feline/CustomCursor"
 
-// 词云画布尺寸
+// 画布尺寸
 const CLOUD_VB_W = 900
 const CLOUD_VB_H = 520
 
@@ -33,14 +33,21 @@ interface PlacedPhrase {
   bottom: number
 }
 
+interface SpotlightState {
+  text: string
+  color: string
+  fontSize: number
+  x: number
+  y: number
+  visible: boolean
+}
+
 // 粉丝留言数据：保留全部原有内容，按长短分三档字号权重
 const fanPhrases: FanPhrase[] = [
-  // 大字（视觉重心）
   { text: "世界变软了", tier: 0, color: "#C95573" },
   { text: "猫影留言墙", tier: 0, color: "#D15D73" },
   { text: "洋洋", tier: 0, color: "#B24F6B" },
 
-  // 中字（关键短语）
   { text: "温柔与坚定", tier: 1, color: "#D38A96" },
   { text: "陪伴", tier: 1, color: "#D27B8B" },
   { text: "靠近", tier: 1, color: "#DC7C8F" },
@@ -66,7 +73,6 @@ const fanPhrases: FanPhrase[] = [
   { text: "一一 · 东京", tier: 1, color: "#E4B8C0" },
   { text: "VOICES OF FANS", tier: 1, color: "#C86A84" },
 
-  // 小字（完整长句 + 短句，填充纹理）
   { text: "洋洋让我相信，猫真的可以活成一个人的样子。", tier: 2, color: "#F3DFE2" },
   { text: "每次看到洋洋的照片，都觉得世界变软了。", tier: 2, color: "#F5E7E9" },
   { text: "温柔和坚定原来可以同时在一个人身上发生。", tier: 2, color: "#F7E9EC" },
@@ -85,21 +91,48 @@ const fanPhrases: FanPhrase[] = [
   { text: "心跳都慢了", tier: 2, color: "#E78695" },
 ]
 
-// 各字号档位的取值范围
+// 各字号档位的取值范围（背景层用，偏小偏淡）
 const TIER_SIZE_RANGE: Record<Tier, [number, number]> = {
   0: [24, 30],
   1: [16, 21],
   2: [11, 14],
 }
 
+// 聚光主体色板：只用中深色调，保证在浅粉背景下始终清晰可辨（浅色只留给背景层用）
+const SPOTLIGHT_COLORS = [
+  "#B24F6B",
+  "#C95573",
+  "#D15D73",
+  "#C55B71",
+  "#CB6980",
+  "#D67384",
+  "#D25976",
+  "#C96E82",
+]
+
+// 聚光主体字号范围（比背景层大一些，作为视觉焦点）
+const SPOTLIGHT_SIZE_RANGE: [number, number] = [30, 46]
+
 function randInRange([min, max]: [number, number]): number {
   return min + Math.random() * (max - min)
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
 }
 
 export default function FelineArchivePage() {
   const [eggOpen, setEggOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
   const [cloudLayout, setCloudLayout] = useState<PlacedPhrase[]>([])
+  const [spotlight, setSpotlight] = useState<SpotlightState | null>(null)
+  const measureCtxRef = useRef<CanvasRenderingContext2D | null>(null)
+  const fontFamilyRef = useRef<string>("sans-serif")
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -124,7 +157,7 @@ export default function FelineArchivePage() {
     return () => observer.disconnect()
   }, [])
 
-  // 自动排版：经典词云螺旋算法，铺满整个矩形区域，保证每句话完整、不重叠
+  // 背景文字云：静态铺开一次，作为氛围底纹，淡出显示（低透明度）
   useEffect(() => {
     let cancelled = false
 
@@ -133,7 +166,7 @@ export default function FelineArchivePage() {
         try {
           await document.fonts.ready
         } catch {
-          // 忽略字体加载检测失败，继续用当前可用字体测量
+          // 忽略字体加载检测失败
         }
       }
       if (cancelled) return
@@ -146,9 +179,10 @@ export default function FelineArchivePage() {
       const fontFamily =
         rootStyles.getPropertyValue("--font-sans").trim() || "sans-serif"
 
-      // 大字先放（占据中心视觉重心），小字后放（填充四周空隙）
-      const ordered = [...fanPhrases].sort((a, b) => a.tier - b.tier)
+      measureCtxRef.current = ctx
+      fontFamilyRef.current = fontFamily
 
+      const ordered = [...fanPhrases].sort((a, b) => a.tier - b.tier)
       const placed: PlacedPhrase[] = []
       const cx = CLOUD_VB_W / 2
       const cy = CLOUD_VB_H / 2
@@ -169,19 +203,17 @@ export default function FelineArchivePage() {
         for (let r = 0; r < maxRadius && !found; r += radiusStep) {
           for (let a = 0; a < Math.PI * 2 && !found; a += angleStep) {
             const x = cx + r * Math.cos(a)
-            const y = cy + r * Math.sin(a) * 0.62 // 椭圆形螺旋，贴合横向宽扁的画布比例
+            const y = cy + r * Math.sin(a) * 0.62
 
             const left = x - halfW
             const right = x + halfW
             const top = y - halfH
             const bottom = y + halfH
 
-            // 必须完整落在画布内，保证句子不被裁切
             if (left < 6 || right > CLOUD_VB_W - 6 || top < 6 || bottom > CLOUD_VB_H - 6) {
               continue
             }
 
-            // 与已放置的文字做碰撞检测，留一点点间距但保持紧密
             const pad = 3
             let overlap = false
             for (const p of placed) {
@@ -214,7 +246,6 @@ export default function FelineArchivePage() {
             bottom: found.bottom,
           })
         }
-        // 找不到空位就跳过这一句，绝不强行重叠或截断显示
       }
 
       if (!cancelled) setCloudLayout(placed)
@@ -223,6 +254,93 @@ export default function FelineArchivePage() {
     computeLayout()
     return () => {
       cancelled = true
+    }
+  }, [])
+
+  // 聚光轮播：每次一句话作为主体，淡入 → 停留 → 淡出 → 换下一句 + 换位置
+  useEffect(() => {
+    let cancelled = false
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    const FADE_IN_MS = 900
+    const HOLD_MS = 2400
+    const FADE_OUT_MS = 900
+    const GAP_MS = 250
+
+    // 优先挑选中长句子做主体轮播，太长的整段句子也保留，保证内容多样
+    let queue = shuffle(fanPhrases)
+    let queueIndex = 0
+
+    function pickPosition(text: string, fontSize: number) {
+      const ctx = measureCtxRef.current
+      const fontFamily = fontFamilyRef.current
+      if (!ctx) return { x: CLOUD_VB_W / 2, y: CLOUD_VB_H / 2 }
+
+      ctx.font = `${fontSize}px ${fontFamily}`
+      const width = ctx.measureText(text).width
+      const height = fontSize * 1.2
+      const halfW = width / 2
+      const halfH = height / 2
+
+      const margin = 24
+      const minX = margin + halfW
+      const maxX = CLOUD_VB_W - margin - halfW
+      const minY = margin + halfH
+      const maxY = CLOUD_VB_H - margin - halfH
+
+      // 若单句过长超出画布宽度，退化为居中显示，避免越界
+      if (minX >= maxX || minY >= maxY) {
+        return { x: CLOUD_VB_W / 2, y: CLOUD_VB_H / 2 }
+      }
+
+      const x = randInRange([minX, maxX])
+      const y = randInRange([minY, maxY])
+      return { x, y }
+    }
+
+    function scheduleNext() {
+      if (cancelled) return
+
+      if (queueIndex >= queue.length) {
+        queue = shuffle(fanPhrases)
+        queueIndex = 0
+      }
+      const phrase = queue[queueIndex]
+      queueIndex += 1
+
+      const fontSize = randInRange(SPOTLIGHT_SIZE_RANGE)
+      const color = SPOTLIGHT_COLORS[Math.floor(Math.random() * SPOTLIGHT_COLORS.length)]
+      const { x, y } = pickPosition(phrase.text, fontSize)
+
+      // 淡入
+      setSpotlight({ text: phrase.text, color, fontSize, x, y, visible: false })
+      timeoutId = setTimeout(() => {
+        if (cancelled) return
+        setSpotlight((prev) => (prev ? { ...prev, visible: true } : prev))
+
+        // 停留后淡出
+        timeoutId = setTimeout(() => {
+          if (cancelled) return
+          setSpotlight((prev) => (prev ? { ...prev, visible: false } : prev))
+
+          // 淡出完成后，间隔一下再进入下一轮
+          timeoutId = setTimeout(() => {
+            if (cancelled) return
+            scheduleNext()
+          }, FADE_OUT_MS + GAP_MS)
+        }, HOLD_MS)
+      }, 30)
+    }
+
+    // 等背景文字云布局计算完（拿到 measureCtx）再开始轮播
+    const startDelay = setTimeout(() => {
+      scheduleNext()
+    }, 400)
+
+    return () => {
+      cancelled = true
+      clearTimeout(startDelay)
+      clearTimeout(timeoutId)
     }
   }, [])
 
@@ -275,20 +393,45 @@ export default function FelineArchivePage() {
                   className="h-full w-full"
                   preserveAspectRatio="xMidYMid meet"
                 >
-                  {cloudLayout.map((item, index) => (
+                  {/* 背景文字云：淡淡的氛围底纹，始终存在 */}
+                  <g opacity={0.22}>
+                    {cloudLayout.map((item, index) => (
+                      <text
+                        key={index}
+                        x={item.x}
+                        y={item.y}
+                        fontSize={item.fontSize}
+                        fill={item.color}
+                        fontFamily="var(--font-sans), sans-serif"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {item.text}
+                      </text>
+                    ))}
+                  </g>
+
+                  {/* 聚光主体：轮播淡入淡出 */}
+                  {spotlight && (
                     <text
-                      key={index}
-                      x={item.x}
-                      y={item.y}
-                      fontSize={item.fontSize}
-                      fill={item.color}
+                      x={spotlight.x}
+                      y={spotlight.y}
+                      fontSize={spotlight.fontSize}
+                      fill={spotlight.color}
                       fontFamily="var(--font-sans), sans-serif"
+                      fontWeight={600}
                       textAnchor="middle"
                       dominantBaseline="central"
+                      style={{
+                        opacity: spotlight.visible ? 1 : 0,
+                        transition: "opacity 0.9s ease, transform 0.9s ease",
+                        transform: spotlight.visible ? "scale(1)" : "scale(0.94)",
+                        transformOrigin: `${spotlight.x}px ${spotlight.y}px`,
+                      }}
                     >
-                      {item.text}
+                      {spotlight.text}
                     </text>
-                  ))}
+                  )}
                 </svg>
               </div>
             </div>
@@ -301,7 +444,6 @@ export default function FelineArchivePage() {
       <style jsx global>{`
         * { cursor: none !important; }
 
-        /* Reveal animations */
         .reveal {
           opacity: 0;
           transform: translateY(36px);
@@ -317,7 +459,6 @@ export default function FelineArchivePage() {
           transform: translateY(0);
         }
 
-        /* Handwriting reveal */
         .handwrite-reveal {
           opacity: 0;
           transition: opacity 1.2s ease;
@@ -326,12 +467,10 @@ export default function FelineArchivePage() {
           opacity: 1;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #FAF7F5; }
         ::-webkit-scrollbar-thumb { background: #D8A7B1; border-radius: 2px; }
 
-        /* Film grain */
         @keyframes grain {
           0%, 100% { transform: translate(0, 0); }
           10% { transform: translate(-2%, -3%); }

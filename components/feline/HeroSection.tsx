@@ -75,6 +75,36 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
       >
         {/* Archive number top */}
         <div
+          className="mb-8 flex items-center gap-3 rounded-full border border-[#D8A7B1]/40 bg-white/50 px-4 py-2 shadow-[0_8px_24px_rgba(216,167,177,0.12)] backdrop-blur-sm"
+          style={{
+            opacity: tagVisible ? 1 : 0,
+            transform: tagVisible ? "translateY(0)" : "translateY(12px)",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.7rem",
+              letterSpacing: "0.3em",
+              color: "#D4AF37",
+              fontWeight: 700,
+            }}
+          >
+            08
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.6rem",
+              letterSpacing: "0.3em",
+              color: "#8E8E93",
+            }}
+          >
+            出道八周年 · 8TH ANNIVERSARY
+          </span>
+        </div>
+
+        <div
           className="mb-12 font-mono text-xs tracking-[0.35em] text-[#8E8E93] opacity-0 transition-all duration-1000"
           style={{
             opacity: tagVisible ? 0.6 : 0,
@@ -188,7 +218,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
               color: "#8E8E93",
             }}
           >
-            [ ARCHIVE NO. 2026-YANG ]
+            [ EIGHTH ANNIVERSARY · 2026-YANG ]
           </span>
         </div>
 
