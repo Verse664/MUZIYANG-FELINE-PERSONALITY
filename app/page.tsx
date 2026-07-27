@@ -107,7 +107,7 @@ const fanPhrases: FanPhrase[] = [
   { text: "底色很温柔的一只大猫，\n特别有责任心又带着一些幽默风趣，完全理想型！\n——From 唯唯", tier: 1, color: "#C95573" },
   { text: "高需求大猫！很细腻非常会照顾别人情绪的好宝宝🥰是我姐姐", tier: 1, color: "#D67384" },
   { text: "永远在照顾别人感受的天使 \n希望 木子洋 可以遇到属于自己的木子洋\n——From 吃亿碗", tier: 1, color: "#D98B99" },
-  { text: "高需求大猫！很细腻非常会照顾别人情绪的好宝宝🥰是我姐姐\n——From 北七Polaris", tier: 1, color: "#D8A7B1" },
+  { text: "高需求大猫！\n很细腻非常会照顾别人情绪的好宝宝🥰是我姐姐\n——From 北七Polaris", tier: 1, color: "#D8A7B1" },
   { text: "妹妹，开心是最富有的事情了妹妹\n——From 小木好困", tier: 1, color: "#C86A84" },
   { text: "你像夏日的阳光般热烈盛放，冬日又化成温润的暖阳温暖心房，\n你的放声开怀,我随声而笑,我们一直都在。\n——From rui词芳~", tier: 1, color: "#ffcddb" },
   { text: "新粉 被他大方的薄肌吸引过来的 \n了解他的性格更喜欢了 很治愈\n——From momo", tier: 1, color: "#D38A96" },
