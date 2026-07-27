@@ -5,20 +5,38 @@ import { useEffect } from "react"
 interface EasterEggModalProps {
   open: boolean
   onClose: () => void
+  title?: string
+  subtitle?: string
+  description?: string
+  videoSrc?: string
+  posterSrc?: string
+  accent?: string
 }
 
-export default function EasterEggModal({ open, onClose }: EasterEggModalProps) {
-  // Close on Escape
+export default function EasterEggModal({
+  open,
+  onClose,
+  title = "深层档案 · 自洽寄语",
+  subtitle = "VIDEO EXHIBIT",
+  description,
+  videoSrc,
+  posterSrc,
+  accent = "#D4AF37",
+}: EasterEggModalProps) {
   useEffect(() => {
     if (!open) return
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose()
     }
+
+    const previousOverflow = document.body.style.overflow
     window.addEventListener("keydown", handleKey)
     document.body.style.overflow = "hidden"
+
     return () => {
       window.removeEventListener("keydown", handleKey)
-      document.body.style.overflow = ""
+      document.body.style.overflow = previousOverflow
     }
   }, [open, onClose])
 
@@ -26,7 +44,7 @@ export default function EasterEggModal({ open, onClose }: EasterEggModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[9990] flex items-center justify-center p-6"
+      className="fixed inset-0 z-[9990] flex items-center justify-center p-4 sm:p-6"
       style={{
         backgroundColor: "rgba(28,28,30,0.55)",
         backdropFilter: "blur(12px)",
@@ -35,34 +53,32 @@ export default function EasterEggModal({ open, onClose }: EasterEggModalProps) {
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="洋洋的深层档案寄语"
+      aria-label="视频弹窗"
     >
-      {/* Modal card */}
       <div
-        className="relative max-w-lg w-full"
+        className="relative w-full max-w-3xl"
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "rgba(250,247,245,0.92)",
+          background: "rgba(250,247,245,0.95)",
           backdropFilter: "blur(24px)",
-          border: "1px solid rgba(212,175,55,0.3)",
-          boxShadow: "0 8px 60px rgba(28,28,30,0.2), 0 2px 20px rgba(212,175,55,0.12)",
+          border: `1px solid ${accent}30`,
+          boxShadow: `0 8px 60px rgba(28,28,30,0.2), 0 2px 20px ${accent}12`,
           animation: "slideInModal 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        {/* Top bar */}
         <div
-          className="flex items-center justify-between px-8 py-4"
-          style={{ borderBottom: "1px solid rgba(216,167,177,0.25)" }}
+          className="flex items-center justify-between px-6 py-4 sm:px-8"
+          style={{ borderBottom: `1px solid ${accent}20` }}
         >
           <span
             style={{
               fontFamily: "var(--font-sans)",
               fontSize: "0.5rem",
               letterSpacing: "0.45em",
-              color: "#D4AF37",
+              color: accent,
             }}
           >
-            ◆ CLASSIFIED ARCHIVE · RESTRICTED ◆
+            {subtitle}
           </span>
           <button
             onClick={onClose}
@@ -83,36 +99,9 @@ export default function EasterEggModal({ open, onClose }: EasterEggModalProps) {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="px-8 py-10">
-          {/* Archive number */}
-          <div
-            className="mb-6"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.5rem",
-              letterSpacing: "0.4em",
-              color: "#8E8E93",
-            }}
-          >
-            DOC-YANG-2026 · LEVEL 5 CLEARANCE · INNER ARCHIVE
-          </div>
-
-          {/* Eye decoration */}
-          <div className="mb-8 flex justify-center">
-            <svg viewBox="0 0 100 40" width="100" height="40" fill="none">
-              <ellipse cx="50" cy="20" rx="44" ry="17" fill="#F4E2E5" opacity="0.8" />
-              <ellipse cx="50" cy="20" rx="12" ry="17" fill="#1C1C1E" opacity="0.7">
-                <animate attributeName="rx" values="12;8;12" dur="3s" repeatCount="indefinite" />
-              </ellipse>
-              <ellipse cx="44" cy="15" rx="4" ry="6" fill="white" opacity="0.3" />
-              <ellipse cx="50" cy="20" rx="44" ry="17" stroke="#D4AF37" strokeWidth="0.8" opacity="0.5" />
-            </svg>
-          </div>
-
-          {/* Title */}
+        <div className="px-6 py-6 sm:px-8 sm:py-8">
           <h3
-            className="mb-6 text-center"
+            className="mb-3 text-center"
             style={{
               fontFamily: "var(--font-serif), serif",
               fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
@@ -121,127 +110,49 @@ export default function EasterEggModal({ open, onClose }: EasterEggModalProps) {
               letterSpacing: "0.06em",
             }}
           >
-            深层档案 · 自洽寄语
+            {title}
           </h3>
 
-          {/* Divider */}
-          <div
-            className="mx-auto mb-8"
-            style={{
-              width: 60,
-              height: 1,
-              background: "linear-gradient(90deg, transparent, #D4AF37, transparent)",
-            }}
-          />
-
-          {/* Message */}
-          <p
-            className="mb-6 text-center"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "clamp(0.9rem, 1.8vw, 1.05rem)",
-              lineHeight: 2.2,
-              color: "#3C3C3E",
-              letterSpacing: "0.08em",
-            }}
-          >
-            自洽，不是不在乎外界——
-            <br />
-            而是知道自己在乎什么，
-            <br />
-            所以不会被那些<span style={{ color: "#D8A7B1" }}>不重要的声音</span>带走。
-          </p>
-
-          <p
-            className="mb-8 text-center"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.85rem",
-              lineHeight: 2,
-              color: "#8E8E93",
-              letterSpacing: "0.06em",
-            }}
-          >
-            你已经是一个完整的宇宙了，
-            <br />
-            不需要被任何人&ldquo;填满&rdquo;，
-            <br />
-            也不需要让自己去&ldquo;填满&rdquo;别人。
-          </p>
-
-          {/* Gold quote */}
-          <div
-            className="mb-8 text-center px-6 py-5"
-            style={{
-              border: "1px solid rgba(212,175,55,0.2)",
-              backgroundColor: "rgba(212,175,55,0.04)",
-            }}
-          >
+          {description ? (
             <p
+              className="mb-5 text-center"
               style={{
-                fontFamily: "var(--font-serif), serif",
-                fontSize: "clamp(1rem, 2vw, 1.3rem)",
-                color: "#1C1C1E",
-                fontStyle: "italic",
+                fontFamily: "var(--font-sans)",
+                fontSize: "0.9rem",
+                lineHeight: 1.8,
+                color: "#3C3C3E",
                 letterSpacing: "0.06em",
-                lineHeight: 1.7,
               }}
             >
-              &ldquo;洋洋，你本身就是光。&rdquo;
+              {description}
             </p>
-          </div>
+          ) : null}
 
-          {/* Handwritten note */}
-          <div className="text-right">
-            <p
-              style={{
-                fontFamily: "var(--font-handwriting), cursive",
-                fontSize: "1.1rem",
-                color: "#D8A7B1",
-                opacity: 0.7,
-              }}
+          {videoSrc ? (
+            <div
+              className="overflow-hidden rounded-2xl border"
+              style={{ borderColor: `${accent}30`, backgroundColor: "#000" }}
             >
-              — with love, always ♡
-            </p>
-          </div>
+              <video
+                className="w-full"
+                controls
+                autoPlay
+                playsInline
+                preload="metadata"
+                poster={posterSrc}
+                style={{ maxHeight: 460, backgroundColor: "#000" }}
+              >
+                <source src={videoSrc} type="video/mp4" />
+              </video>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed px-6 py-10 text-center" style={{ borderColor: `${accent}30` }}>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#3C3C3E" }}>
+                暂无可播放视频
+              </p>
+            </div>
+          )}
         </div>
-
-        {/* Bottom stamps row */}
-        <div
-          className="flex items-center justify-between px-8 py-4"
-          style={{ borderTop: "1px solid rgba(216,167,177,0.2)" }}
-        >
-          <div className="flex gap-1.5">
-            {["#D8A7B1", "#E8C4B0", "#B0AEE0", "#9BA8A0"].map((c, i) => (
-              <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: c, opacity: 0.6 }} />
-            ))}
-          </div>
-          <span
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.45rem",
-              letterSpacing: "0.35em",
-              color: "#8E8E93",
-              opacity: 0.4,
-            }}
-          >
-            ARCHIVE NO. 2026-YANG · END OF FILE
-          </span>
-        </div>
-
-        {/* Gold corner accents */}
-        {[
-          "top-0 left-0 border-t border-l",
-          "top-0 right-0 border-t border-r",
-          "bottom-0 left-0 border-b border-l",
-          "bottom-0 right-0 border-b border-r",
-        ].map((cls, i) => (
-          <div
-            key={i}
-            className={`absolute ${cls} w-5 h-5`}
-            style={{ borderColor: "rgba(212,175,55,0.5)" }}
-          />
-        ))}
       </div>
 
       <style jsx global>{`

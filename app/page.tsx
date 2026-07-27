@@ -22,7 +22,7 @@ interface FanPhrase {
 }
 
 interface PlacedPhrase {
-  text: string
+  lines: string[]
   color: string
   fontSize: number
   x: number
@@ -34,7 +34,7 @@ interface PlacedPhrase {
 }
 
 interface SpotlightState {
-  text: string
+  lines: string[]
   color: string
   fontSize: number
   x: number
@@ -42,53 +42,98 @@ interface SpotlightState {
   visible: boolean
 }
 
+interface VideoModalState {
+  title: string
+  subtitle: string
+  description: string
+  videoSrc: string
+  posterSrc: string
+  accent: string
+}
+
+// 把 \n 和 <br> / <br/> 统一拆分成多行数组，去除空白行首尾空格
+function splitLines(text: string): string[] {
+  return text
+    .replace(/<br\s*\/?>/gi, "\n")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+}
+
+// 测量多行文本：宽度取每行最大值，高度按行数 * 行高累加
+function measureMultiline(
+  ctx: CanvasRenderingContext2D,
+  lines: string[],
+  fontSize: number
+): { width: number; height: number; lineHeight: number } {
+  const lineHeight = fontSize * 1.25
+  let maxWidth = 0
+  for (const line of lines) {
+    const w = ctx.measureText(line).width
+    if (w > maxWidth) maxWidth = w
+  }
+  return { width: maxWidth, height: lineHeight * lines.length, lineHeight }
+}
+
 // 粉丝留言数据：保留全部原有内容，按长短分三档字号权重
 const fanPhrases: FanPhrase[] = [
-  { text: "世界变软了", tier: 0, color: "#C95573" },
-  { text: "猫影留言墙", tier: 0, color: "#D15D73" },
-  { text: "洋洋", tier: 0, color: "#B24F6B" },
+  { text: "温柔\n——From 云、", tier: 0, color: "#C95573" },
+  { text: "奶牛猫！！\n——From Suhedi", tier: 0, color: "#D15D73" },
+  { text: "我爱你💕\n——From 一加一", tier: 0, color: "#B24F6B" },
+  { text: "感性又性感\n——From 山与", tier: 0, color: "#ffa2bc" },
+  { text: "你一定是最棒的\n——From 洋洋", tier: 0, color: "#e37795" },
 
-  { text: "温柔与坚定", tier: 1, color: "#D38A96" },
-  { text: "陪伴", tier: 1, color: "#D27B8B" },
-  { text: "靠近", tier: 1, color: "#DC7C8F" },
-  { text: "治愈", tier: 1, color: "#E499A5" },
-  { text: "柔软但坚定", tier: 1, color: "#CB6980" },
-  { text: "谢谢洋洋示范", tier: 1, color: "#E89AA8" },
-  { text: "世界如此柔软", tier: 1, color: "#C55B71" },
-  { text: "猫头侧影", tier: 1, color: "#DC7C8F" },
-  { text: "沉稳而温柔", tier: 1, color: "#E37A8B" },
-  { text: "氛围感太强", tier: 1, color: "#EEA0AD" },
-  { text: "被治愈了", tier: 1, color: "#D67384" },
-  { text: "文字云", tier: 1, color: "#D98B99" },
-  { text: "梦境质感", tier: 1, color: "#DB7E91" },
-  { text: "粉色光影", tier: 1, color: "#D98B99" },
-  { text: "柔软的目光", tier: 1, color: "#D25976" },
-  { text: "猫影里的温柔", tier: 1, color: "#D15D73" },
-  { text: "容易醉心", tier: 1, color: "#E37A8B" },
-  { text: "这一刻很高级", tier: 1, color: "#C95573" },
-  { text: "粉色调的温度", tier: 1, color: "#D67384" },
-  { text: "柔光与留白", tier: 1, color: "#D98B99" },
-  { text: "小鹿 · 上海", tier: 1, color: "#D8A7B1" },
-  { text: "阿卷 · 成都", tier: 1, color: "#D8A7B1" },
-  { text: "一一 · 东京", tier: 1, color: "#E4B8C0" },
-  { text: "VOICES OF FANS", tier: 1, color: "#C86A84" },
+  { text: "心思细腻，大大咧咧，感性，大方，傻头傻脑\n——From hi-my.🍟", tier: 1, color: "#D38A96" },
+  { text: "鸡毛小雪  猪毛微雪\n——From 树的历险记", tier: 1, color: "#D27B8B" },
+  { text: "感性，爱哭，温柔，像春天里温和的春风\n——From 太洋下山还有岳光", tier: 1, color: "#DC7C8F" },
+  { text: "真的就是浪漫的文科生吧？\n温柔 包容 敏感 细心 在意情义\n——From 小木好困", tier: 1, color: "#E499A5" },
+  { text: "心思细腻 容易内耗\n虽然外表大大咧咧\n——From Ace.of", tier: 1, color: "#D67384" },
+  { text: "是你告诉我要好好爱自己再爱你！\n——From 해수 야~~", tier: 1, color: "#D38A96" },
+  { text: "木子洋能让我在人生的道路上生出勇气，\n能让我想起他的时候是笑着的\n——From 盐汽水炒饭", tier: 1, color: "#D27B8B" },
+  { text: "我那个当明星的沙雕朋友，浪漫疯子\n——From 小图", tier: 1, color: "#DC7C8F" },
+  { text: "太阳男孩洋洋\n笑起来很阳光\n——From 一天三杯水", tier: 1, color: "#E499A5" },
+  { text: "抽象阳光,活着生命力，\n这都是他身上的活人感,也是我所追随的!\n——From 活在当下只讲屁话", tier: 1, color: "#CB6980" },
+  { text: "踩雪 追逐晚霞 喜欢阳光 爱吃美食 \n爱看书 感性 浪漫 温柔 有时傻傻的 \n所有的细节都很打动人\n——From 如果没有明天", tier: 1, color: "#E89AA8" },
+  { text: "不想再看你流泪了，哪怕是幸福的眼泪，\n如果一定要跟你的泪水再次相见我希望是在鸟巢。\n——From 小梨真央", tier: 1, color: "#C55B71" },
+  { text: "细腻的，温柔的，爱着大家的，\n有时候会忽略自己感受的,特别特别好但是令人心疼的咪\n——From 忆安", tier: 1, color: "#DC7C8F" },
+  { text: "大海啊,你真的beautiful。\n还有木子洋笑起来真好看。\n——From baby yu", tier: 1, color: "#E37A8B" },
+  { text: "爱意有什么好隐藏的，对啊就是很爱很爱你啊；\n美好,因为有你我愿意去相信这个世界是美好的\n——From 粘手米粒儿~", tier: 1, color: "#EEA0AD" },
+  { text: "世界上最最最温柔坚定的木子洋，因为你我愿意更爱世界一点！\n有机会的话让我们多多见面享受在一起的时间,\n没机会的话就祝我们各自安好各自珍重,祝你永远幸福平安。\n——From 山地大野驴", tier: 1, color: "#D67384" },
+  { text: "那个在楼上对虐狗人士大喊你干嘛的洋，\n狗毛三级过敏也要撸猫撸狗的洋,\n再苦再累再不舒服也要帮弟弟撑场子的洋最打动人心了\n——From 妞 (๑•́ ₃ •̀๑)妞", tier: 1, color: "#DB7E91" },
+  { text: "入坑是 fishboy 的舞台 惊讶到我了 竟然有服务意识这么强的男明星！\n后来越来越喜欢 非常感性 非常曼妙 非常温柔 非常有想法 非常敏感 \n对妹妹们非常好的曼妙男孩！\n他说格莱美也不及妹妹们的心 天呐怎么有如此好的大猫！\n——From 不爱钓鱼🎣", tier: 1, color: "#D98B99" },
+  { text: "最喜欢他的笑，不管哪种笑，\n真的太有感染力了,希望他一直这么开心快乐\n(我是个不爱笑的人，但是看小日常每次脸都笑僵了）\n——From yang", tier: 1, color: "#D25976" },
+  { text: "我哥哥我爸爸我爱人我老公我主人我daddy\n——From 百鹤语", tier: 1, color: "#D15D73" },
+  { text: "感性又温柔的洋洋\n入坑的一瞬间是他这么大方营业而私下里爱看书的反差\n——From 没事儿就爱吃点麻辣烫", tier: 1, color: "#E37A8B" },
+  { text: "底色很温柔的一只大猫，\n特别有责任心又带着一些幽默风趣，完全理想型！\n——From 唯唯", tier: 1, color: "#C95573" },
+  { text: "高需求大猫！很细腻非常会照顾别人情绪的好宝宝🥰是我姐姐", tier: 1, color: "#D67384" },
+  { text: "永远在照顾别人感受的天使 \n希望 木子洋 可以遇到属于自己的木子洋\n——From 吃亿碗", tier: 1, color: "#D98B99" },
+  { text: "高需求大猫！很细腻非常会照顾别人情绪的好宝宝🥰是我姐姐\n——From 北七Polaris", tier: 1, color: "#D8A7B1" },
+  { text: "妹妹，开心是最富有的事情了妹妹\n——From 小木好困", tier: 1, color: "#C86A84" },
+  { text: "你像夏日的阳光般热烈盛放，冬日又化成温润的暖阳温暖心房，\n你的放声开怀,我随声而笑,我们一直都在。\n——From rui词芳~", tier: 1, color: "#ffcddb" },
+  { text: "新粉 被他大方的薄肌吸引过来的 \n了解他的性格更喜欢了 很治愈\n——From momo", tier: 1, color: "#D38A96" },
+  { text: "很温暖又浪漫的存在～\n感觉有他世界很美好\n——From 沫沫🐑", tier: 1, color: "#f9a7b5" },
+  { text: "看到了另一个自己\n——From 爱吃肘子的万能人", tier: 1, color: "#ad4d5d" },
 
-  { text: "洋洋让我相信，猫真的可以活成一个人的样子。", tier: 2, color: "#F3DFE2" },
-  { text: "每次看到洋洋的照片，都觉得世界变软了。", tier: 2, color: "#F5E7E9" },
-  { text: "温柔和坚定原来可以同时在一个人身上发生。", tier: 2, color: "#F7E9EC" },
-  { text: "你的温柔很有力量", tier: 2, color: "#D76176" },
-  { text: "好像有人悄悄抱住了我", tier: 2, color: "#CB6980" },
-  { text: "像一封手写信", tier: 2, color: "#E794A0" },
-  { text: "你是我的晴天", tier: 2, color: "#C96E82" },
-  { text: "纸张上的猫像", tier: 2, color: "#F0D4D8" },
-  { text: "这份静谧真的很好", tier: 2, color: "#F4E8EA" },
-  { text: "从照片里出来的柔软", tier: 2, color: "#DB7E91" },
-  { text: "谢谢你让世界安静", tier: 2, color: "#F7E8EA" },
-  { text: "每一行都像心情", tier: 2, color: "#F8E3E5" },
-  { text: "像猫毛一样细腻", tier: 2, color: "#F3DEE1" },
-  { text: "像猫头剪影一样安静", tier: 2, color: "#F0D9DB" },
-  { text: "被看见的温柔", tier: 2, color: "#F6E9EB" },
-  { text: "心跳都慢了", tier: 2, color: "#E78695" },
+  { text: "外表高冷有距离感，实则底色温柔又温暖，\n强烈的反差感对我来说有着致命吸引力\n——From +0", tier: 2, color: "#F3DFE2" },
+  { text: "我想对洋洋说：\n请继续做个浪漫的疯子吧,请继续笑着爱这个世界吧，\n首先你要快乐,其次都是其次！\n——From 卡拉", tier: 2, color: "#F5E7E9" },
+  { text: "笑起来就是大猫超级可爱，还会撒娇，\n不笑的时候很稳重能抗事,真的像大哥一样\n——From 柳柳", tier: 2, color: "#f8c1cd" },
+  { text: "第一次线下的结束语：\n如果有机会,我们就来见一次面吧,因为没有任何时候是比当下最好的时刻。\n我不想你们错过当下最好时刻绽放的我们,我们也不想错过当下对我们感情最浓烈最美好和最漂亮的你，\n所以有时间和我们一起来约会吧~~\n——From 腊肉肉肉", tier: 2, color: "#D76176" },
+  { text: "站舞台上的木子洋一直在散发很独特的魅力，\n而且能很清晰的感知到,他的唱功和舞蹈还一直在默默用功进步，\n从杭州到海口场的高音长音等处理越来越扎实越来越稳,喜欢他很安心\n——From 南卡南卡", tier: 2, color: "#CB6980" },
+  { text: "很细腻的一个大哥哥，还会照顾身边人的情绪，\n也很会活跃气氛!是个高需求宝宝!\n工作时候私下安静看书,会冥想/合理健身！像小猫一样喜欢睡觉！\n——From 肉肉不知", tier: 2, color: "#E794A0" },
+  { text: "在这一瞬间我脑海里浮现的是\n六巡首场杭州场谢幕时候和妹妹们一起流泪了的大猫\n——From 宛若梦未央", tier: 2, color: "#C96E82" },
+  { text: "一个特别温暖 温柔细腻的大男孩 \n是一个很会活跃气氛的人 又很会安慰人 \n说话黏黏糊糊的特可爱 有他在的地方永远都不会冷场 \n希望洋洋永远都可以笑哈哈的 不要被那些坏评论坏人影响了心情 永远做自己！\n木子洋全 肯定呐！\n——From 聪聪洋", tier: 2, color: "#edb3bc" },
+  { text: "去年苏州音乐节是oner在汽水的最后一场(不知道有没有记错),\n汽水喷的彩带上很用心,有oner的歌还是歌词,还特别感谢了oner这一年陪汽水走了很多地方!\n洋洋发现后马上收起嘻嘻哈哈认真的感谢了小汽水!看视频才能感受到当时的真诚!可能我的语言比较匮乏!\n当时我就觉得,洋洋真的是一个很细腻温柔,能接住所有真诚和善意的人!\n——From Olivia yang", tier: 2, color: "#ff9cac" },
+  { text: "一个阳光明媚的男孩,本来自己也是i人,为了活跃气氛硬生生把自己变成e人,\n很有担当也很有责任感,可以把弟弟们护在身后，\n每次说话都是黏黏糊糊的,很可爱,谁懂他那嗓子,还是一个爱撒娇的男孩，\n很喜欢听他撒娇,露身材也是大大方方的,我的男孩不扭捏不做作\n——From 樱桃杀手头号粉", tier: 2, color: "#DB7E91" },
+  { text: "可以陪我玩的年上，可靠阳光拯救我的，\n第一次见是音乐节 当时我不认识他 只觉得他声音特别好听 \n第一印象远远高于妈妈和小弟 觉得他特别明媚 \n于是第二次音乐节见了之后 他就成为了我的本命\n——From 美刀不吃xuannn", tier: 2, color: "#e68895" },
+  { text: "我们的第一次见面是在25年的8月2号,\n也是这一场你的帅气松弛把我吸引进了万能星球,\n认识到你的细腻,你爱着这个团队,认真对待每个舞台,\n木子洋你值得我们的爱,一直会有人爱你！\n——From xx不嘻嘻", tier: 2, color: "#ffc8cd" },
+  { text: "第一次见到他是他金边眼镜的小红书，真正爱上是北京场的黑西装，\n每次见到他不同的造型都会想怎么会有人那么帅那么可爱,\n再深入了解发现他很像报喜不报忧的小孩,嘻嘻哈哈的外表下隐藏着细腻的柔软的内心。\n希望他身心健康,希望他下次放粉丝进群是因为开心,希望他明媚开心做自己。\n——From '、", tier: 2, color: "#ff8698" },
+  { text: "私下喜欢安静，用独处来恢复能量，但是不耽误他喜欢和亲近的人待在一起，\n很内敛,感觉是会不好意思表达对别人的爱的那种，会为了团体发展去社交和付出\n(没有说感觉他在委屈自己的意思，只要是 木子洋 选择干的我都无条件支持),\n很有责任心,在公众面前会给大家带来正向的情绪价值。\n咪好,咪的细腻、温柔、安静、开朗和锅碗瓢盆旧家电我照单全收，\n只要是洋哥选择做的我全都支持,相信洋哥已经平衡好了木子洋和李振洋,\n所以洋哥做什么我都相信他是发自内心的想去做,不管是木子洋还是李振洋都是他自己\n——From ZXA", tier: 2, color: "#f09ea5" },
+  { text: "我发现不管别人多么好，你始终都是我的首选，我的心永远偏向你，\n我的生命中第一次出现你这样与我如此适配的人\n——From 一城天", tier: 2, color: "#f0adb7" },
+  { text: "愛意有什麼好隱藏的！\n一開始沒有get到洋哥,直到第一次線下以及考古了許多物料後，\n發現他真的是很細膩敏感的人,每次在玩笑的口吻說出關懷的話，照顧著大家的情緒。\n漸漸愛上這個暖呼呼的人!\n當然大模Daddy 的時候也是帥到不行！ 這種反差感實在太萌了\n——From Nadear Hsu", tier: 2, color: "#bc657e" },
+  { text: "在过去的一年爱上你让我感觉好幸福，\n也希望你被更多更多的人爱,收获更多的幸福！\n——From 拐洞洞拐", tier: 2, color: "#ee4575" },
+  { text: "你本来就是个很好的人，\n真诚细腻、开朗嬉笑的你,\n总能照顾好身边所有人情绪的你,\n不让话掉地上的你,\n总会串联好方方面面细节的你,\n我们总能从你身上能汲取能量,也会从你身上映衬着生活中的自己,\n深知“顾全”二字要做到、有多难。\n木子洋 ，希望你始终向阳，永远自由，健康快乐！\n如果有机会,就见一次面吧!\n——From 飞天小神猪gy", tier: 1, color: "#D38A96" },
+  { text: "不相信别人的漂亮话，但非常相信我洋洋哥哥的真心，\n他说“格莱美 也不及妹妹们的心”，\n觉得他太美好了,洋洋是天使！\n——From 丘丘Joice", tier: 2, color: "#ff9cb8" },
+  { text: "很温柔细腻的人，总是能顾及到身边的人，把身边人照顾的很好，\n巡演南京场的时候抽扭蛋玩游戏轮到另外两人给他出题,\n他就带着大家玩应援棒完全没有冷场，\n有他在总是感觉很安心,希望 木子洋 的身边也有一个木子洋。\n虽然大家都说他私下里很安静话少,但是他还是愿意为了粉丝搞氛围做效果逗大家开心！\n而且他不笑的时候就帅帅酷酷的,笑起来就萌萌的,不论是性格还是长相都是很有魅力的一枚！\n——From 🐟️都被海风吹走了吧", tier: 2, color: "#E78695" },
 ]
 
 // 各字号档位的取值范围（背景层用，偏小偏淡）
@@ -110,8 +155,8 @@ const SPOTLIGHT_COLORS = [
   "#C96E82",
 ]
 
-// 聚光主体字号范围（比背景层大一些，作为视觉焦点）
-const SPOTLIGHT_SIZE_RANGE: [number, number] = [30, 46]
+// 聚光主体字号范围（比背景层大一些，作为视觉焦点；多行文本会自动略缩小，见下方逻辑）
+const SPOTLIGHT_SIZE_RANGE: [number, number] = [30, 44]
 
 function randInRange([min, max]: [number, number]): number {
   return min + Math.random() * (max - min)
@@ -127,7 +172,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export default function FelineArchivePage() {
-  const [eggOpen, setEggOpen] = useState(false)
+  const [videoModal, setVideoModal] = useState<VideoModalState | null>(null)
   const [scrollY, setScrollY] = useState(0)
   const [cloudLayout, setCloudLayout] = useState<PlacedPhrase[]>([])
   const [spotlight, setSpotlight] = useState<SpotlightState | null>(null)
@@ -157,7 +202,7 @@ export default function FelineArchivePage() {
     return () => observer.disconnect()
   }, [])
 
-  // 背景文字云：静态铺开一次，作为氛围底纹，淡出显示（低透明度）
+  // 背景文字云：静态铺开一次，作为氛围底纹，低透明度显示（支持多行）
   useEffect(() => {
     let cancelled = false
 
@@ -189,10 +234,12 @@ export default function FelineArchivePage() {
       const maxRadius = Math.hypot(CLOUD_VB_W, CLOUD_VB_H)
 
       for (const phrase of ordered) {
+        const lines = splitLines(phrase.text)
+        if (lines.length === 0) continue
+
         const fontSize = randInRange(TIER_SIZE_RANGE[phrase.tier])
         ctx.font = `${fontSize}px ${fontFamily}`
-        const width = ctx.measureText(phrase.text).width
-        const height = fontSize * 1.15
+        const { width, height } = measureMultiline(ctx, lines, fontSize)
         const halfW = width / 2
         const halfH = height / 2
 
@@ -235,7 +282,7 @@ export default function FelineArchivePage() {
 
         if (found) {
           placed.push({
-            text: phrase.text,
+            lines,
             color: phrase.color,
             fontSize,
             x: found.x,
@@ -257,28 +304,26 @@ export default function FelineArchivePage() {
     }
   }, [])
 
-  // 聚光轮播：每次一句话作为主体，淡入 → 停留 → 淡出 → 换下一句 + 换位置
+  // 聚光轮播：每次一段留言作为主体，淡入 → 停留 → 淡出 → 换下一句 + 换位置（支持多行）
   useEffect(() => {
     let cancelled = false
     let timeoutId: ReturnType<typeof setTimeout>
 
     const FADE_IN_MS = 900
-    const HOLD_MS = 2400
+    const HOLD_MS = 2600
     const FADE_OUT_MS = 900
     const GAP_MS = 250
 
-    // 优先挑选中长句子做主体轮播，太长的整段句子也保留，保证内容多样
     let queue = shuffle(fanPhrases)
     let queueIndex = 0
 
-    function pickPosition(text: string, fontSize: number) {
+    function pickPosition(lines: string[], fontSize: number) {
       const ctx = measureCtxRef.current
       const fontFamily = fontFamilyRef.current
       if (!ctx) return { x: CLOUD_VB_W / 2, y: CLOUD_VB_H / 2 }
 
       ctx.font = `${fontSize}px ${fontFamily}`
-      const width = ctx.measureText(text).width
-      const height = fontSize * 1.2
+      const { width, height } = measureMultiline(ctx, lines, fontSize)
       const halfW = width / 2
       const halfH = height / 2
 
@@ -288,7 +333,6 @@ export default function FelineArchivePage() {
       const minY = margin + halfH
       const maxY = CLOUD_VB_H - margin - halfH
 
-      // 若单句过长超出画布宽度，退化为居中显示，避免越界
       if (minX >= maxX || minY >= maxY) {
         return { x: CLOUD_VB_W / 2, y: CLOUD_VB_H / 2 }
       }
@@ -308,22 +352,29 @@ export default function FelineArchivePage() {
       const phrase = queue[queueIndex]
       queueIndex += 1
 
-      const fontSize = randInRange(SPOTLIGHT_SIZE_RANGE)
-      const color = SPOTLIGHT_COLORS[Math.floor(Math.random() * SPOTLIGHT_COLORS.length)]
-      const { x, y } = pickPosition(phrase.text, fontSize)
+      const lines = splitLines(phrase.text)
+      if (lines.length === 0) {
+        scheduleNext()
+        return
+      }
 
-      // 淡入
-      setSpotlight({ text: phrase.text, color, fontSize, x, y, visible: false })
+      // 行数越多，自动适当缩小字号，避免多行长文本超出画布或过于抢眼
+      const baseFontSize = randInRange(SPOTLIGHT_SIZE_RANGE)
+      const fontSize = lines.length > 1 ? baseFontSize * (1 - 0.12 * (lines.length - 1)) : baseFontSize
+      const clampedFontSize = Math.max(20, fontSize)
+
+      const color = SPOTLIGHT_COLORS[Math.floor(Math.random() * SPOTLIGHT_COLORS.length)]
+      const { x, y } = pickPosition(lines, clampedFontSize)
+
+      setSpotlight({ lines, color, fontSize: clampedFontSize, x, y, visible: false })
       timeoutId = setTimeout(() => {
         if (cancelled) return
         setSpotlight((prev) => (prev ? { ...prev, visible: true } : prev))
 
-        // 停留后淡出
         timeoutId = setTimeout(() => {
           if (cancelled) return
           setSpotlight((prev) => (prev ? { ...prev, visible: false } : prev))
 
-          // 淡出完成后，间隔一下再进入下一轮
           timeoutId = setTimeout(() => {
             if (cancelled) return
             scheduleNext()
@@ -332,7 +383,6 @@ export default function FelineArchivePage() {
       }, 30)
     }
 
-    // 等背景文字云布局计算完（拿到 measureCtx）再开始轮播
     const startDelay = setTimeout(() => {
       scheduleNext()
     }, 400)
@@ -352,10 +402,35 @@ export default function FelineArchivePage() {
         className="relative min-h-screen overflow-x-hidden"
         style={{ fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#FAF7F5" }}
       >
-        <HeroSection onEggTrigger={() => setEggOpen(true)} scrollY={scrollY} />
+        <HeroSection onEggTrigger={() => setVideoModal({
+          title: "深层档案 · 自洽寄语",
+          subtitle: "VIDEO EXHIBIT",
+          description: "点击图片后，这里会播放对应的短片。",
+          videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          posterSrc: "/KWINmanmiao.jpg",
+          accent: "#D4AF37",
+        })} scrollY={scrollY} />
         <SpeciesSection />
-        <PersonalitySection />
-        <SelfConsistentSection onEggTrigger={() => setEggOpen(true)} />
+        <PersonalitySection
+        onOpenVideo={(personality) =>
+          setVideoModal({
+            title: personality.videoTitle,
+            subtitle: "VIDEO EXHIBIT",
+            description: personality.videoDescription,
+            videoSrc: personality.videoSrc,
+            posterSrc: personality.posterSrc,
+            accent: personality.accent,
+          })
+        }
+      />
+        <SelfConsistentSection onEggTrigger={() => setVideoModal({
+          title: "深层档案 · 自洽寄语",
+          subtitle: "VIDEO EXHIBIT",
+          description: "点击图片后，这里会播放对应的短片。",
+          videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          posterSrc: "/KWINmanmiao.jpg",
+          accent: "#D4AF37",
+        })} />
 
         <section className="relative overflow-hidden py-32 px-6">
           <div
@@ -393,45 +468,65 @@ export default function FelineArchivePage() {
                   className="h-full w-full"
                   preserveAspectRatio="xMidYMid meet"
                 >
-                  {/* 背景文字云：淡淡的氛围底纹，始终存在 */}
+                  {/* 背景文字云：淡淡的氛围底纹，始终存在，支持多行 */}
                   <g opacity={0.22}>
-                    {cloudLayout.map((item, index) => (
-                      <text
-                        key={index}
-                        x={item.x}
-                        y={item.y}
-                        fontSize={item.fontSize}
-                        fill={item.color}
-                        fontFamily="var(--font-sans), sans-serif"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                      >
-                        {item.text}
-                      </text>
-                    ))}
+                    {cloudLayout.map((item, index) => {
+                      const lineHeight = item.fontSize * 1.25
+                      const startOffset = -((item.lines.length - 1) / 2) * lineHeight
+                      return (
+                        <text
+                          key={index}
+                          x={item.x}
+                          fontSize={item.fontSize}
+                          fill={item.color}
+                          fontFamily="var(--font-sans), sans-serif"
+                          textAnchor="middle"
+                        >
+                          {item.lines.map((line, lineIdx) => (
+                            <tspan
+                              key={lineIdx}
+                              x={item.x}
+                              y={item.y + startOffset + lineIdx * lineHeight}
+                            >
+                              {line}
+                            </tspan>
+                          ))}
+                        </text>
+                      )
+                    })}
                   </g>
 
-                  {/* 聚光主体：轮播淡入淡出 */}
-                  {spotlight && (
-                    <text
-                      x={spotlight.x}
-                      y={spotlight.y}
-                      fontSize={spotlight.fontSize}
-                      fill={spotlight.color}
-                      fontFamily="var(--font-sans), sans-serif"
-                      fontWeight={600}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      style={{
-                        opacity: spotlight.visible ? 1 : 0,
-                        transition: "opacity 0.9s ease, transform 0.9s ease",
-                        transform: spotlight.visible ? "scale(1)" : "scale(0.94)",
-                        transformOrigin: `${spotlight.x}px ${spotlight.y}px`,
-                      }}
-                    >
-                      {spotlight.text}
-                    </text>
-                  )}
+                  {/* 聚光主体：轮播淡入淡出，支持多行 */}
+                  {spotlight && (() => {
+                    const lineHeight = spotlight.fontSize * 1.25
+                    const startOffset = -((spotlight.lines.length - 1) / 2) * lineHeight
+                    return (
+                      <text
+                        x={spotlight.x}
+                        fontSize={spotlight.fontSize}
+                        fill={spotlight.color}
+                        fontFamily="var(--font-sans), sans-serif"
+                        fontWeight={600}
+                        textAnchor="middle"
+                        style={{
+                          opacity: spotlight.visible ? 1 : 0,
+                          transition: "opacity 0.9s ease, transform 0.9s ease",
+                          transform: spotlight.visible ? "scale(1)" : "scale(0.94)",
+                          transformOrigin: `${spotlight.x}px ${spotlight.y}px`,
+                        }}
+                      >
+                        {spotlight.lines.map((line, lineIdx) => (
+                          <tspan
+                            key={lineIdx}
+                            x={spotlight.x}
+                            y={spotlight.y + startOffset + lineIdx * lineHeight}
+                          >
+                            {line}
+                          </tspan>
+                        ))}
+                      </text>
+                    )
+                  })()}
                 </svg>
               </div>
             </div>
@@ -439,7 +534,16 @@ export default function FelineArchivePage() {
         </section>
       </main>
 
-      <EasterEggModal open={eggOpen} onClose={() => setEggOpen(false)} />
+      <EasterEggModal
+        open={Boolean(videoModal)}
+        onClose={() => setVideoModal(null)}
+        title={videoModal?.title}
+        subtitle={videoModal?.subtitle}
+        description={videoModal?.description}
+        videoSrc={videoModal?.videoSrc}
+        posterSrc={videoModal?.posterSrc}
+        accent={videoModal?.accent}
+      />
 
       <style jsx global>{`
         * { cursor: none !important; }
