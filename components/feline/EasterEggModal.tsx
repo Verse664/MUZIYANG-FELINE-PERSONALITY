@@ -16,7 +16,7 @@ interface EasterEggModalProps {
 export default function EasterEggModal({
   open,
   onClose,
-  title = "深层档案 · 自洽寄语",
+  title = "深层档案 · 藏在时间里的话",
   subtitle = "VIDEO EXHIBIT",
   description,
   videoSrc,
