@@ -261,8 +261,8 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
 
 function CatEyeSVG({ blinking }: { blinking: boolean }) {
   return (
-    <div className="relative" style={{ width: 160, height: 100 }}>
-      {/* Ambient glow */}
+    <div className="relative" style={{ width: 600, height: 200 }}>
+      {/* Ambient glow，保留原来的氛围光晕效果 */}
       <div
         aria-hidden="true"
         className="absolute inset-0 rounded-full"
@@ -272,43 +272,30 @@ function CatEyeSVG({ blinking }: { blinking: boolean }) {
           animation: "glow-pulse 3s ease-in-out infinite",
         }}
       />
-      <svg
-        viewBox="0 0 160 100"
-        width="160"
-        height="100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+
+      {/* 睁眼图 */}
+      <img
+        src="/eyes/eye-open.png"
+        alt="睁眼"
+        className="absolute inset-0 h-full w-full object-contain"
         style={{
           filter: "drop-shadow(0 0 18px rgba(216,167,177,0.5))",
-          transform: blinking ? "scaleY(0.08)" : "scaleY(1)",
-          transformOrigin: "center",
-          transition: blinking ? "transform 0.08s ease-in" : "transform 0.12s ease-out",
+          opacity: blinking ? 0 : 1,
+          transition: "opacity 0.6s ease-out",
         }}
-      >
-        {/* Eye white / iris base */}
-        <ellipse cx="80" cy="50" rx="72" ry="44" fill="#F4E2E5" opacity="0.9" />
-        {/* Iris gradient */}
-        <ellipse cx="80" cy="50" rx="58" ry="36">
-          <animate attributeName="fill" values="#E8D3D8;#D8A7B1;#E8D3D8" dur="5s" repeatCount="indefinite" />
-        </ellipse>
-        {/* Pupil — vertical slit with breathe animation */}
-        <ellipse cx="80" cy="50" rx="18" ry="38" fill="#1C1C1E">
-          <animate
-            attributeName="rx"
-            values="18;12;18"
-            dur="4s"
-            repeatCount="indefinite"
-            calcMode="spline"
-            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-          />
-        </ellipse>
-        {/* Pupil sheen */}
-        <ellipse cx="72" cy="40" rx="7" ry="11" fill="white" opacity="0.18" />
-        {/* Gold ring */}
-        <ellipse cx="80" cy="50" rx="72" ry="44" stroke="#D4AF37" strokeWidth="0.8" opacity="0.6" />
-        {/* Outer subtle line */}
-        <ellipse cx="80" cy="50" rx="76" ry="47" stroke="#D8A7B1" strokeWidth="0.5" opacity="0.3" />
-      </svg>
+      />
+
+      {/* 闭眼图 */}
+      <img
+        src="/eyes/eye-close.png"
+        alt="闭眼"
+        className="absolute inset-0 h-full w-full object-contain"
+        style={{
+          filter: "drop-shadow(0 0 18px rgba(216,167,177,0.5))",
+          opacity: blinking ? 1 : 0,
+          transition: "opacity 0.5s ease-in",
+        }}
+      />
     </div>
   )
 }
