@@ -261,7 +261,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
 
 function CatEyeSVG({ blinking }: { blinking: boolean }) {
   return (
-    <div className="relative" style={{ width: 600, height: 200 }}>
+    <div className="relative" style={{ width: 550, height: 200 }}>
       {/* Ambient glow，保留原来的氛围光晕效果 */}
       <div
         aria-hidden="true"
@@ -293,7 +293,7 @@ function CatEyeSVG({ blinking }: { blinking: boolean }) {
         style={{
           filter: "drop-shadow(0 0 18px rgba(216,167,177,0.5))",
           opacity: blinking ? 1 : 0,
-          transition: "opacity 0.5s ease-in",
+          transition: "opacity 0.6s ease-in",
         }}
       />
     </div>
