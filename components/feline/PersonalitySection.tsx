@@ -10,10 +10,9 @@ const personalities = [
     labelEn: "Graceful",
     keywords: ["优雅", "魅力", "曼妙"],
     keywordsEn: "Elegance · Charm · Gracefulness",
-    desc: "像丝绸般流动的存在。他知道如何在光影之间移动，舞台不是外界给予的，而是他抵达任何地方时自带的气场。",
+    desc: "他往那里一站,光和影都会顺着他改变方向\n不是谁给了他舞台\n而是他走到哪里\n哪里就自然而然成了值得被看见的地方",
     accent: "#D8A7B1",
     bg: "linear-gradient(135deg, #F4E2E5 0%, #E8D3D8 50%, #D8C4C8 100%)",
-    visual: "曼妙 · 轻盈 · 流动",
     videoTitle: "曼妙猫 · 轻盈之舞",
     videoDescription: "一段把光影与气场交织起来的短片。",
     videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/manmiao.mp4",
@@ -36,7 +35,6 @@ const personalities = [
     desc: "他的存在本身就是一种治愈。不需要任何解释，只是在场，就能让空间变得温暖而安全。",
     accent: "#7C9B7E",
     bg: "linear-gradient(135deg, #EEF5EE 0%, #DDE8DC 50%, #C4D6C4 100%)",
-    visual: "温柔 · 治愈 · 静默",
     videoTitle: "温柔猫 · 贴近心意",
     videoDescription: "一段让人感到安定与陪伴的短片。",
     videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/wenrou.mp4",
@@ -59,7 +57,6 @@ const personalities = [
     desc: "他总会在不经意间制造一点惊喜。偶尔调皮，偶尔幼稚，喜欢用玩笑打破安静，也让身边的人忍不住跟着笑起来。这份捣蛋，从不是任性，而是对世界始终保留的一点天真。",
     accent: "#B8BCC8",
     bg: "linear-gradient(135deg, #F7F8FA 0%, #ECEEF2 50%, #D9DEE7 100%)",
-    visual: "玩心 · 灵动 · 轻笑",
     videoTitle: "捣蛋猫 · 反差小宇宙",
     videoDescription: "一段带着调皮气息与快乐氛围的短片。",
     videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/daodan.mp4",
@@ -82,7 +79,6 @@ const personalities = [
     desc: "有时候软软的，有时候却是最稳定的锚。他不声张，但你总能在最重要的时刻感知到他的重量。",
     accent: "#5F7CA8",
     bg: "linear-gradient(135deg, #EAF2F8 0%, #D7E4F1 50%, #BDD2E8 100%)",
-    visual: "担当 · 坚定 · 守护",
     videoTitle: "担当猫 · 守护的重量",
     videoDescription: "一段传递稳定与温度的短片。",
     videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/dandang.mp4",
@@ -345,17 +341,18 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                 />
 
                 <p
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
-                    lineHeight: 2,
-                    color: "#3C3C3E",
-                    letterSpacing: "0.06em",
-                    maxWidth: 480,
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+                  lineHeight: 2,
+                  color: "#3C3C3E",
+                  letterSpacing: "0.06em",
+                  maxWidth: 480,
+                  whiteSpace: "pre-line",   // 新增这一行，让 \n 真正生效换行
                   }}
-                >
-                  {current.desc}
-                </p>
+                  >
+                    {current.desc}
+                    </p>
               </div>
 
               <div className="mt-10 flex items-center justify-between">

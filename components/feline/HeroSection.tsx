@@ -186,7 +186,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
             transform: subtitleVisible ? "translateY(0)" : "translateY(20px)",
           }}
         >
-          关于一只猫如何成为自己的观察记录
+          用八年的时光，在万千种可能里，慢慢长成自己
         </p>
 
         {/* Archive tag */}
