@@ -16,7 +16,7 @@ const personalities = [
     visual: "曼妙 · 轻盈 · 流动",
     videoTitle: "曼妙猫 · 轻盈之舞",
     videoDescription: "一段把光影与气场交织起来的短片。",
-    videoSrc: "/videos/manmiao.mp4",
+    videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/manmiao.mp4",
     posterSrc: "/KWINmanmiao.jpg",
     motif: (
       <img
@@ -39,7 +39,7 @@ const personalities = [
     visual: "温柔 · 治愈 · 静默",
     videoTitle: "温柔猫 · 贴近心意",
     videoDescription: "一段让人感到安定与陪伴的短片。",
-    videoSrc: "/videos/wenrou.mp4",
+    videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/wenrou.mp4",
     posterSrc: "/KWINwenrou.jpg",
     motif: (
       <img
@@ -62,7 +62,7 @@ const personalities = [
     visual: "玩心 · 灵动 · 轻笑",
     videoTitle: "捣蛋猫 · 反差小宇宙",
     videoDescription: "一段带着调皮气息与快乐氛围的短片。",
-    videoSrc: "/videos/daodan.mp4",
+    videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/daodan.mp4",
     posterSrc: "/KWINdaodan.png",
     motif: (
       <img
@@ -85,7 +85,7 @@ const personalities = [
     visual: "担当 · 坚定 · 守护",
     videoTitle: "担当猫 · 守护的重量",
     videoDescription: "一段传递稳定与温度的短片。",
-    videoSrc: "/videos/dandang.mp4",
+    videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/dandang.mp4",
     posterSrc: "/KWINdandang.jpg",
     motif: (
       <img
