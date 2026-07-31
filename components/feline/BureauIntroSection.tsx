@@ -34,68 +34,50 @@ export default function BureauIntroSection() {
   return (
     <section
       className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden"
-      style={{ backgroundColor: "#0F0F10" }}
+      style={{
+        background: "linear-gradient(160deg, #F4E2E5 0%, #FAF7F5 40%, #E8D3D8 75%, #EDD5D9 100%)",
+      }}
     >
-      {/* 背景网格纹 */}
+      {/* 背景光晕 */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.04) 0%, transparent 70%)",
         }}
       />
 
-      {/* 中心晕光 */}
+      {/* 细微网格线 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute"
+        className="pointer-events-none absolute inset-0 opacity-[0.02]"
         style={{
-          width: "60vw",
-          height: "60vw",
-          maxWidth: 700,
-          maxHeight: 700,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(216,167,177,0.06) 0%, transparent 70%)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          backgroundImage:
+            "linear-gradient(#1C1C1E 1px, transparent 1px), linear-gradient(90deg, #1C1C1E 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
         }}
       />
 
-      {/* 顶部机密标记 */}
+      {/* 顶部标记 */}
       <div
-        className="absolute top-8 left-0 right-0 flex items-center justify-center gap-3"
+        className="absolute top-6 left-0 right-0 flex items-center justify-center gap-2"
         style={{
-          opacity: 0.45,
+          opacity: 0.4,
         }}
       >
-        <span style={{ flex: 1, maxWidth: 120, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)" }} />
+        <span style={{ flex: 1, maxWidth: 100, height: "0.5px", background: "linear-gradient(90deg, transparent, #D8A7B1)" }} />
         <span
           style={{
             fontFamily: "var(--font-sans)",
-            fontSize: "0.5rem",
-            letterSpacing: "0.5em",
-            color: "#D4AF37",
+            fontSize: "0.48rem",
+            letterSpacing: "0.4em",
+            color: "#8E8E93",
           }}
         >
-          FELINE INTELLIGENCE BUREAU · 木子猫情报局
+          FELINE INTELLIGENCE BUREAU
         </span>
-        <span style={{ flex: 1, maxWidth: 120, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)" }} />
-      </div>
-
-      {/* 档案编号 */}
-      <div
-        className="absolute top-16 right-10"
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "0.45rem",
-          letterSpacing: "0.35em",
-          color: "#3C3C3E",
-        }}
-      >
-        CASE NO. 2026-YANG · DISPATCH 00
+        <span style={{ flex: 1, maxWidth: 100, height: "0.5px", background: "linear-gradient(90deg, #D8A7B1, transparent)" }} />
       </div>
 
       {/* 主体内容 */}
@@ -124,11 +106,11 @@ export default function BureauIntroSection() {
         <div
           style={{
             fontFamily: "var(--font-serif), serif",
-            fontSize: "clamp(1.3rem, 3.5vw, 2.2rem)",
-            color: "#F5F0EA",
-            letterSpacing: "0.12em",
-            lineHeight: 1.85,
-            minHeight: "3.7em",
+            fontSize: "clamp(1.2rem, 3.2vw, 2rem)",
+            color: "#1C1C1E",
+            letterSpacing: "0.1em",
+            lineHeight: 1.9,
+            minHeight: "4em",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -143,8 +125,8 @@ export default function BureauIntroSection() {
                   display: "inline-block",
                   width: 2,
                   height: "1.1em",
-                  backgroundColor: "#D8A7B1",
-                  marginLeft: 2,
+                  backgroundColor: "#D4AF37",
+                  marginLeft: 3,
                   verticalAlign: "middle",
                   animation: "cursor-blink 0.9s step-end infinite",
                 }}
@@ -155,40 +137,29 @@ export default function BureauIntroSection() {
 
         {/* 副文案 */}
         <div
-          className="mt-10 flex flex-col items-center gap-3"
+          className="mt-12 flex flex-col items-center gap-2"
           style={{
             opacity: showSub ? 1 : 0,
             transform: showSub ? "translateY(0)" : "translateY(12px)",
             transition: "opacity 0.9s ease, transform 0.9s ease",
           }}
         >
-          <div style={{ width: 80, height: "0.5px", background: "linear-gradient(90deg, transparent, #D8A7B1, transparent)" }} />
+          <div style={{ width: 70, height: "0.5px", background: "linear-gradient(90deg, transparent, #D8A7B1, transparent)" }} />
           <p
             style={{
               fontFamily: "var(--font-sans)",
-              fontSize: "0.68rem",
-              letterSpacing: "0.35em",
-              color: "#8E8E93",
-            }}
-          >
-            情报局正式开放 · 5 份卷宗已解密
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.55rem",
+              fontSize: "0.62rem",
               letterSpacing: "0.3em",
-              color: "#D4AF37",
-              opacity: 0.7,
+              color: "#3C3C3E",
             }}
           >
-            SCROLL TO ACCESS CLASSIFIED INTEL
+            5 份卷宗已解密 · 情报即将启动
           </p>
         </div>
 
         {/* 情报局印章 */}
         <div
-          className="mt-14"
+          className="mt-16"
           style={{
             opacity: showBadge ? 1 : 0,
             transform: showBadge ? "scale(1)" : "scale(0.7)",
@@ -202,12 +173,12 @@ export default function BureauIntroSection() {
               alignItems: "center",
               justifyContent: "center",
               gap: 3,
-              width: 80,
-              height: 80,
+              width: 72,
+              height: 72,
               borderRadius: "50%",
-              border: "1.5px solid rgba(212,175,55,0.45)",
-              backgroundColor: "rgba(212,175,55,0.03)",
-              boxShadow: "0 0 0 5px rgba(212,175,55,0.04)",
+              border: "1.5px solid rgba(216,167,177,0.4)",
+              backgroundColor: "rgba(216,167,177,0.04)",
+              boxShadow: "0 0 0 5px rgba(216,167,177,0.03)",
               position: "relative",
             }}
           >
@@ -216,9 +187,49 @@ export default function BureauIntroSection() {
                 position: "absolute",
                 inset: 6,
                 borderRadius: "50%",
-                border: "1px solid rgba(212,175,55,0.25)",
+                border: "1px solid rgba(216,167,177,0.2)",
               }}
             />
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", letterSpacing: "0.25em", color: "#D8A7B1", zIndex: 1 }}>
+              情报局
+            </span>
+            <div style={{ width: 16, height: "0.5px", backgroundColor: "#D8A7B1", opacity: 0.3, zIndex: 1 }} />
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.35rem", letterSpacing: "0.15em", color: "#8E8E93", zIndex: 1 }}>
+              2026
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 底部向下箭头 */}
+      <div
+        className="absolute bottom-8 flex flex-col items-center gap-2"
+        style={{
+          opacity: showSub ? 0.4 : 0,
+          transition: "opacity 1s ease 0.4s",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "0.45rem",
+            letterSpacing: "0.35em",
+            color: "#8E8E93",
+          }}
+        >
+          SCROLL
+        </span>
+        <svg width="14" height="20" viewBox="0 0 14 20" fill="none" aria-hidden="true">
+          <path d="M7 0 L7 16" stroke="#D8A7B1" strokeWidth="0.8" strokeOpacity="0.5" />
+          <path d="M1 11 L7 17 L13 11" stroke="#D8A7B1" strokeWidth="0.8" strokeOpacity="0.5" fill="none" />
+        </svg>
+      </div>
+
+      {/* 底部装饰线 */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(216,167,177,0.2), transparent)" }}
+      />
             <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.42rem", letterSpacing: "0.3em", color: "#D4AF37", zIndex: 1 }}>
               情报局
             </span>

@@ -123,53 +123,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
           </span>
         </div>
 
-        <div
-          className="mb-6 px-6 py-3 border border-[#D8A7B1]/30"
-          style={{
-            opacity: tagVisible ? 1 : 0,
-            transform: tagVisible ? "translateY(0)" : "translateY(12px)",
-            transition: "opacity 1s ease 0.15s, transform 1s ease 0.15s",
-            backgroundColor: "rgba(255,255,255,0.45)",
-            backdropFilter: "blur(8px)",
-            maxWidth: 540,
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-serif), serif",
-              fontSize: "clamp(0.85rem, 1.8vw, 1.1rem)",
-              color: "#3C3C3E",
-              letterSpacing: "0.12em",
-              lineHeight: 1.9,
-              textAlign: "center",
-            }}
-          >
-            亲爱的侦探小姐，
-            <br />
-            <span style={{ color: "#D8A7B1" }}>欢迎进入木子猫情报局</span>
-            <br />
-            祝您今日交易愉快~
-          </p>
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)" }} />
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.3em", color: "#D4AF37", fontFamily: "var(--font-sans)" }}>BUREAU DISPATCH</span>
-            <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)" }} />
-          </div>
-        </div>
-
-        <div
-          className="mb-10 font-mono text-xs tracking-[0.35em]"
-          style={{
-            opacity: tagVisible ? 0.55 : 0,
-            transform: tagVisible ? "translateY(0)" : "translateY(12px)",
-            fontFamily: "var(--font-sans), monospace",
-            color: "#8E8E93",
-            transition: "opacity 1s ease 0.25s, transform 1s ease 0.25s",
-          }}
-        >
-          CLASSIFIED · INTEL ARCHIVE · RESTRICTED ACCESS
-        </div>
-
         {/* Cat eye SVG — clickable Easter Egg trigger */}
         <button
           onClick={onEggTrigger}
