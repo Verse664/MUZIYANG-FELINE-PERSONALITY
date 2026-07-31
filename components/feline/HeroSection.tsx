@@ -81,9 +81,9 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
         className="relative z-10 flex flex-col items-center px-6 text-center"
         style={{ transform: `translateY(${parallaxY}px)` }}
       >
-        {/* Archive number top */}
+        {/* 情报局接入标识 */}
         <div
-          className="mb-8 flex items-center gap-3 rounded-full border border-[#D8A7B1]/40 bg-white/50 px-4 py-2 shadow-[0_8px_24px_rgba(216,167,177,0.12)] backdrop-blur-sm"
+          className="mb-8 flex items-center gap-3 border border-[#D4AF37]/40 bg-[#1C1C1E]/5 px-5 py-2.5 backdrop-blur-sm"
           style={{
             opacity: tagVisible ? 1 : 0,
             transform: tagVisible ? "translateY(0)" : "translateY(12px)",
@@ -91,36 +91,83 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
         >
           <span
             style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.7rem",
-              letterSpacing: "0.3em",
-              color: "#D4AF37",
-              fontWeight: 700,
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              backgroundColor: "#D4AF37",
+              boxShadow: "0 0 8px 2px #D4AF3788",
+              display: "inline-block",
+              animation: "glow-pulse 1.8s ease-in-out infinite",
             }}
-          >
-            08
-          </span>
+          />
           <span
             style={{
               fontFamily: "var(--font-sans)",
               fontSize: "0.6rem",
-              letterSpacing: "0.3em",
+              letterSpacing: "0.38em",
+              color: "#D4AF37",
+              fontWeight: 700,
+            }}
+          >
+            FELINE INTELLIGENCE BUREAU
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.55rem",
+              letterSpacing: "0.2em",
               color: "#8E8E93",
             }}
           >
-            出道八周年 · 8TH ANNIVERSARY
+            · 木子猫情报局
           </span>
         </div>
 
         <div
-          className="mb-12 font-mono text-xs tracking-[0.35em] text-[#8E8E93] opacity-0 transition-all duration-1000"
+          className="mb-6 px-6 py-3 border border-[#D8A7B1]/30"
           style={{
-            opacity: tagVisible ? 0.6 : 0,
+            opacity: tagVisible ? 1 : 0,
             transform: tagVisible ? "translateY(0)" : "translateY(12px)",
-            fontFamily: "var(--font-sans), monospace",
+            transition: "opacity 1s ease 0.15s, transform 1s ease 0.15s",
+            backgroundColor: "rgba(255,255,255,0.45)",
+            backdropFilter: "blur(8px)",
+            maxWidth: 540,
           }}
         >
-          PRIVATE COLLECTION · SPECIMEN STUDY · RESTRICTED ACCESS
+          <p
+            style={{
+              fontFamily: "var(--font-serif), serif",
+              fontSize: "clamp(0.85rem, 1.8vw, 1.1rem)",
+              color: "#3C3C3E",
+              letterSpacing: "0.12em",
+              lineHeight: 1.9,
+              textAlign: "center",
+            }}
+          >
+            亲爱的侦探小姐，
+            <br />
+            <span style={{ color: "#D8A7B1" }}>欢迎进入木子猫情报局</span>
+            <br />
+            祝您今日交易愉快~
+          </p>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)" }} />
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.3em", color: "#D4AF37", fontFamily: "var(--font-sans)" }}>BUREAU DISPATCH</span>
+            <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)" }} />
+          </div>
+        </div>
+
+        <div
+          className="mb-10 font-mono text-xs tracking-[0.35em]"
+          style={{
+            opacity: tagVisible ? 0.55 : 0,
+            transform: tagVisible ? "translateY(0)" : "translateY(12px)",
+            fontFamily: "var(--font-sans), monospace",
+            color: "#8E8E93",
+            transition: "opacity 1s ease 0.25s, transform 1s ease 0.25s",
+          }}
+        >
+          CLASSIFIED · INTEL ARCHIVE · RESTRICTED ACCESS
         </div>
 
         {/* Cat eye SVG — clickable Easter Egg trigger */}
@@ -159,7 +206,20 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
               marginTop: "0.3em",
             }}
           >
-            PERSONALITY ARCHIVE
+            猫探长情报档案
+          </span>
+          <span
+            style={{
+              display: "block",
+              fontSize: "clamp(0.65rem, 1.4vw, 1rem)",
+              letterSpacing: "0.35em",
+              color: "#8E8E93",
+              fontWeight: 400,
+              marginTop: "0.5em",
+              fontFamily: "var(--font-sans)",
+            }}
+          >
+            FELINE INTELLIGENCE DOSSIER · CASE NO. 2026-YANG
           </span>
         </h1>
 
@@ -194,7 +254,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
             transform: subtitleVisible ? "translateY(0)" : "translateY(20px)",
           }}
         >
-          用八年的时光，在万千种可能里，慢慢长成自己
+          本局已运营八周年 · 猫探长现身情报大厅
         </p>
 
         {/* Archive tag */}
@@ -226,7 +286,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
               color: "#8E8E93",
             }}
           >
-            [ EIGHTH ANNIVERSARY · 2026-YANG ]
+            [ 情报局 · 公开情报 · 翻阅档案 ]
           </span>
         </div>
 
@@ -244,7 +304,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
               color: "#8E8E93",
             }}
           >
-            SCROLL TO EXPLORE
+            SCROLL · ENTER BUREAU
           </span>
           <div
             style={{

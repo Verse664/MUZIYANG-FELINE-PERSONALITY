@@ -71,23 +71,23 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
       </div>
 
       <div className="relative z-10 mx-auto max-w-4xl text-center">
-        {/* Section label */}
+        {/* 区块标识 */}
         <div className="reveal mb-16 flex items-center justify-center gap-5">
-          <span style={{ flex: 1, maxWidth: 80, height: 1, background: "linear-gradient(90deg, transparent, #D8A7B1)" }} />
+          <span style={{ flex: 1, maxWidth: 80, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)", opacity: 0.5 }} />
           <span
             style={{
               fontFamily: "var(--font-sans)",
-              fontSize: "0.6rem",
+              fontSize: "0.58rem",
               letterSpacing: "0.4em",
-              color: "#8E8E93",
+              color: "#D4AF37",
             }}
           >
-            04 — FINAL CHAPTER
+            BUREAU FILE · 03
           </span>
-          <span style={{ flex: 1, maxWidth: 80, height: 1, background: "linear-gradient(90deg, #D8A7B1, transparent)" }} />
+          <span style={{ flex: 1, maxWidth: 80, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)", opacity: 0.5 }} />
         </div>
 
-        {/* Title */}
+        {/* 标题 */}
         <h2
           className="reveal delay-1"
           style={{
@@ -99,7 +99,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             lineHeight: 1.2,
           }}
         >
-          猫格万千
+          情报归档
         </h2>
         <p
           className="reveal delay-2 mt-2"
@@ -110,56 +110,64 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             color: "#8E8E93",
           }}
         >
-          ONE CAT, ONE WORLD
+          BUREAU CLOSURE · CASE FILED
         </p>
 
-        {/* Concept description */}
-      <div
-        className="reveal delay-2 mx-auto mb-10"
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
-          lineHeight: 2.2,
-          color: "#3C3C3E",
-          letterSpacing: "0.08em",
-          maxWidth: 560,
-          textAlign: "center",
-        }}
-      >
-        <span className="block">
-          有人喜欢给猫命名
-        </span>
+        {/* 情报局收档正文 */}
+        <div
+          className="reveal delay-2 mx-auto mb-10 mt-12"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
+            lineHeight: 2.3,
+            color: "#3C3C3E",
+            letterSpacing: "0.08em",
+            maxWidth: 560,
+            textAlign: "center",
+          }}
+        >
+          <span className="block" style={{ color: "#8E8E93", fontSize: "0.6rem", letterSpacing: "0.4em" }}>
+            本局侦探说——
+          </span>
 
-        <span className="block">
-          有人喜欢给人定义
-        </span>
+          <span className="block mt-4">
+            有人喜欢给猫命名
+          </span>
 
-        <span className="block">
-          可是有些猫，拥有很多种模样
-        </span>
+          <span className="block">
+            有人喜欢给人定义
+          </span>
 
-        <span className="block mt-6">
-          曼妙时是他
-        </span>
+          <span className="block">
+            可是有些猫探长，拥有很多种模样
+          </span>
 
-        <span className="block">
-          温柔时是他
-        </span>
+          <span className="block mt-6">
+            曼妙时是他
+          </span>
 
-        <span className="block">
-          捣蛋时是他
-        </span>
+          <span className="block">
+            温柔时是他
+          </span>
 
-        <span className="block">
-          担当时也是他
-        </span>
+          <span className="block">
+            捣蛋时是他
+          </span>
 
-        <span className="block mt-6">
-          万千猫格，皆是洋洋
-        </span>
+          <span className="block">
+            担当时是他
+          </span>
+
+          <span className="block">
+            傲娇时，也是他
+          </span>
+
+          <span className="block mt-6" style={{ color: "#D8A7B1" }}>
+            万千猫格，皆是洋洋
+          </span>
         </div>
 
-        {/* Gold quote */}
+        {/* 情报局核心标签 */}
         <div
           className="reveal delay-3 mx-auto mb-16 px-8 py-8 relative"
           style={{
@@ -170,7 +178,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             boxShadow: "0 4px 30px rgba(212,175,55,0.1)",
           }}
         >
-          {/* Corner accents */}
+          {/* 角码 */}
           {["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"].map((pos, i) => (
             <div
               key={i}
@@ -183,6 +191,18 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
               }}
             />
           ))}
+
+          <p
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.48rem",
+              letterSpacing: "0.4em",
+              color: "#D4AF37",
+              marginBottom: "0.75rem",
+            }}
+          >
+            CORE INTEL TAG · 情报局核心标签
+          </p>
 
           <p
             style={{
@@ -205,11 +225,11 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
               color: "#D4AF37",
             }}
           >
-            MUZIYANG · CORE ATTRIBUTE TAG
+            MUZIYANG · FELINE INTELLIGENCE BUREAU
           </p>
         </div>
 
-        {/* Handwritten signature */}
+        {/* 探长亲笔署名 */}
         <div
           className="mx-auto mb-10 text-center"
           style={{
@@ -218,6 +238,17 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             transition: "opacity 1.2s ease, transform 1s ease",
           }}
         >
+          <p
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.5rem",
+              letterSpacing: "0.4em",
+              color: "#8E8E93",
+              marginBottom: "0.5rem",
+            }}
+          >
+            猫探长本人亲笔签署
+          </p>
           <p
             style={{
               fontFamily: "var(--font-handwriting), cursive",
@@ -233,17 +264,17 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             className="mx-auto mt-2"
             style={{
               width: "clamp(120px, 30%, 200px)",
-              height: 1,
+              height: "0.5px",
               background: "linear-gradient(90deg, transparent, #D8A7B1, transparent)",
             }}
           />
         </div>
 
-        {/* Stamp — clickable Easter Egg */}
+        {/* 情报局印章 — 可点击 */}
         <button
           onClick={onEggTrigger}
           data-clickable
-          aria-label="点击查看自洽档案秘密寄语"
+          aria-label="点击查看情报局深层档案寄语"
           className="mx-auto mt-4 flex items-center justify-center outline-none"
           style={{
             background: "none",
@@ -257,32 +288,31 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
               width: 96,
               height: 96,
               borderRadius: "50%",
-              border: "2px solid rgba(216,167,177,0.6)",
+              border: "2px solid rgba(212,175,55,0.6)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
               gap: 2,
-              backgroundColor: "rgba(232,211,216,0.08)",
+              backgroundColor: "rgba(212,175,55,0.04)",
               backdropFilter: "blur(4px)",
-              boxShadow: "0 0 0 6px rgba(216,167,177,0.06), 0 0 0 12px rgba(216,167,177,0.03)",
+              boxShadow: "0 0 0 6px rgba(212,175,55,0.06), 0 0 0 12px rgba(212,175,55,0.03)",
               transition: "box-shadow 0.3s",
             }}
           >
-            {/* Inner ring */}
             <div
               className="absolute inset-2 rounded-full"
-              style={{ border: "1px solid rgba(216,167,177,0.3)" }}
+              style={{ border: "1px solid rgba(212,175,55,0.3)" }}
             />
-            <p style={{ fontFamily: "var(--font-serif)", fontSize: "0.55rem", letterSpacing: "0.2em", color: "#D8A7B1" }}>
-              MUZIYANG
+            <p style={{ fontFamily: "var(--font-serif)", fontSize: "0.5rem", letterSpacing: "0.2em", color: "#D4AF37", zIndex: 1 }}>
+              情报局
             </p>
-            <div style={{ width: 24, height: 0.5, backgroundColor: "#D8A7B1", opacity: 0.5 }} />
-            <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#D8A7B1", opacity: 0.7 }}>
-              猫格万千
+            <div style={{ width: 24, height: 0.5, backgroundColor: "#D4AF37", opacity: 0.5, zIndex: 1 }} />
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.25em", color: "#D4AF37", opacity: 0.8, zIndex: 1 }}>
+              BUREAU
             </p>
-            <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", letterSpacing: "0.2em", color: "#8E8E93" }}>
-              8th
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", letterSpacing: "0.2em", color: "#8E8E93", zIndex: 1 }}>
+              2026 · 8th
             </p>
           </div>
         </button>
@@ -297,18 +327,19 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             opacity: 0.5,
           }}
         >
-          ↑ 点击印章，解锁档案深层寄语
+          ↑ 盖章已确认 · 点击解锁深层情报
         </p>
 
-        {/* Four color stripe */}
+        {/* 五维颜色条 */}
         <div className="mt-20 flex h-1 w-full overflow-hidden">
           <div style={{ flex: 1, backgroundColor: "#D8A7B1" }} />
           <div style={{ flex: 1, backgroundColor: "#9BA8A0" }} />
           <div style={{ flex: 1, backgroundColor: "#B8BCC8" }} />
           <div style={{ flex: 1, backgroundColor: "#5F7CA8" }} />
+          <div style={{ flex: 1, backgroundColor: "#C0713A" }} />
         </div>
 
-        {/* Footer note */}
+        {/* Footer */}
         <p
           className="mt-8"
           style={{
@@ -319,7 +350,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             opacity: 0.35,
           }}
         >
-          MUZIYANG FELINE PERSONALITY ARCHIVE · ARCHIVE NO. 2026-YANG · ALL DIMENSIONS DOCUMENTED
+          FELINE INTELLIGENCE BUREAU · CASE NO. 2026-YANG · 5 DOSSIERS FILED
         </p>
       </div>
     </section>
