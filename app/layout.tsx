@@ -1,25 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Playfair_Display, Inter, Caveat } from 'next/font/google'
 import './globals.css'
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
-})
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-})
-
-const caveat = Caveat({
-  subsets: ['latin'],
-  variable: '--font-handwriting',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: 'YANGYANG FELINE PERSONALITY ARCHIVE｜洋洋猫科人格档案',
@@ -40,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="zh-CN" className={`${playfair.variable} ${inter.variable} ${caveat.variable} bg-[#FAF7F5]`}>
+    <html lang="zh-CN" className="bg-[#FAF7F5]">
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
