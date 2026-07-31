@@ -102,7 +102,7 @@ const personalities = [
     labelEn: "Dazzling",
     keywords: ["明艳", "傲娇", "挑剔"],
     keywordsEn: "Brilliance · Tsundere · Discernment",
-    desc: "本局特殊情报：高危且迷人。\n他眼神锐利，择人而交，\n嘴上"随便"，心里"挑遍了全场"。\n明艳得让人喘不过气，\n傲娇得让人甘愿折服——\n被他选中，是一种殊荣。",
+    desc: `本局特殊情报：高危且迷人。\n他眼神锐利，择人而交，\n嘴上"随便"，心里"挑遍了全场"。\n明艳得让人喘不过气，\n傲娇得让人甘愿折服——\n被他选中，是一种殊荣。`,
     intelTag: "INTEL-DAZZLE",
     accent: "#C0713A",
     bg: "linear-gradient(135deg, #FDF0E8 0%, #F5E0CC 50%, #E8C9A8 100%)",
