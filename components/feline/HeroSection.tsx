@@ -8,34 +8,42 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps) {
+  const [mounted, setMounted] = useState(false)
   const [titleVisible, setTitleVisible] = useState(false)
   const [subtitleVisible, setSubtitleVisible] = useState(false)
   const [tagVisible, setTagVisible] = useState(false)
   const [blinking, setBlinking] = useState(false)
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // Staggered entrance
   useEffect(() => {
+    if (!mounted) return
     const t1 = setTimeout(() => setTitleVisible(true), 400)
     const t2 = setTimeout(() => setSubtitleVisible(true), 900)
     const t3 = setTimeout(() => setTagVisible(true), 1400)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
-  }, [])
+  }, [mounted])
 
-  // Random blink
+  // Random blink — only after mount to avoid hydration mismatch
   useEffect(() => {
+    if (!mounted) return
+    let timeoutId: ReturnType<typeof setTimeout>
     const scheduleBlink = () => {
       const delay = 2500 + Math.random() * 4000
-      return setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setBlinking(true)
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           setBlinking(false)
           scheduleBlink()
         }, 180)
       }, delay)
     }
-    const t = scheduleBlink()
-    return () => clearTimeout(t)
-  }, [])
+    scheduleBlink()
+    return () => clearTimeout(timeoutId)
+  }, [mounted])
 
   const parallaxY = scrollY * 0.4
 
