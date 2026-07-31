@@ -230,16 +230,6 @@ export default function BureauIntroSection() {
         className="absolute bottom-0 left-0 right-0 h-px"
         style={{ background: "linear-gradient(90deg, transparent, rgba(216,167,177,0.2), transparent)" }}
       />
-            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.42rem", letterSpacing: "0.3em", color: "#D4AF37", zIndex: 1 }}>
-              情报局
-            </span>
-            <div style={{ width: 18, height: "0.5px", backgroundColor: "#D4AF37", opacity: 0.4, zIndex: 1 }} />
-            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.38rem", letterSpacing: "0.2em", color: "#8E8E93", zIndex: 1 }}>
-              2026 · 8th
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* 底部向下箭头 */}
       <div
