@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function CustomCursor() {
+  const [mounted, setMounted] = useState(false)
   const cursorRef = useRef<HTMLDivElement>(null)
   const dotRef = useRef<HTMLDivElement>(null)
   const posRef = useRef({ x: -100, y: -100 })
@@ -10,6 +11,11 @@ export default function CustomCursor() {
   const rafRef = useRef<number | null>(null)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     const moveCursor = (e: MouseEvent) => {
       posRef.current = { x: e.clientX, y: e.clientY }
     }
@@ -52,7 +58,9 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", moveCursor)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  }, [mounted])
+
+  if (!mounted) return null
 
   return (
     <>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import BureauIntroSection from "@/components/feline/BureauIntroSection"
 import HeroSection from "@/components/feline/HeroSection"
 import SpeciesSection from "@/components/feline/SpeciesSection"
 import PersonalitySection from "@/components/feline/PersonalitySection"
@@ -118,7 +119,7 @@ const fanPhrases: FanPhrase[] = [
   { text: "你像夏日的阳光般热烈盛放，冬日又化成温润的暖阳温暖心房，\n你的放声开怀,我随声而笑,我们一直都在。\n——From rui词芳~", tier: 1, color: "#ffcddb" },
   { text: "新粉 被他大方的薄肌吸引过来的 \n了解他的性格更喜欢了 很治愈\n——From momo", tier: 1, color: "#D38A96" },
   { text: "很温暖又浪漫的存在～\n感觉有他世界很美好\n——From 沫沫🐑", tier: 1, color: "#f9a7b5" },
-  { text: "看到了另一个自己\n——From 爱吃肘子的万能人", tier: 1, color: "#ad4d5d" },
+  { text: "看到了另一个自己\n—���From 爱吃肘子的万能人", tier: 1, color: "#ad4d5d" },
   { text: "窗外的暴雨淋不湿屋内的你，我是暴雨，你还是你\n——From 风眷叙", tier: 1, color: "#e28191" },
   { text: "温柔，拥有感受爱并给予爱的能力的好猫一只\n——From 张麦麦", tier: 1, color: "#b74c5e" },
   { text: "爱他耍宝，爱他笑起来的样子，\n爱他黏黏糊糊的嗓音,\n爱他活泼表象下可以窥见的温柔。\n——From Hehe", tier: 1, color: "#f77288" },
@@ -148,8 +149,8 @@ const fanPhrases: FanPhrase[] = [
   { text: "愛意有什麼好隱藏的！\n一開始沒有get到洋哥,直到第一次線下以及考古了許多物料後，\n發現他真的是很細膩敏感的人,每次在玩笑的口吻說出關懷的話，照顧著大家的情緒。\n漸漸愛上這個暖呼呼的人!\n當然大模Daddy 的時候也是帥到不行！ 這種反差感實在太萌了\n——From Nadear Hsu", tier: 2, color: "#bc657e" },
   { text: "在过去的一年爱上你让我感觉好幸福，\n也希望你被更多更多的人爱,收获更多的幸福！\n——From 拐洞洞拐", tier: 2, color: "#ee4575" },
   { text: "你本来就是个很好的人，\n真诚细腻、开朗嬉笑的你,\n总能照顾好身边所有人情绪的你,\n不让话掉地上的你,\n总会串联好方方面面细节的你,\n我们总能从你身上能汲取能量,也会从你身上映衬着生活中的自己,\n深知“顾全”二字要做到、有多难。\n木子洋 ，希望你始终向阳，永远自由，健康快乐！\n如果有机会,就见一次面吧!\n——From 飞天小神猪gy", tier: 1, color: "#D38A96" },
-  { text: "不相信别人的漂亮话，但非常相信我洋洋哥哥的真心，\n他说“格莱美 也不及妹妹们的心”，\n觉得他太美好了,洋洋是天使！\n——From 丘丘Joice", tier: 2, color: "#ff9cb8" },
-  { text: "“只要咱们饿前面就有吃的，只要咱们出去玩就得有大太阳”\n历尽千帆依然相信世界是美好的,勇于享受生活热爱生活，\n喜欢去安静的海岛旅行喜欢吃各种各样的美食,\n他的世界很丰富多彩也会影响身边的人,\n是个很会治愈别人的小太阳\n——From Екатерина", tier: 2, color: "#ce91a2" },
+  { text: "不相信别人的漂亮话，但非常相信我洋洋哥哥的真心，\n他说“格莱美 也不����妹们的心”，\n觉得他太美好了,洋洋是天使！\n——From 丘丘Joice", tier: 2, color: "#ff9cb8" },
+  { text: "“只要咱们饿前面就有吃的，只要咱们出去玩就得有大太阳”\n历���千帆依然相信世界是美好的,勇于享受生活热爱生活，\n喜欢去安静的海岛旅行喜欢吃各种各样的美食,\n他的世界很丰富多彩也会影响身边的人,\n是个很会治愈别人的小太阳\n——From Екатерина", tier: 2, color: "#ce91a2" },
   { text: "最喜欢的其实是哥哥柔软的心❤️从一开始到八年后的现在，\n不管世界怎么变,人又怎么成长和成熟,\n唯一不改的是木子洋温柔善良的底色。\n——From noliquid鱼鱼🍓", tier: 2, color: "#ff9cb8" },
   { text: "总是幽默诙谐的语气去描述一切，带给身边的人好多欢乐的阳光大男孩。\n特别喜欢他笑起来的样子,萌萌的微笑和搞怪的时候的哈哈大笑。\n很多次生气的时候看见他的笑容真的能秒治愈,\n很适用那句“他一笑就想把全世界都给他”\n——From 幸运的夕兮", tier: 2, color: "#d4587b" },
   { text: "感性 温柔 浪漫 幽默 也很有自己对生活的看法和态度,\n某些地方和我有点相似但是又有很多我希望拥有的优点,希望洋洋健康快乐!\n(私以为run和 迷走神经 这两首歌很符合他本人气质）\n——From 维持生命元素", tier: 2, color: "#d492a5" },
@@ -426,10 +427,11 @@ export default function FelineArchivePage() {
         className="relative min-h-screen overflow-x-hidden"
         style={{ fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#FAF7F5" }}
       >
+        <BureauIntroSection />
         <HeroSection onEggTrigger={() => setVideoModal({
-          title: "深层档案 · 自洽寄语",
-          subtitle: "VIDEO EXHIBIT",
-          description: "点击图片后，这里会播放对应的短片。",
+          title: "情报局 · 深层档案解密",
+          subtitle: "CLASSIFIED INTEL VIDEO",
+          description: "情报局猫探长专属寄语，点击即可解锁深层情报。",
           videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
           posterSrc: "/KWINmanmiao.jpg",
           accent: "#D4AF37",
@@ -448,9 +450,9 @@ export default function FelineArchivePage() {
         }
       />
         <SelfConsistentSection onEggTrigger={() => setVideoModal({
-          title: "深层档案 · 自洽寄语",
-          subtitle: "VIDEO EXHIBIT",
-          description: "点击图片后，这里会播放对应的短片。",
+          title: "情报局 · 归档深层情报",
+          subtitle: "CLASSIFIED INTEL VIDEO",
+          description: "侦探小姐，您已触发最高级别情报权限。以下为猫探长亲批档案。",
           videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
           posterSrc: "/KWINmanmiao.jpg",
           accent: "#D4AF37",
@@ -471,21 +473,63 @@ export default function FelineArchivePage() {
 
           <div className="relative mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center mb-16">
+              <div className="mb-4 flex items-center justify-center gap-4">
+                <span style={{ flex: 1, maxWidth: 60, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)", opacity: 0.4 }} />
+                <span
+                  style={{
+                    fontFamily: "var(--font-sans)",
+                    fontSize: "0.58rem",
+                    letterSpacing: "0.4em",
+                    color: "#D4AF37",
+                  }}
+                >
+                  BUREAU FILE · 04
+                </span>
+                <span style={{ flex: 1, maxWidth: 60, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)", opacity: 0.4 }} />
+              </div>
               <p
-                className="mb-5 font-sans text-[0.72rem] uppercase tracking-[0.45em] text-[#8F7F82]"
-                style={{ letterSpacing: "0.35em" }}
+                className="mb-5 font-sans text-[0.72rem] uppercase tracking-[0.45em]"
+                style={{ letterSpacing: "0.35em", color: "#8E8E93" }}
               >
-                VOICES OF FANS
+                INTEL EXCHANGE · OPEN TRANSMISSION
               </p>
               <h2
                 className="font-serif mx-auto max-w-xl text-[clamp(2rem,4vw,3.8rem)] leading-tight"
                 style={{ color: "#1C1C1E", letterSpacing: "0.04em" }}
               >
-                留言墙
+                情报交换区
               </h2>
+              <p
+                className="mt-3"
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.2em",
+                  color: "#8E8E93",
+                  lineHeight: 1.8,
+                }}
+              >
+                无限流情报在此汇聚 · 侦探们的一手线报持续更新
+              </p>
             </div>
 
-            <div className="relative mx-auto w-full max-w-5xl rounded-[3rem] border border-[#D8A7B1]/25 bg-[#FFF2F4]/70 px-8 py-12 shadow-[0_40px_120px_rgba(216,167,177,0.12)]">
+            <div className="relative mx-auto w-full max-w-5xl border border-[#D4AF37]/25 bg-[#FDFAF4]/80 px-8 py-12 shadow-[0_8px_60px_rgba(212,175,55,0.08)]" style={{ backdropFilter: "blur(8px)" }}>
+              {/* 情报卷宗顶部机密条 */}
+              <div
+                className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-1.5"
+                style={{
+                  backgroundColor: "#1C1C1E",
+                  borderBottom: "1px solid rgba(212,175,55,0.4)",
+                }}
+              >
+                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.45rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
+                  [ INTEL EXCHANGE · 情报交换 ]
+                </span>
+                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.45rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
+                  LIVE TRANSMISSION · {(new Date()).getFullYear()}
+                </span>
+              </div>
+              <div style={{ marginTop: "2rem" }}>
               <div className="mx-auto w-full overflow-hidden" style={{ aspectRatio: `${CLOUD_VB_W} / ${CLOUD_VB_H}` }}>
                 <svg
                   viewBox={`0 0 ${CLOUD_VB_W} ${CLOUD_VB_H}`}
@@ -553,6 +597,7 @@ export default function FelineArchivePage() {
                   })()}
                 </svg>
               </div>
+              </div>{/* end marginTop wrapper */}
             </div>
           </div>
         </section>
