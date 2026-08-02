@@ -45,8 +45,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
     return () => clearTimeout(timeoutId)
   }, [mounted])
 
-  const parallaxY = scrollY * 0.4
-
   return (
     <section
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
@@ -79,7 +77,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
       {/* Parallax content wrapper */}
       <div
         className="relative z-10 flex flex-col items-center px-6 text-center"
-        style={{ transform: `translateY(${parallaxY}px)` }}
+        style={{ transform: "translateY(0)" }}
       >
         {/* 情报局接入标识 */}
         <div

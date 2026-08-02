@@ -62,8 +62,8 @@ const dossiers = [
     chinese: "傲娇",
     description: "眼神锐利，挑人而交；嘴上说着随便，心里却早已挑遍全场。被她选中，是一种殊荣。",
     accent: "#C0718A",
-    image: "/KWINxiaoxiang.jpg",
-    posterSrc: "/KWINxiaoxiang.jpg",
+    image: "/KWINaojiao.jpg",
+    posterSrc: "/KWINaojiao.jpg",
     videoTitle: "情报展区 · 傲娇卷宗",
     videoDescription: "一段捕捉明艳傲娇气场的短片。",
     videoSrc: "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/dandang.mp4",
@@ -98,9 +98,13 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
           </p>
         </header>
 
-        <div className="reveal delay-2 grid grid-cols-2 items-end gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-5 lg:gap-x-4">
+        <div className="reveal delay-2 -mx-6 overflow-x-auto px-6 pb-6 sm:mx-0 sm:px-0 sm:overflow-visible">
+          <div className="flex w-max items-start gap-3 sm:gap-5 lg:w-full lg:justify-between lg:gap-4">
           {dossiers.map((dossier, index) => (
-            <article key={dossier.id} className={`group min-w-0 ${index === 4 ? "col-span-2 mx-auto w-[calc(50%-0.375rem)] sm:col-span-1 sm:mx-0 sm:w-auto" : ""}`}>
+            <article
+              key={dossier.id}
+              className={`group w-36 shrink-0 sm:w-44 lg:w-auto lg:flex-1 ${["pt-8", "pt-0", "pt-5", "pt-0", "pt-7"][index]}`}
+            >
               <button
                 type="button"
                 onClick={() => onOpenVideo?.(dossier)}
@@ -114,7 +118,7 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                 <span
                   className="relative block overflow-hidden border transition-all duration-500 group-hover:-translate-y-2 group-focus-visible:-translate-y-2"
                   style={{
-                    height: index === 0 ? "clamp(250px, 32vw, 390px)" : index === 1 ? "clamp(300px, 38vw, 470px)" : index === 2 ? "clamp(270px, 34vw, 415px)" : index === 3 ? "clamp(330px, 42vw, 510px)" : "clamp(285px, 36vw, 440px)",
+                    height: "clamp(240px, 31vw, 390px)",
                     borderColor: `${dossier.accent}80`,
                     boxShadow: `0 12px 26px ${dossier.accent}28`,
                   }}
@@ -134,6 +138,7 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
               </div>
             </article>
           ))}
+          </div>
         </div>
       </div>
     </section>
