@@ -32,13 +32,13 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
     if (!mounted) return
     let timeoutId: ReturnType<typeof setTimeout>
     const scheduleBlink = () => {
-      const delay = 2500 + Math.random() * 4000
+      const delay = 4000 + Math.random() * 5000
       timeoutId = setTimeout(() => {
         setBlinking(true)
         timeoutId = setTimeout(() => {
           setBlinking(false)
           scheduleBlink()
-        }, 180)
+        }, 600)
       }, delay)
     }
     scheduleBlink()
@@ -121,16 +121,13 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
           </span>
         </div>
 
-        {/* Cat eye SVG — clickable Easter Egg trigger */}
-        <button
-          onClick={onEggTrigger}
-          data-clickable
-          aria-label="打开洋洋的秘密档案"
-          className="relative mb-16 outline-none focus-visible:ring-2 focus-visible:ring-[#D8A7B1]"
+        {/* Cat eye SVG */}
+        <div
+          className="relative mb-16"
           style={{ background: "none", border: "none" }}
         >
           <CatEyeSVG blinking={blinking} />
-        </button>
+        </div>
 
         {/* Main title */}
         <h1
@@ -210,9 +207,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
 
         {/* Archive tag */}
         <div
-          className="group flex cursor-pointer items-center gap-3 border border-[#D8A7B1]/40 px-6 py-2.5 transition-all duration-700 hover:border-[#D8A7B1] hover:bg-[#E8D3D8]/20"
-          onClick={onEggTrigger}
-          data-clickable
+          className="group flex items-center gap-3 border border-[#D8A7B1]/40 px-6 py-2.5 transition-all duration-700"
           style={{
             opacity: tagVisible ? 1 : 0,
             transform: tagVisible ? "translateY(0)" : "translateY(16px)",
