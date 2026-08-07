@@ -223,7 +223,7 @@ const dossiers = [
     chinese: "捣蛋",
     description:
       "将平淡的日常，悄然酿成一场惊喜。\n以恰到好处的调皮与玩笑，温柔瓦解沉闷；\n让笑意在彼此之间，自然发生。\n偶尔幼稚，也是在认真治愈生活。",
-    observerLog: "哪怕偶尔展露幼稚的一面，也是治愈生活的良药。\n他用最松弛的姿态，接住了所有疲惫的灵魂。",
+    observerLog: "哪怕偶尔展露幼稚的一面，也是治愈生活的良药。他用最松弛的姿态，接住了所有疲惫的灵魂。",
     accent: "#BA8FA0",
     image: "/KWINdaodan.png",
     posterSrc: "/KWINdaodan.png",
@@ -239,7 +239,7 @@ const dossiers = [
     chinese: "温柔",
     description:
       "以冷峻的骨相抵御喧嚣，\n以温柔的本心回应世界。\nThe world has kissed my soul with its pain,\nasking for its return in songs.\n世界以痛吻我，我愿回报以歌。",
-    observerLog: "目标的温柔并不张扬，却足以让靠近的人安定下来。",
+    observerLog: "目标人物并非生来披甲，而是将苦难与锋芒尽数熔铸为铠甲。他用极致的清醒对抗外界的嘈杂，又用最柔软的善意接住所有的偏爱。这份在泥泞中依然选择歌唱的赤诚，是他最坚不可摧的绝对法则。",
     accent: "#A77E91",
     image: "/KWINwenrou.jpg",
     posterSrc: "/KWINwenrou.jpg",
@@ -255,7 +255,7 @@ const dossiers = [
     chinese: "曼妙",
     description:
       "聚光灯的轨迹由他定义，\n全场的呼吸随他起伏。\n无需迎合，亦不必借光；\n只要立于舞台中央，便自成绝对法则。\n目标气场全开，请观测者留意心跳频率。",
-    observerLog: "视线已被目标锁定。建议平复呼吸后，再继续观测。",
+    observerLog: "强烈建议其余观测者备好氧气瓶，并随时准备交出心跳。",
     accent: "#D8A7B1",
     image: "/KWINmanmiao.jpg",
     posterSrc: "/KWINmanmiao.jpg",
@@ -271,7 +271,7 @@ const dossiers = [
     chinese: "担当",
     description:
       "温暖与坚韧在此共生。\n不声张，自有万钧之力；\n不喧哗，稳作定海之锚。\nSoft as a cloud, yet an unshakeable anchor.",
-    observerLog: "关键时刻，目标始终在场。稳定指数持续高于基准线。",
+    observerLog: "目标人物从不刻意展露锋芒，却总能在风暴骤起时，稳稳托底所有的不安。这份不动声色的重量感，是他赋予周遭最顶级的安全感。",
     accent: "#9E7186",
     image: "/KWINdandang.jpg",
     posterSrc: "/KWINdandang.jpg",
@@ -286,7 +286,7 @@ const dossiers = [
     systemLabel: "社交防御机制评估报告",
     chinese: "傲娇",
     description: "择人而交，宁缺毋滥。\n看似漫不经心，实则优雅审视全场。\n防御机制已启动；获准靠近者，另当别论。",
-    observerLog: "外层警戒值偏高。若收到回应，说明你已通过初步筛选。",
+    observerLog: "目标人物的社交门槛极高，绝不轻易交付真心。请其余观测者铭记：一旦被他选中，便意味着你通过了最高级别的灵魂审核，这本身就是一份无上殊荣。",
     accent: "#C0718A",
     image: "/KWINaojiao.jpg",
     posterSrc: "/KWINaojiao.jpg",
