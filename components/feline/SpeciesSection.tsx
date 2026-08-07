@@ -14,21 +14,21 @@ const personalInfo = [
 
 const skills = [
   { code: "01", title: "反差萌突袭", desc: "快速切换高冷超模脸与软萌甜嗓，瞬间击穿敌方心理防线，造成持续性心动伤害。" },
-  { code: "02", title: "社交黏人术", desc: "进入无边界感状态，对队友发起高频肢体接触（摸头、拥抱），提升团队亲密度并回复自身能量。" },
-  { code: "03", title: "嘴硬心软男子汉", desc: "自称山东传奇好汉，实则对恐怖元素、节肢动物毫无抵抗力，被吓后秒变「弟弟抱紧我」模式。" },
+  { code: "02", title: "可爱绝对吸引", desc: "哪怕狗毛过敏三级警报拉响，在外偶遇猫猫狗狗依然会丧失理智、忍不住上手猛吸；\n家中狗狗「铁牛」与「玉芬」，为爱可抗一切生理反应。" },
+  { code: "03", title: "嘴硬心软男子汉", desc: "自称山东传奇好汉，实则对恐怖元素、节肢动物毫无抵抗力，被吓后秒变「捂耳乱窜嗷嗷叫」模式。" },
 ]
 
-const likes = ["甜点", "舞台", "哥哥弟弟们"]
-const dislikes = ["恐怖系", "螃蟹", "突然的安静", "未知的「新人」", "冷暴力"]
+const likes = ["阅读", "舞台", "大海", "独处"]
+const dislikes = ["恐怖系", "螃蟹", "突然的安静", "冷暴力"]
 const tags = ["天才爱豆", "颜值担当", "抽象梗王", "猫系男友", "小哭包", "醋精"]
 
 const radarStats = [
-  { label: "外貌", value: 5 },
-  { label: "唱功", value: 4.5 },
-  { label: "性格", value: 5 },
+  { label: "外貌", value: 5.5 },
+  { label: "唱功", value: 5 },
+  { label: "性格", value: 6 },
   { label: "人气", value: 5 },
-  { label: "反差", value: 5 },
-  { label: "魅力", value: 4.5 },
+  { label: "曼妙", value: 8 },
+  { label: "魅力", value: 5 },
 ]
 
 function polarToXY(cx: number, cy: number, r: number, angleDeg: number) {
@@ -242,9 +242,6 @@ export default function SpeciesSection() {
                       <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", color: "#E8B8C4", letterSpacing: "0.06em" }}>
                         Mu ZiYang
                       </p>
-                      <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.32rem", color: "#8FA0B5", marginTop: 2 }}>
-                        LV.4 · 门面/Rapper
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -317,7 +314,7 @@ export default function SpeciesSection() {
                           <p style={{ fontFamily: "var(--font-serif), serif", fontSize: "0.78rem", color: "#3D2418", fontWeight: 700 }}>
                             {skill.title}
                           </p>
-                          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.66rem", lineHeight: 1.6, color: "#6B4230", marginTop: 2 }}>
+                          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.66rem", lineHeight: 1.6, color: "#6B4230", marginTop: 2, whiteSpace: "pre-wrap" }}>
                             {skill.desc}
                           </p>
                         </div>

@@ -249,7 +249,7 @@ const dossiers = [
   },
   {
     id: "Zesty",
-    letter: "Y",
+    letter: "Z",
     word: "ZESTY",
     systemLabel: "舞台掌控力评估报告",
     chinese: "曼妙",
