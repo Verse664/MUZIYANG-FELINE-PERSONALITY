@@ -45,11 +45,14 @@ interface SpotlightState {
 
 interface VideoModalState {
   title: string
-  subtitle: string
-  description: string
-  videoSrc: string
-  posterSrc: string
-  accent: string
+  subtitle?: string
+  description?: string
+  videoSrc?: string
+  posterSrc?: string
+  accent?: string
+  variant?: "video" | "letter"
+  letterLines?: string[]
+  signature?: string
 }
 
 // 把 \n 和 <br> / <br/> 统一拆分成多行数组，去除空白行首尾空格
@@ -451,11 +454,21 @@ export default function FelineArchivePage() {
       />
         <SelfConsistentSection onEggTrigger={() => setVideoModal({
           title: "情报局 · 归档深层情报",
-          subtitle: "CLASSIFIED INTEL VIDEO",
-          description: "侦探小姐，您已触发最高级别情报权限。以下为猫探长亲批档案。",
-          videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-          posterSrc: "/KWINmanmiao.jpg",
+          subtitle: "SEALED LETTER · 火漆密信",
           accent: "#D4AF37",
+          variant: "letter",
+          letterLines: [
+            "如果你看到这里，说明五份卷宗你都翻完了。",
+            "谢谢你愿意花这些时间，认真地认识一遍「洋洋」。",
+            "曼妙、温柔、捣蛋、担当、傲娇——",
+            "其实哪一面都不是刻意扮演的角色，",
+            "只是不同的时刻，恰好露出了不同的自己。",
+            "谢谢你没有只选一面来定义我，",
+            "谢谢你愿意把五份都看完。",
+            "以后的路还很长，",
+            "希望你还愿意继续陪着看下去。",
+          ],
+          signature: "MuZiyang · 木子洋",
         })} />
 
         <section className="relative overflow-hidden py-32 px-6">
@@ -612,6 +625,9 @@ export default function FelineArchivePage() {
         videoSrc={videoModal?.videoSrc}
         posterSrc={videoModal?.posterSrc}
         accent={videoModal?.accent}
+        variant={videoModal?.variant ?? "video"}
+        letterLines={videoModal?.letterLines}
+        signature={videoModal?.signature}
       />
 
       <style jsx global>{`
@@ -658,7 +674,7 @@ export default function FelineArchivePage() {
         }
 
         @keyframes blink {
-          0%, 85%, 100% { scaleY: 1; }
+          0%, 85%, 100% { transform: scaleY(1); }
           90%, 92% { transform: scaleY(0.05); }
         }
 

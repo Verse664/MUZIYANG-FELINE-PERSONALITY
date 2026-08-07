@@ -478,19 +478,34 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                         </p>
                       </div>
                       <div
-                        className="mx-auto mt-3 max-w-[18rem] border border-dashed px-3 py-2 text-left"
-                        style={{ borderColor: `${dossier.accent}90`, backgroundColor: "#FFF9FA70" }}
-                      >
-                        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.52rem", color: "#8E5D6C", letterSpacing: "0.16em" }}>
-                          ◇ 观测者日志
-                        </p>
-                        <p
-                          className="mt-1"
-                          style={{ fontFamily: "var(--font-sans)", fontSize: "0.7rem", lineHeight: 1.75, color: "#795662", letterSpacing: "0.03em" }}
+                        className="relative mx-auto mt-3 max-w-[18rem] py-2.5 pl-6 pr-3 text-left"
+                        style={{
+                        backgroundColor: "#FFF9FA",
+                        border: `1px solid ${dossier.accent}80`,
+                        clipPath: "polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%)",
+                        }}
                         >
-                          {dossier.observerLog}
-                        </p>
-                      </div>
+                          {/* 标签打孔 */}
+                          <span
+                          aria-hidden="true"
+                          className="absolute rounded-full"
+                          style={{
+                            width: 3.5,
+                            height: 3.5,
+                            left: 5,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            backgroundColor: dossier.accent,
+                            opacity: 0.7,
+                          }}
+                          />
+                          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.52rem", color: "#8E5D6C", letterSpacing: "0.16em" }}>
+                            观测者日志
+                            </p>
+                            <p className="mt-1" style={{ fontFamily: "var(--font-sans)", fontSize: "0.7rem", lineHeight: 1.75, color: "#795662", letterSpacing: "0.03em" }}>
+                              {dossier.observerLog}
+                              </p>
+                            </div>
                     </div>
                   </article>
                 ))}

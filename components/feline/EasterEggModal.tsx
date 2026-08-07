@@ -1,15 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 interface EasterEggModalProps {
   open: boolean
   onClose: () => void
+  variant?: "video" | "letter"
   title?: string
   subtitle?: string
+  accent?: string
+  // video 模式专用
+  description?: string
+  videoSrc?: string
+  posterSrc?: string
+  // letter 模式专用
   letterLines?: string[]
   signature?: string
-  accent?: string
 }
 
 const defaultLetterLines = [
@@ -27,35 +34,36 @@ const defaultLetterLines = [
 export default function EasterEggModal({
   open,
   onClose,
+  variant = "video",
   title = "深层档案 · 藏在时间里的话",
-  subtitle = "SEALED LETTER · 火漆密信",
+  subtitle,
+  accent = "#D4AF37",
+  description,
+  videoSrc,
+  posterSrc,
   letterLines = defaultLetterLines,
   signature = "MuZiyang · 木子洋",
-  accent = "#D4AF37",
 }: EasterEggModalProps) {
   const [visibleCount, setVisibleCount] = useState(0)
   const [sigVisible, setSigVisible] = useState(false)
 
   useEffect(() => {
     if (!open) return
-
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose()
     }
-
     const previousOverflow = document.body.style.overflow
     window.addEventListener("keydown", handleKey)
     document.body.style.overflow = "hidden"
-
     return () => {
       window.removeEventListener("keydown", handleKey)
       document.body.style.overflow = previousOverflow
     }
   }, [open, onClose])
 
-  // 信件逐行淡入
+  // 信件逐行淡入（仅 letter 模式使用）
   useEffect(() => {
-    if (!open) {
+    if (!open || variant !== "letter") {
       setVisibleCount(0)
       setSigVisible(false)
       return
@@ -69,26 +77,26 @@ export default function EasterEggModal({
       i += 1
       setVisibleCount(i)
       if (i < letterLines.length) {
-        const id = window.setTimeout(revealNext, 480)
-        timeouts.push(id)
+        timeouts.push(window.setTimeout(revealNext, 480))
       } else {
-        const id = window.setTimeout(() => {
-          if (!cancelled) setSigVisible(true)
-        }, 600)
-        timeouts.push(id)
+        timeouts.push(
+          window.setTimeout(() => {
+            if (!cancelled) setSigVisible(true)
+          }, 600)
+        )
       }
     }
 
-    const startId = window.setTimeout(revealNext, 500)
-    timeouts.push(startId)
-
+    timeouts.push(window.setTimeout(revealNext, 500))
     return () => {
       cancelled = true
       timeouts.forEach((id) => window.clearTimeout(id))
     }
-  }, [open, letterLines])
+  }, [open, variant, letterLines])
 
   if (!open) return null
+
+  const resolvedSubtitle = subtitle ?? (variant === "letter" ? "SEALED LETTER · 火漆密信" : "VIDEO EXHIBIT")
 
   return (
     <div
@@ -101,125 +109,159 @@ export default function EasterEggModal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="深层档案密信"
+      aria-label={variant === "letter" ? "深层档案密信" : "视频弹窗"}
     >
-      <div
-        className="relative w-full max-w-xl"
-        onClick={(e) => e.stopPropagation()}
-        style={{ animation: "slideInModal 0.5s cubic-bezier(0.22, 1, 0.36, 1)" }}
-      >
-        {/* 拆开的火漆印章，悬浮在信纸顶部 */}
-        <div className="relative z-20 mx-auto -mb-8 flex justify-center">
-          <BrokenWaxSeal accent={accent} />
-        </div>
-
-        {/* 信纸主体 */}
+      {variant === "letter" ? (
+        // ============ 书信模式 ============
         <div
-          className="relative overflow-hidden pt-14"
+          className="relative w-full max-w-xl"
+          onClick={(e) => e.stopPropagation()}
+          style={{ animation: "slideInModal 0.5s cubic-bezier(0.22, 1, 0.36, 1)" }}
+        >
+          {/* 悬浮火漆印章 */}
+          <div className="relative z-20 mx-auto -mb-8 flex flex-col items-center gap-1">
+            <div style={{ width: 76, height: 76, position: "relative", filter: "drop-shadow(0 8px 16px rgba(124,42,34,0.4))" }}>
+              <Image src="/huoqi.png" alt="已拆封的火漆印章" fill style={{ objectFit: "contain" }} />
+            </div>
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.4rem", letterSpacing: "0.25em", color: "#8C5A42", opacity: 0.6 }}>
+              SEAL BROKEN · 已拆封
+            </span>
+          </div>
+
+          <div
+            className="relative overflow-hidden pt-6"
+            style={{
+              backgroundColor: "#F3DCCF",
+              border: "1px solid #C08D74",
+              boxShadow: "0 25px 70px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.15)",
+            }}
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 opacity-[0.06]"
+              style={{ backgroundImage: "repeating-linear-gradient(115deg, #6B4230 0px, transparent 1px, transparent 3px)" }}
+            />
+
+            <div className="relative flex items-center justify-between px-6 pb-4 sm:px-8">
+              <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.35em", color: "#8C5A42" }}>
+                {resolvedSubtitle}
+              </span>
+              <button
+                onClick={onClose}
+                data-clickable
+                aria-label="关闭"
+                style={{ background: "none", border: "none", color: "#8C5A42", fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.2em", cursor: "none", opacity: 0.7 }}
+              >
+                [ CLOSE ]
+              </button>
+            </div>
+
+            <div className="relative px-8 pb-10 sm:px-12 sm:pb-12">
+              <h3
+                className="mb-8 text-center"
+                style={{ fontFamily: "var(--font-serif), serif", fontSize: "clamp(1.2rem, 2.8vw, 1.6rem)", color: "#3D2418", fontWeight: 700, letterSpacing: "0.08em" }}
+              >
+                {title}
+              </h3>
+
+              <div className="mx-auto max-w-md space-y-3">
+                {letterLines.map((line, i) => (
+                  <p
+                    key={i}
+                    style={{
+                      fontFamily: "var(--font-handwriting), cursive",
+                      fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
+                      lineHeight: 1.9,
+                      color: "#3D2418",
+                      letterSpacing: "0.03em",
+                      textAlign: "center",
+                      opacity: i < visibleCount ? 1 : 0,
+                      transform: i < visibleCount ? "translateY(0)" : "translateY(8px)",
+                      transition: "opacity 0.6s ease, transform 0.6s ease",
+                    }}
+                  >
+                    {line}
+                  </p>
+                ))}
+              </div>
+
+              <div
+                className="mt-10 flex flex-col items-center gap-2"
+                style={{
+                  opacity: sigVisible ? 1 : 0,
+                  transform: sigVisible ? "translateY(0)" : "translateY(10px)",
+                  transition: "opacity 0.8s ease, transform 0.8s ease",
+                }}
+              >
+                <div style={{ width: 60, height: "0.5px", backgroundColor: "#B4483F", opacity: 0.4 }} />
+                <p style={{ fontFamily: "var(--font-handwriting), cursive", fontSize: "clamp(1.3rem, 3vw, 1.8rem)", color: "#B4483F", opacity: 0.85, letterSpacing: "0.06em" }}>
+                  {signature}
+                </p>
+                <p className="mt-2" style={{ fontFamily: "var(--font-sans)", fontSize: "0.46rem", letterSpacing: "0.3em", color: "#8C5A42", opacity: 0.55 }}>
+                  本信仅你可见 · ACCESS GRANTED
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // ============ 视频模式（原样保留） ============
+        <div
+          className="relative w-full max-w-3xl"
+          onClick={(e) => e.stopPropagation()}
           style={{
-            backgroundColor: "#F3DCCF",
-            border: "1px solid #C08D74",
-            boxShadow: "0 25px 70px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.15)",
+            background: "rgba(250,247,245,0.95)",
+            backdropFilter: "blur(24px)",
+            border: `1px solid ${accent}30`,
+            boxShadow: `0 8px 60px rgba(28,28,30,0.2), 0 2px 20px ${accent}12`,
+            animation: "slideInModal 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         >
-          {/* 纸纤维纹理 */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-[0.06]"
-            style={{ backgroundImage: "repeating-linear-gradient(115deg, #6B4230 0px, transparent 1px, transparent 3px)" }}
-          />
-
-          {/* 顶部信息条 */}
-          <div className="relative flex items-center justify-between px-6 pb-4 sm:px-8">
-            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.35em", color: "#8C5A42" }}>
-              {subtitle}
+          <div className="flex items-center justify-between px-6 py-4 sm:px-8" style={{ borderBottom: `1px solid ${accent}20` }}>
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.45em", color: accent }}>
+              {resolvedSubtitle}
             </span>
             <button
               onClick={onClose}
               data-clickable
               aria-label="关闭"
-              style={{
-                background: "none",
-                border: "none",
-                color: "#8C5A42",
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                cursor: "none",
-                opacity: 0.7,
-              }}
+              style={{ background: "none", border: "none", color: "#8E8E93", fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.2em", cursor: "none", opacity: 0.7 }}
             >
               [ CLOSE ]
             </button>
           </div>
 
-          <div className="relative px-8 pb-10 sm:px-12 sm:pb-12">
+          <div className="px-6 py-6 sm:px-8 sm:py-8">
             <h3
-              className="mb-8 text-center"
-              style={{
-                fontFamily: "var(--font-serif), serif",
-                fontSize: "clamp(1.2rem, 2.8vw, 1.6rem)",
-                color: "#3D2418",
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-              }}
+              className="mb-3 text-center"
+              style={{ fontFamily: "var(--font-serif), serif", fontSize: "clamp(1.3rem, 3vw, 1.8rem)", color: "#1C1C1E", fontWeight: 700, letterSpacing: "0.06em" }}
             >
               {title}
             </h3>
 
-            {/* 信件正文，逐行淡入 */}
-            <div className="mx-auto max-w-md space-y-3">
-              {letterLines.map((line, i) => (
-                <p
-                  key={i}
-                  style={{
-                    fontFamily: "var(--font-handwriting), cursive",
-                    fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
-                    lineHeight: 1.9,
-                    color: "#3D2418",
-                    letterSpacing: "0.03em",
-                    textAlign: "center",
-                    opacity: i < visibleCount ? 1 : 0,
-                    transform: i < visibleCount ? "translateY(0)" : "translateY(8px)",
-                    transition: "opacity 0.6s ease, transform 0.6s ease",
-                  }}
-                >
-                  {line}
-                </p>
-              ))}
-            </div>
+            {description ? (
+              <p
+                className="mb-5 text-center"
+                style={{ fontFamily: "var(--font-sans)", fontSize: "0.9rem", lineHeight: 1.8, color: "#3C3C3E", letterSpacing: "0.06em" }}
+              >
+                {description}
+              </p>
+            ) : null}
 
-            {/* 签名 */}
-            <div
-              className="mt-10 flex flex-col items-center gap-2"
-              style={{
-                opacity: sigVisible ? 1 : 0,
-                transform: sigVisible ? "translateY(0)" : "translateY(10px)",
-                transition: "opacity 0.8s ease, transform 0.8s ease",
-              }}
-            >
-              <div style={{ width: 60, height: "0.5px", backgroundColor: "#B4483F", opacity: 0.4 }} />
-              <p
-                style={{
-                  fontFamily: "var(--font-handwriting), cursive",
-                  fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
-                  color: "#B4483F",
-                  opacity: 0.85,
-                  letterSpacing: "0.06em",
-                }}
-              >
-                {signature}
-              </p>
-              <p
-                className="mt-2"
-                style={{ fontFamily: "var(--font-sans)", fontSize: "0.46rem", letterSpacing: "0.3em", color: "#8C5A42", opacity: 0.55 }}
-              >
-                本信仅你可见 · ACCESS GRANTED
-              </p>
-            </div>
+            {videoSrc ? (
+              <div className="overflow-hidden rounded-2xl border" style={{ borderColor: `${accent}30`, backgroundColor: "#000" }}>
+                <video className="w-full" controls autoPlay playsInline preload="metadata" poster={posterSrc} style={{ maxHeight: 460, backgroundColor: "#000" }}>
+                  <source src={videoSrc} type="video/mp4" />
+                </video>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed px-6 py-10 text-center" style={{ borderColor: `${accent}30` }}>
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "#3C3C3E" }}>暂无可播放视频</p>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
       <style jsx global>{`
         @keyframes fadeIn {
@@ -231,64 +273,6 @@ export default function EasterEggModal({
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
-    </div>
-  )
-}
-
-// 拆开状态的火漆印章：裂成两半，露出信纸的效果
-function BrokenWaxSeal({ accent }: { accent: string }) {
-  return (
-    <div className="relative flex items-center" style={{ width: 120, height: 76 }}>
-      {/* 左半边蜡片 */}
-      <svg width="64" height="76" viewBox="0 0 64 76" style={{ position: "absolute", left: 0, transform: "rotate(-6deg)" }}>
-        <defs>
-          <radialGradient id="waxLeft" cx="35%" cy="30%" r="80%">
-            <stop offset="0%" stopColor="#D9584C" />
-            <stop offset="55%" stopColor="#B4483F" />
-            <stop offset="100%" stopColor="#7C2A22" />
-          </radialGradient>
-        </defs>
-        <path
-          d="M58 8 C62 2 50 -2 42 4 C34 -4 20 0 18 8 C8 6 0 16 6 26 C-2 32 2 44 12 46 C8 56 18 66 28 62 C32 72 48 72 50 62 C60 64 66 52 58 46 C64 38 60 26 50 24 C56 16 52 6 58 8 Z"
-          fill="url(#waxLeft)"
-        />
-        <ellipse cx="24" cy="18" rx="10" ry="6" fill="#fff" opacity="0.18" />
-        <text x="30" y="42" textAnchor="middle" fill="#F3DCCF" fontSize="15" fontFamily="var(--font-serif), serif" opacity="0.85">
-          洋
-        </text>
-      </svg>
-
-      {/* 右半边蜡片 */}
-      <svg width="64" height="76" viewBox="0 0 64 76" style={{ position: "absolute", right: 0, transform: "rotate(7deg)" }}>
-        <defs>
-          <radialGradient id="waxRight" cx="65%" cy="30%" r="80%">
-            <stop offset="0%" stopColor="#D9584C" />
-            <stop offset="55%" stopColor="#B4483F" />
-            <stop offset="100%" stopColor="#7C2A22" />
-          </radialGradient>
-        </defs>
-        <path
-          d="M6 8 C2 2 14 -2 22 4 C30 -4 44 0 46 8 C56 6 64 16 58 26 C66 32 62 44 52 46 C56 56 46 66 36 62 C32 72 16 72 14 62 C4 64 -2 52 6 46 C0 38 4 26 14 24 C8 16 12 6 6 8 Z"
-          fill="url(#waxRight)"
-        />
-        <ellipse cx="40" cy="18" rx="10" ry="6" fill="#fff" opacity="0.15" />
-      </svg>
-
-      {/* 底部滴蜡小点 */}
-      <span
-        className="absolute rounded-full"
-        style={{ width: 6, height: 6, backgroundColor: "#7C2A22", left: 18, bottom: -3, opacity: 0.8 }}
-      />
-      <span
-        className="absolute rounded-full"
-        style={{ width: 4, height: 4, backgroundColor: "#7C2A22", right: 26, bottom: -2, opacity: 0.7 }}
-      />
-
-      {/* 金色裂缝细光 */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ width: 2, height: 50, background: `linear-gradient(180deg, transparent, ${accent}90, transparent)`, opacity: 0.6, transform: "rotate(4deg)" }}
-      />
     </div>
   )
 }

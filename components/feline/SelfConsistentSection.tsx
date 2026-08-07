@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 interface SelfConsistentSectionProps {
   onEggTrigger: () => void
@@ -221,10 +222,6 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           />
         </div>
 
-        {/*
-          情报局火漆印章 — 可点击，触发 onEggTrigger 打开深层档案密信弹层。
-          点击后应配合 EasterEggModal 的拆信体验。
-        */}
         <button
           onClick={onEggTrigger}
           data-clickable
@@ -232,7 +229,12 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           className="mx-auto mt-4 flex items-center justify-center outline-none"
           style={{ background: "none", border: "none", cursor: "none" }}
         >
-          <WaxSealButton visible={stampVisible} />
+          <div
+            className={`relative ${stampVisible ? "stamp-animate" : "opacity-0"}`}
+            style={{ width: 108, height: 108, filter: "drop-shadow(0 8px 18px rgba(124,42,34,0.35))" }}
+          >
+            <Image src="/huoqi.png" alt="情报局火漆印章" fill style={{ objectFit: "contain" }} />
+          </div>
         </button>
 
         <p className="mt-5" style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.5 }}>
