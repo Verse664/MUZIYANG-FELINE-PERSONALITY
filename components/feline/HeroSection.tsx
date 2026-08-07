@@ -52,17 +52,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
         background: "linear-gradient(160deg, #F4E2E5 0%, #FAF7F5 40%, #E8D3D8 75%, #EDD5D9 100%)",
       }}
     >
-      {/* Background ambient glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.06) 0%, transparent 70%)",
-          animation: "glow-pulse 5s ease-in-out infinite",
-        }}
-      />
-
       {/* Subtle grid lines */}
       <div
         aria-hidden="true"
