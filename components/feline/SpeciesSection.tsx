@@ -27,7 +27,7 @@ const radarStats = [
   { label: "唱功", value: 5 },
   { label: "性格", value: 6 },
   { label: "人气", value: 5 },
-  { label: "曼妙", value: 8 },
+  { label: "曼妙", value: 11 },
   { label: "魅力", value: 5 },
 ]
 
@@ -45,13 +45,13 @@ function pointsToString(points: { x: number; y: number }[]) {
 function RadarChart() {
   const cx = 110
   const cy = 110
-  const maxR = 72
+  const maxR = 88
   const levels = [1, 2, 3, 4, 5]
   const dataPoints = radarStats.map((s, i) => polarToXY(cx, cy, (s.value / 5) * maxR, i * 60))
   const outerPoints = buildHexPoints(cx, cy, maxR)
 
   return (
-    <svg viewBox="0 0 220 220" className="h-full w-full max-w-[190px]">
+    <svg viewBox="0 0 220 220" className="h-full w-full max-w-[190px]" style={{ overflow: "visible" }}>
       {levels.map((lvl) => (
         <polygon
           key={lvl}

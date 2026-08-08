@@ -18,13 +18,16 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
 
-  // 光标闪烁
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
+
   useEffect(() => {
     const blink = window.setInterval(() => setShowCursor((v) => !v), 480)
     return () => window.clearInterval(blink)
   }, [])
 
-  // 随机故障触发
   useEffect(() => {
     const glitchLoop = window.setInterval(() => {
       if (Math.random() < 0.35) {
@@ -33,13 +36,12 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         window.setTimeout(() => {
           setGlitchActive(false)
           setGlitchOffset(0)
-        }, 90 + Math.random() * 120)
+        }, 80 + Math.random() * 100)
       }
-    }, 900)
+    }, 700)
     return () => window.clearInterval(glitchLoop)
   }, [])
 
-  // 打字机效果：递归 setTimeout + 取消令牌，避免 StrictMode 双重执行导致重复打印
   useEffect(() => {
     let cancelled = false
     const timeouts: number[] = []
@@ -53,8 +55,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
     if (lineIndex >= bootSequence.length) {
       schedule(() => {
         setIsExiting(true)
-        schedule(() => onComplete(), 700)
-      }, 900)
+        schedule(() => onCompleteRef.current(), 450)
+      }, 500)
       return () => {
         cancelled = true
         timeouts.forEach((id) => window.clearTimeout(id))
@@ -70,13 +72,13 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
       charIndex += 1
       setDisplayedLine(target.slice(0, charIndex))
 
-      if (Math.random() < 0.12) {
+      if (Math.random() < 0.1) {
         setGlitchActive(true)
         setGlitchOffset((Math.random() - 0.5) * 4)
         schedule(() => {
           setGlitchActive(false)
           setGlitchOffset(0)
-        }, 70)
+        }, 60)
       }
 
       if (charIndex >= target.length) {
@@ -84,19 +86,19 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
           if (cancelled) return
           setVisibleLines((prev) => [...prev, target])
           setLineIndex((prev) => prev + 1)
-        }, 850)
+        }, 500)
       } else {
-        schedule(typeNextChar, 38)
+        schedule(typeNextChar, 28)
       }
     }
 
-    schedule(typeNextChar, 38)
+    schedule(typeNextChar, 28)
 
     return () => {
       cancelled = true
       timeouts.forEach((id) => window.clearTimeout(id))
     }
-  }, [lineIndex, onComplete])
+  }, [lineIndex])
 
   const progress = Math.min(
     100,
@@ -107,7 +109,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div
-      className="mx-auto flex min-h-[320px] max-w-2xl items-center justify-center px-6 py-8 transition-all duration-700"
+      className="mx-auto flex min-h-[320px] max-w-2xl items-center justify-center px-6 py-8 transition-all duration-500"
       style={{ opacity: isExiting ? 0 : 1, transform: isExiting ? "scale(0.97)" : "scale(1)" }}
     >
       <div
@@ -146,11 +148,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0"
-            style={{
-              height: "2px",
-              top: glitchLineTop,
-              backgroundColor: "rgba(246,220,227,0.35)",
-            }}
+            style={{ height: "2px", top: glitchLineTop, backgroundColor: "rgba(246,220,227,0.35)" }}
           />
         ) : null}
 
@@ -160,15 +158,9 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         <span aria-hidden="true" className="absolute bottom-3 right-3 h-4 w-4 border-b border-r" style={{ borderColor: "#D8A7B1" }} />
 
         <div className="relative z-10">
-          <div
-            className="mb-6 flex items-center justify-between font-mono"
-            style={{ fontSize: "0.6rem", letterSpacing: "0.28em", color: "#E8B8C4" }}
-          >
+          <div className="mb-6 flex items-center justify-between font-mono" style={{ fontSize: "0.6rem", letterSpacing: "0.28em", color: "#E8B8C4" }}>
             <span className="flex items-center gap-2">
-              <i
-                className="h-1.5 w-1.5 animate-pulse rounded-full"
-                style={{ backgroundColor: "#F4A6B8", boxShadow: "0 0 8px #F4A6B8" }}
-              />
+              <i className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: "#F4A6B8", boxShadow: "0 0 8px #F4A6B8" }} />
               ARCHIVE TERMINAL
             </span>
             <span style={{ textShadow: glitchActive ? "1px 0 #F4A6B8, -1px 0 #6FE3D9" : "none" }}>
@@ -187,11 +179,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             {lineIndex < bootSequence.length ? (
               <p className="flex items-baseline gap-2">
                 <span style={{ color: "#7A4456" }}>[{String(lineIndex + 1).padStart(2, "0")}]</span>
-                <span
-                  style={{
-                    textShadow: glitchActive ? "1.5px 0 rgba(244,166,184,0.7), -1.5px 0 rgba(111,227,217,0.5)" : "none",
-                  }}
-                >
+                <span style={{ textShadow: glitchActive ? "1.5px 0 rgba(244,166,184,0.7), -1.5px 0 rgba(111,227,217,0.5)" : "none" }}>
                   {displayedLine}
                   <span
                     className="ml-1 inline-block h-4 w-2 align-middle"
@@ -239,7 +227,8 @@ const dossiers = [
     chinese: "温柔",
     description:
       "以冷峻的骨相抵御喧嚣，\n以温柔的本心回应世界。\nThe world has kissed my soul with its pain,\nasking for its return in songs.\n世界以痛吻我，我愿回报以歌。",
-    observerLog: "目标人物并非生来披甲，而是将苦难与锋芒尽数熔铸为铠甲。他用极致的清醒对抗外界的嘈杂，又用最柔软的善意接住所有的偏爱。这份在泥泞中依然选择歌唱的赤诚，是他最坚不可摧的绝对法则。",
+    observerLog:
+      "目标人物并非生来披甲，而是将苦难与锋芒尽数熔铸为铠甲。他用极致的清醒对抗外界的嘈杂，又用最柔软的善意接住所有的偏爱。这份在泥泞中依然选择歌唱的赤诚，是他最坚不可摧的绝对法则。",
     accent: "#A77E91",
     image: "/KWINwenrou.jpg",
     posterSrc: "/KWINwenrou.jpg",
@@ -271,7 +260,8 @@ const dossiers = [
     chinese: "担当",
     description:
       "温暖与坚韧在此共生。\n不声张，自有万钧之力；\n不喧哗，稳作定海之锚。\nSoft as a cloud, yet an unshakeable anchor.",
-    observerLog: "目标人物从不刻意展露锋芒，却总能在风暴骤起时，稳稳托底所有的不安。这份不动声色的重量感，是他赋予周遭最顶级的安全感。",
+    observerLog:
+      "目标人物从不刻意展露锋芒，却总能在风暴骤起时，稳稳托底所有的不安。这份不动声色的重量感，是他赋予周遭最顶级的安全感。",
     accent: "#9E7186",
     image: "/KWINdandang.jpg",
     posterSrc: "/KWINdandang.jpg",
@@ -286,7 +276,8 @@ const dossiers = [
     systemLabel: "社交防御机制评估报告",
     chinese: "傲娇",
     description: "择人而交，宁缺毋滥。\n看似漫不经心，实则优雅审视全场。\n防御机制已启动；获准靠近者，另当别论。",
-    observerLog: "目标人物的社交门槛极高，绝不轻易交付真心。请其余观测者铭记：一旦被他选中，便意味着你通过了最高级别的灵魂审核，这本身就是一份无上殊荣。",
+    observerLog:
+      "目标人物的社交门槛极高，绝不轻易交付真心。请其余观测者铭记：一旦被他选中，便意味着你通过了最高级别的灵魂审核，这本身就是一份无上殊荣。",
     accent: "#C0718A",
     image: "/KWINaojiao.jpg",
     posterSrc: "/KWINaojiao.jpg",
@@ -306,9 +297,8 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
   const sectionRef = useRef<HTMLElement>(null)
   const [started, setStarted] = useState(false)
   const [showBootSequence, setShowBootSequence] = useState(true)
-  const [contentVisible, setContentVisible] = useState(false)
+  const [contentPhase, setContentPhase] = useState<"hidden" | "revealing" | "visible">("hidden")
 
-  // 滚动到这一页才触发动画，只触发一次
   useEffect(() => {
     if (started) return
     const el = sectionRef.current
@@ -331,9 +321,8 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
 
   const handleBootComplete = () => {
     setShowBootSequence(false)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setContentVisible(true))
-    })
+    setContentPhase("revealing")
+    window.setTimeout(() => setContentPhase("visible"), 460)
   }
 
   return (
@@ -346,22 +335,16 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {!started ? (
-          // 尚未进入视口：预留占位高度，不渲染任何内容，避免布局跳动
           <div className="min-h-[320px]" />
         ) : showBootSequence ? (
           <BootSequence onComplete={handleBootComplete} />
         ) : (
           <div
-            style={{
-              opacity: contentVisible ? 1 : 0,
-              transform: contentVisible ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
-            }}
+            className={contentPhase === "revealing" ? "content-glitch-in" : ""}
+            style={{ opacity: contentPhase === "hidden" ? 0 : 1 }}
           >
             <header className="mb-16 text-center sm:mb-20">
-              <p
-                style={{ fontFamily: "var(--font-sans)", fontSize: "0.62rem", letterSpacing: "0.45em", color: "#A65D73" }}
-              >
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.62rem", letterSpacing: "0.45em", color: "#A65D73" }}>
                 BUREAU FILE · 02 · OPEN ARCHIVE
               </p>
               <h2
@@ -378,17 +361,13 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
               </h2>
               <p
                 className="mt-4"
-                style={{
-                  fontFamily: "var(--font-serif), serif",
-                  fontSize: "clamp(1rem, 2vw, 1.4rem)",
-                  color: "#A65D73",
-                  letterSpacing: "0.18em",
-                }}
+                style={{ fontFamily: "var(--font-serif), serif", fontSize: "clamp(1rem, 2vw, 1.4rem)", color: "#A65D73", letterSpacing: "0.18em" }}
               >
                 M U Z I Y · five facets, one archive
               </p>
             </header>
 
+            {/* 卷宗展示：字母 + 照片 + 系统提示 */}
             <div className="-mx-6 overflow-x-auto px-6 pb-6 sm:mx-0 sm:px-0 sm:overflow-visible">
               <div className="flex w-max items-start gap-3 sm:gap-5 lg:w-full lg:justify-between lg:gap-4">
                 {dossiers.map((dossier, index) => (
@@ -477,43 +456,125 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                           {dossier.description}
                         </p>
                       </div>
-                      <div
-                        className="relative mx-auto mt-3 max-w-[18rem] py-2.5 pl-6 pr-3 text-left"
-                        style={{
-                        backgroundColor: "#FFF9FA",
-                        border: `1px solid ${dossier.accent}80`,
-                        clipPath: "polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%)",
-                        }}
-                        >
-                          {/* 标签打孔 */}
-                          <span
-                          aria-hidden="true"
-                          className="absolute rounded-full"
-                          style={{
-                            width: 3.5,
-                            height: 3.5,
-                            left: 5,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            backgroundColor: dossier.accent,
-                            opacity: 0.7,
-                          }}
-                          />
-                          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.52rem", color: "#8E5D6C", letterSpacing: "0.16em" }}>
-                            观测者日志
-                            </p>
-                            <p className="mt-1" style={{ fontFamily: "var(--font-sans)", fontSize: "0.7rem", lineHeight: 1.75, color: "#795662", letterSpacing: "0.03em" }}>
-                              {dossier.observerLog}
-                              </p>
-                            </div>
                     </div>
                   </article>
                 ))}
               </div>
             </div>
+
+            {/* 观测者日志：图钉钉在便签上 */}
+            <div className="mt-16">
+              <div className="relative -mx-6 overflow-x-auto px-6 pb-10 pt-4 sm:mx-0 sm:px-0 sm:overflow-visible">
+                <div className="relative flex w-max items-start gap-10 sm:w-full sm:justify-between sm:gap-6">
+                  {/* 背景连线：走在便签下方，只在便签之间的空隙露出 */}
+                  <svg
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-0 top-[14px] hidden w-full sm:block"
+                    style={{ height: 24, zIndex: 0 }}
+                    viewBox="0 0 100 10"
+                    preserveAspectRatio="none"
+                  >
+                    <polyline
+                      points="10,5 28,2 46,7 64,2 82,7 90,5"
+                      fill="none"
+                      stroke="#D08298"
+                      strokeWidth="0.6"
+                      strokeOpacity="0.85"
+                    />
+                  </svg>
+
+                  {dossiers.map((dossier, index) => (
+                    <div key={dossier.id} className="relative w-44 shrink-0 pt-6 sm:w-auto sm:flex-1">
+                      <div
+                        className="relative px-4 pb-4 pt-5 text-left"
+                        style={{
+                          backgroundColor: "#FFFBF7",
+                          border: `1px solid ${dossier.accent}55`,
+                          boxShadow: "0 10px 22px rgba(84,41,54,0.14)",
+                          transform: `rotate(${index % 2 === 0 ? "-1deg" : "1.2deg"})`,
+                          clipPath: "polygon(0% 2%, 3% 0%, 97% 1%, 100% 3%, 99% 97%, 96% 100%, 4% 99%, 0% 96%)",
+                          zIndex: 1,
+                        }}
+                      >
+                        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", color: dossier.accent, letterSpacing: "0.16em" }}>
+                          {dossier.chinese} · 观测者日志
+                        </p>
+                        <p
+                          className="mt-1.5"
+                          style={{ fontFamily: "var(--font-sans)", fontSize: "0.68rem", lineHeight: 1.7, color: "#6A4551", letterSpacing: "0.02em" }}
+                        >
+                          {dossier.observerLog}
+                        </p>
+                      </div>
+
+                      {/* 图钉：一半嵌入便签顶部，制造"扎进纸里"的效果 */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-1/2 z-10 -translate-x-1/2 rounded-full"
+                        style={{
+                          top: 14,
+                          width: 12,
+                          height: 12,
+                          backgroundColor: dossier.accent,
+                          boxShadow: "0 3px 5px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -1px 2px rgba(0,0,0,0.2)",
+                        }}
+                      />
+                      {/* 针尖阴影：落在便签纸面上，加强"被扎穿"的错觉 */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-1/2 z-[3] -translate-x-1/2 rounded-full"
+                        style={{ top: 24, width: 5, height: 3, backgroundColor: "#7A4456", opacity: 0.35, filter: "blur(0.5px)" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes glitchIn {
+          0% {
+            opacity: 0;
+            transform: translateY(6px);
+            filter: blur(3px);
+          }
+          18% {
+            opacity: 0.55;
+            transform: translateX(-4px);
+            filter: blur(1.5px);
+          }
+          34% {
+            opacity: 0.15;
+            transform: translateX(3px);
+            filter: blur(1px);
+          }
+          50% {
+            opacity: 0.8;
+            transform: translateX(-2px);
+            filter: blur(0.5px);
+          }
+          68% {
+            opacity: 0.35;
+            transform: translateX(2px);
+          }
+          85% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: none;
+          }
+        }
+        .content-glitch-in {
+          animation: glitchIn 460ms steps(2, end);
+        }
+      `}</style>
     </section>
   )
 }
