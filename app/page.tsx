@@ -471,147 +471,155 @@ export default function FelineArchivePage() {
           signature: "MuZiyang · 木子洋",
         })} />
 
-        <section className="relative overflow-hidden py-32 px-6">
+        <section className="relative overflow-hidden py-32 px-6" style={{ backgroundColor: "#FAF7F5" }}>
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 opacity-[0.025]"
             style={{
               backgroundImage:
-                "radial-gradient(circle at 18% 14%, rgba(245,232,236,0.48) 0%, transparent 18%), radial-gradient(circle at 79% 28%, rgba(247,236,233,0.38) 0%, transparent 16%), radial-gradient(circle at 48% 76%, rgba(255,245,244,0.5) 0%, transparent 20%), linear-gradient(180deg, rgba(250,247,245,1) 0%, rgba(250,242,240,1) 100%)",
+                "repeating-linear-gradient(0deg, #1C1C1E 0px, transparent 1px, transparent 32px, #1C1C1E 32px, transparent 33px)",
             }}
           />
-          <div className="pointer-events-none absolute inset-0 opacity-60" style={{ backgroundImage: "repeating-linear-gradient(135deg, transparent 0 8px, rgba(230,212,215,0.18) 8px 9px)" }} />
           <div className="fan-messages-petal absolute left-8 top-16 h-16 w-16 rounded-full bg-[#F5E5E6]/80 blur-sm" />
           <div className="fan-messages-petal absolute right-12 top-32 h-20 w-20 rounded-full bg-[#F8E6E9]/80 blur-sm" />
 
-          <div className="relative mx-auto max-w-6xl">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <div className="mb-4 flex items-center justify-center gap-4">
-                <span style={{ flex: 1, maxWidth: 60, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)", opacity: 0.4 }} />
-                <span
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "0.58rem",
-                    letterSpacing: "0.4em",
-                    color: "#D4AF37",
-                  }}
-                >
-                  BUREAU FILE · 04
-                </span>
-                <span style={{ flex: 1, maxWidth: 60, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)", opacity: 0.4 }} />
-              </div>
-              <p
-                className="mb-5 font-sans text-[0.72rem] uppercase tracking-[0.45em]"
-                style={{ letterSpacing: "0.35em", color: "#8E8E93" }}
-              >
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <div className="mb-4 flex items-center gap-5">
+              <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
+                BUREAU FILE · 05
+              </span>
+              <span style={{ flex: 1, height: 1, backgroundColor: "#D4AF37", opacity: 0.3 }} />
+              <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
                 INTEL EXCHANGE · OPEN TRANSMISSION
-              </p>
-              <h2
-                className="font-serif mx-auto max-w-xl text-[clamp(2rem,4vw,3.8rem)] leading-tight"
-                style={{ color: "#1C1C1E", letterSpacing: "0.04em" }}
-              >
-                情报交换区
-              </h2>
-              <p
-                className="mt-3"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.2em",
-                  color: "#8E8E93",
-                  lineHeight: 1.8,
-                }}
-              >
-                无限流情报在此汇聚 · 侦探们的一手线报持续更新
-              </p>
+              </span>
             </div>
 
-            <div className="relative mx-auto w-full max-w-5xl border border-[#D4AF37]/25 bg-[#FDFAF4]/80 px-8 py-12 shadow-[0_8px_60px_rgba(212,175,55,0.08)]" style={{ backdropFilter: "blur(8px)" }}>
-              {/* 情报卷宗顶部机密条 */}
+            <h2
+              style={{
+                fontFamily: "var(--font-serif), serif",
+                fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                color: "#1C1C1E",
+                fontWeight: 700,
+                letterSpacing: "0.04em",
+              }}
+            >
+              情报交换区
+            </h2>
+            <p
+              className="mt-3"
+              style={{ fontFamily: "var(--font-sans)", fontSize: "0.75rem", letterSpacing: "0.25em", color: "#8E8E93" }}
+            >
+              无限流情报在此汇聚 · 侦探们的一手线报持续更新
+            </p>
+
+            <div
+              className="relative mx-auto mt-12 overflow-hidden"
+              style={{
+                border: "1px solid #C8A87A",
+                backgroundColor: "rgba(253,250,244,0.95)",
+                backdropFilter: "blur(8px)",
+                boxShadow: "0 2px 40px rgba(212,175,55,0.1), 4px 4px 0 rgba(212,175,55,0.08), inset 0 0 0 6px rgba(212,175,55,0.04)",
+              }}
+            >
+              {/* 机密横幅 */}
               <div
-                className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-1.5"
-                style={{
-                  backgroundColor: "#1C1C1E",
-                  borderBottom: "1px solid rgba(212,175,55,0.4)",
-                }}
+                className="flex items-center justify-between px-6 py-2"
+                style={{ backgroundColor: "#1C1C1E", borderBottom: "1px solid #D4AF37" }}
               >
-                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.45rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
-                  [ INTEL EXCHANGE · 情报交换 ]
+                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.5em", color: "#D4AF37", fontWeight: 700 }}>
+                  [ INTEL EXCHANGE · FELINE INTELLIGENCE BUREAU ]
                 </span>
-                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.45rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
-                  LIVE TRANSMISSION · {(new Date()).getFullYear()}
+                <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
+                  LIVE TRANSMISSION · {new Date().getFullYear()}
                 </span>
               </div>
-              <div style={{ marginTop: "2rem" }}>
-              <div className="mx-auto w-full overflow-hidden" style={{ aspectRatio: `${CLOUD_VB_W} / ${CLOUD_VB_H}` }}>
-                <svg
-                  viewBox={`0 0 ${CLOUD_VB_W} ${CLOUD_VB_H}`}
-                  className="h-full w-full"
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  {/* 背景文字云：淡淡的氛围底纹，始终存在，支持多行 */}
-                  <g opacity={0.22}>
-                    {cloudLayout.map((item, index) => {
-                      const lineHeight = item.fontSize * 1.25
-                      const startOffset = -((item.lines.length - 1) / 2) * lineHeight
-                      return (
-                        <text
-                          key={index}
-                          x={item.x}
-                          fontSize={item.fontSize}
-                          fill={item.color}
-                          fontFamily="var(--font-sans), sans-serif"
-                          textAnchor="middle"
-                        >
-                          {item.lines.map((line, lineIdx) => (
-                            <tspan
-                              key={lineIdx}
-                              x={item.x}
-                              y={item.y + startOffset + lineIdx * lineHeight}
-                            >
-                              {line}
-                            </tspan>
-                          ))}
-                        </text>
-                      )
-                    })}
-                  </g>
 
-                  {/* 聚光主体：轮播淡入淡出，支持多行 */}
-                  {spotlight && (() => {
-                    const lineHeight = spotlight.fontSize * 1.25
-                    const startOffset = -((spotlight.lines.length - 1) / 2) * lineHeight
-                    return (
-                      <text
-                        x={spotlight.x}
-                        fontSize={spotlight.fontSize}
-                        fill={spotlight.color}
-                        fontFamily="var(--font-sans), sans-serif"
-                        fontWeight={600}
-                        textAnchor="middle"
-                        style={{
-                          opacity: spotlight.visible ? 1 : 0,
-                          transition: "opacity 0.9s ease, transform 0.9s ease",
-                          transform: spotlight.visible ? "scale(1)" : "scale(0.94)",
-                          transformOrigin: `${spotlight.x}px ${spotlight.y}px`,
-                        }}
-                      >
-                        {spotlight.lines.map((line, lineIdx) => (
-                          <tspan
-                            key={lineIdx}
-                            x={spotlight.x}
-                            y={spotlight.y + startOffset + lineIdx * lineHeight}
+              <div className="relative px-8 py-10 sm:px-10">
+                {/* 四角金色括标 */}
+                {["top-3 left-3", "top-3 right-3", "bottom-3 left-3", "bottom-3 right-3"].map((pos, i) => (
+                  <div
+                    key={pos}
+                    className={`absolute ${pos} h-4 w-4`}
+                    style={{
+                      borderTop: i < 2 ? "1.5px solid #D4AF37" : undefined,
+                      borderBottom: i >= 2 ? "1.5px solid #D4AF37" : undefined,
+                      borderLeft: i % 2 === 0 ? "1.5px solid #D4AF37" : undefined,
+                      borderRight: i % 2 === 1 ? "1.5px solid #D4AF37" : undefined,
+                      opacity: 0.6,
+                    }}
+                  />
+                ))}
+
+                {/* 以下内容与逻辑完全保留，仅由原容器迁移至新外壳 */}
+                <div className="mx-auto w-full overflow-hidden" style={{ aspectRatio: `${CLOUD_VB_W} / ${CLOUD_VB_H}` }}>
+                  <svg
+                    viewBox={`0 0 ${CLOUD_VB_W} ${CLOUD_VB_H}`}
+                    className="h-full w-full"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    {/* 背景文字云：淡淡的氛围底纹，始终存在，支持多行 */}
+                    <g opacity={0.22}>
+                      {cloudLayout.map((item, index) => {
+                        const lineHeight = item.fontSize * 1.25
+                        const startOffset = -((item.lines.length - 1) / 2) * lineHeight
+                        return (
+                          <text
+                            key={index}
+                            x={item.x}
+                            fontSize={item.fontSize}
+                            fill={item.color}
+                            fontFamily="var(--font-sans), sans-serif"
+                            textAnchor="middle"
                           >
-                            {line}
-                          </tspan>
-                        ))}
-                      </text>
-                    )
-                  })()}
-                </svg>
+                            {item.lines.map((line, lineIdx) => (
+                              <tspan key={lineIdx} x={item.x} y={item.y + startOffset + lineIdx * lineHeight}>
+                                {line}
+                              </tspan>
+                            ))}
+                          </text>
+                        )
+                      })}
+                    </g>
+
+                    {/* 聚光主体：轮播淡入淡出，支持多行 */}
+                    {spotlight &&
+                      (() => {
+                        const lineHeight = spotlight.fontSize * 1.25
+                        const startOffset = -((spotlight.lines.length - 1) / 2) * lineHeight
+                        return (
+                          <text
+                            x={spotlight.x}
+                            fontSize={spotlight.fontSize}
+                            fill={spotlight.color}
+                            fontFamily="var(--font-sans), sans-serif"
+                            fontWeight={600}
+                            textAnchor="middle"
+                            style={{
+                              opacity: spotlight.visible ? 1 : 0,
+                              transition: "opacity 0.9s ease, transform 0.9s ease",
+                              transform: spotlight.visible ? "scale(1)" : "scale(0.94)",
+                              transformOrigin: `${spotlight.x}px ${spotlight.y}px`,
+                            }}
+                          >
+                            {spotlight.lines.map((line, lineIdx) => (
+                              <tspan key={lineIdx} x={spotlight.x} y={spotlight.y + startOffset + lineIdx * lineHeight}>
+                                {line}
+                              </tspan>
+                            ))}
+                          </text>
+                        )
+                      })()}
+                  </svg>
+                </div>
               </div>
-              </div>{/* end marginTop wrapper */}
             </div>
+
+            <p
+              className="mt-6 text-center"
+              style={{ fontFamily: "var(--font-sans)", fontSize: "0.55rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.5 }}
+            >
+              FELINE INTELLIGENCE BUREAU · CASE NO. 2026-YANG · INTEL STREAM ACTIVE
+            </p>
           </div>
         </section>
       </main>
