@@ -8,7 +8,7 @@ const personalInfo = [
   { label: "HEIGHT", value: "188cm" },
   { label: "IDENTITY", value: "职业偶像 / 坤音娱乐CE2O" },
   { label: "COLOR", value: "噗通粉 Thump Pink" },
-  { label: "POSITION", value: "门面 / Rapper / 气氛组担当" },
+  { label: "POSITION", value: "门面 / 全能ACE / 气氛组担当" },
   { label: "EXPERTISE", value: "甜嗓 / 模特步 / 搞笑 / 撒娇" },
 ]
 
@@ -120,7 +120,7 @@ export default function SpeciesSection() {
         {/* 顶部姓名 + 提示标签 */}
         <div className="mb-10 text-center">
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.5em", color: "#E8B8C4" }}>
-            KEEGAN · MU ZIYANG · CASE FILE
+            MU ZIYANG · KWIN · CASE FILE
           </p>
           <h2
             className="mt-3"
@@ -204,7 +204,7 @@ export default function SpeciesSection() {
               {/* 左页 */}
               <div className="relative border-b p-8 sm:p-10 lg:border-b-0 lg:border-r" style={{ borderColor: "#C08D7480" }}>
                 <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8C5A42" }}>
-                  U.S. SPECIAL OPERATIONS · SUBJECT PORTRAIT
+                  CN SPECIAL OPERATIONS · SUBJECT PORTRAIT
                 </p>
 
                 <div className="relative mt-4 flex justify-center">
