@@ -622,6 +622,47 @@ export default function FelineArchivePage() {
             </p>
           </div>
         </section>
+
+        {/* 制作信息存档 · 紧凑收尾小注，不作为独立板块 */}
+        <div className="px-6 pb-16 pt-10 text-center">
+          <p
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.5rem",
+              letterSpacing: "0.35em",
+              color: "#B8A79C",
+              opacity: 0.65,
+            }}
+          >
+            PRODUCTION RECORD
+          </p>
+          <p
+            className="mt-3"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.62rem",
+              letterSpacing: "0.06em",
+              color: "#8E8E93",
+              lineHeight: 2,
+            }}
+          >
+            策划 · 卷 &amp; Verse　　文案 · 卷　　制作 · Verse
+            <br />
+            眼睛条稿图 · 🐱　　《I&apos;m KWIN》直拍 · 小别兔别又别　　其余视频素材 · 官方
+          </p>
+          <p
+            className="mt-4"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.5rem",
+              letterSpacing: "0.06em",
+              color: "#B0B0B3",
+              opacity: 0.7,
+            }}
+          >
+            本档案为粉丝自制内容，仅用于表达喜爱，不代表官方立场。
+          </p>
+        </div>
       </main>
 
       <EasterEggModal
