@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import Image from "next/image"
 
 interface SelfConsistentSectionProps {
   onEggTrigger: () => void
@@ -15,11 +14,223 @@ const fusionPersonalities = [
   { label: "傲娇", color: "#C0718A" },
 ]
 
+// 浅色版终端卡片：等宽字体 + 行号 + OK 标签 + 故障闪烁
+function TerminalCard({
+  lines,
+  visible,
+}: {
+  lines: string[]
+  visible: boolean
+}) {
+  const [glitchActive, setGlitchActive] = useState(false)
+  const [glitchOffset, setGlitchOffset] = useState(0)
+  const [showCursor, setShowCursor] = useState(true)
+
+  useEffect(() => {
+    const blink = window.setInterval(() => setShowCursor((v) => !v), 480)
+    return () => window.clearInterval(blink)
+  }, [])
+
+  useEffect(() => {
+    if (!visible) return
+    const glitchLoop = window.setInterval(() => {
+      if (Math.random() < 0.3) {
+        setGlitchActive(true)
+        setGlitchOffset((Math.random() - 0.5) * 5)
+        window.setTimeout(() => {
+          setGlitchActive(false)
+          setGlitchOffset(0)
+        }, 80 + Math.random() * 100)
+      }
+    }, 1100)
+    return () => window.clearInterval(glitchLoop)
+  }, [visible])
+
+  return (
+    <div
+      className="relative mx-auto max-w-md overflow-hidden rounded-lg border px-5 py-4 text-left"
+      style={{
+        borderColor: "#D4AF3760",
+        backgroundColor: "#FBF5EE",
+        boxShadow: "0 6px 24px rgba(196,140,60,0.1)",
+        transform: glitchActive ? `translateX(${glitchOffset}px)` : "translateX(0)",
+        transition: glitchActive ? "none" : "transform 120ms ease-out",
+      }}
+    >
+      {/* 扫描线纹理 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: "repeating-linear-gradient(0deg, #6B4230 0px, transparent 1px, transparent 3px)",
+          opacity: glitchActive ? 0.1 : 0.045,
+          transition: "opacity 90ms ease-out",
+        }}
+      />
+      {/* 故障色差闪 */}
+      {glitchActive ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-1/2"
+          style={{ height: "1.5px", backgroundColor: "rgba(180,72,63,0.4)", transform: `translateY(${glitchOffset}px)` }}
+        />
+      ) : null}
+
+      <div className="relative flex items-center gap-2" style={{ marginBottom: "0.6rem" }}>
+        <i className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: "#B4483F" }} />
+        <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.24em", color: "#B4483F" }}>
+          ARCHIVE LOG
+        </span>
+      </div>
+
+      <div className="relative space-y-1.5 font-mono" style={{ fontSize: "0.72rem", lineHeight: 1.9 }}>
+        {lines.map((line, i) => (
+          <p key={i} className="flex flex-wrap items-baseline gap-2">
+            <span style={{ color: "#B99B7A" }}>[{String(i + 1).padStart(2, "0")}]</span>
+            <span
+              style={{
+                color: "#6B4230",
+                textShadow: glitchActive ? "1px 0 rgba(180,72,63,0.5), -1px 0 rgba(212,175,55,0.4)" : "none",
+              }}
+            >
+              {line}
+            </span>
+            <span style={{ color: "#B99B7A" }}>OK</span>
+          </p>
+        ))}
+        <p className="flex items-center gap-1 pt-0.5">
+          <span
+            className="inline-block h-3.5 w-1.5 align-middle"
+            style={{ backgroundColor: "#B4483F", opacity: showCursor ? 1 : 0 }}
+          />
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// 解密进度环按钮：呼吸光效 → 点击后扫描解锁动效 → 触发弹窗
+function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible: boolean }) {
+  const [decrypting, setDecrypting] = useState(false)
+
+  const handleClick = () => {
+    if (decrypting) return
+    setDecrypting(true)
+    window.setTimeout(() => {
+      onTrigger()
+      window.setTimeout(() => setDecrypting(false), 400)
+    }, 900)
+  }
+
+  const size = 108
+  const strokeWidth = 2
+  const radius = (size - strokeWidth * 2) / 2
+  const circumference = 2 * Math.PI * radius
+
+  return (
+    <button
+      onClick={handleClick}
+      data-clickable
+      aria-label="点击解密，查看情报局深层档案"
+      className="relative flex items-center justify-center outline-none"
+      style={{
+        width: size,
+        height: size,
+        background: "none",
+        border: "none",
+        cursor: "none",
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.6s ease",
+      }}
+    >
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute inset-0">
+        {/* 底环 */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#D4AF3735"
+          strokeWidth={strokeWidth}
+        />
+        {/* 呼吸光效外圈（未解密时） */}
+        {!decrypting ? (
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="#D4AF37"
+            strokeWidth={strokeWidth}
+            strokeDasharray={`${circumference * 0.28} ${circumference}`}
+            style={{
+              transformOrigin: "center",
+              animation: "decrypt-idle-spin 4.5s linear infinite",
+            }}
+          />
+        ) : (
+          /* 解密中：进度环快速转一圈 */
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="#B4483F"
+            strokeWidth={strokeWidth + 0.5}
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference}
+            strokeLinecap="round"
+            style={{
+              transformOrigin: "center",
+              transform: "rotate(-90deg)",
+              animation: "decrypt-progress 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            }}
+          />
+        )}
+      </svg>
+
+      {/* 中心呼吸光晕 */}
+      <div
+        aria-hidden="true"
+        className="absolute rounded-full"
+        style={{
+          width: size - 26,
+          height: size - 26,
+          background: "radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)",
+          animation: decrypting ? "none" : "glow-pulse 3s ease-in-out infinite",
+        }}
+      />
+
+      {/* 中心文字 */}
+      <div className="relative z-10 flex flex-col items-center gap-1">
+        <span
+          className="font-mono"
+          style={{
+            fontSize: "0.6rem",
+            letterSpacing: "0.18em",
+            color: decrypting ? "#B4483F" : "#B4483F",
+            opacity: decrypting ? [1, 0.3, 1, 0.3, 1][0] : 1,
+            animation: decrypting ? "decrypt-text-flicker 0.9s steps(5, end) forwards" : "none",
+          }}
+        >
+          {decrypting ? "解密中" : "DECRYPT"}
+        </span>
+        <span
+          className="font-mono"
+          style={{ fontSize: "0.46rem", letterSpacing: "0.12em", color: "#B99B7A" }}
+        >
+          {decrypting ? "..." : "点击解密"}
+        </span>
+      </div>
+    </button>
+  )
+}
+
 export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(false)
-  const [sigVisible, setSigVisible] = useState(false)
-  const [stampVisible, setStampVisible] = useState(false)
+  const [closingVisible, setClosingVisible] = useState(false)
+  const [buttonVisible, setButtonVisible] = useState(false)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -28,8 +239,8 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
       (entries) => {
         if (entries[0].isIntersecting) {
           setVisible(true)
-          setTimeout(() => setSigVisible(true), 900)
-          setTimeout(() => setStampVisible(true), 1500)
+          setTimeout(() => setClosingVisible(true), 1100)
+          setTimeout(() => setButtonVisible(true), 1700)
           observer.disconnect()
         }
       },
@@ -79,7 +290,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
       </div>
 
       <div
-        className="relative z-10 mx-auto max-w-5xl"
+        className="relative z-10 mx-auto max-w-2xl text-center"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(20px)",
@@ -87,14 +298,12 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         }}
       >
         {/* 区块标识 */}
-        <div className="mb-4 flex items-center gap-5">
-          <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
-            BUREAU FILE · 04
+        <div className="mb-6 flex items-center justify-center gap-5">
+          <span style={{ flex: 1, maxWidth: 70, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)", opacity: 0.5 }} />
+          <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.58rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
+            BUREAU FILE · 04 · FINAL SEAL
           </span>
-          <span style={{ flex: 1, height: 1, backgroundColor: "#D4AF37", opacity: 0.3 }} />
-          <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
-            BUREAU CLOSURE · CASE FILED
-          </span>
+          <span style={{ flex: 1, maxWidth: 70, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)", opacity: 0.5 }} />
         </div>
 
         {/* 标题 */}
@@ -109,214 +318,126 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         >
           情报归档
         </h2>
-        <p className="mt-3" style={{ fontFamily: "var(--font-sans)", fontSize: "0.75rem", letterSpacing: "0.25em", color: "#8E8E93" }}>
-          五份卷宗，最终归于同一坐标
+        <p className="mt-3 mb-14" style={{ fontFamily: "var(--font-sans)", fontSize: "0.72rem", letterSpacing: "0.25em", color: "#8E8E93" }}>
+          BUREAU CLOSURE · FINAL DOSSIER
         </p>
 
-        {/* 主档案卡：黑色机密横幅 + 金色边框，与角色档案 / 情报交换区同一套皮肤 */}
+        {/* 开场：终端卡片 */}
+        <div className="mb-16">
+          <TerminalCard
+            lines={["最终观测报告生成中......", "权限确认：绝密档案解封"]}
+            visible={visible}
+          />
+        </div>
+
+        {/* 正文诗句 */}
         <div
-          className="mt-12 overflow-hidden"
           style={{
-            border: "1px solid #C8A87A",
-            backgroundColor: "rgba(253,250,244,0.95)",
-            backdropFilter: "blur(8px)",
-            boxShadow: "0 2px 40px rgba(212,175,55,0.1), 4px 4px 0 rgba(212,175,55,0.08), inset 0 0 0 6px rgba(212,175,55,0.04)",
+            fontFamily: "var(--font-serif), serif",
+            fontSize: "clamp(0.98rem, 2vw, 1.15rem)",
+            lineHeight: 2.5,
+            color: "#3C3C3E",
+            letterSpacing: "0.06em",
           }}
         >
-          {/* 机密横幅 */}
-          <div className="flex items-center justify-between px-6 py-2" style={{ backgroundColor: "#1C1C1E", borderBottom: "1px solid #D4AF37" }}>
-            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.5em", color: "#D4AF37", fontWeight: 700 }}>
-              [ CASE CLOSED · FELINE INTELLIGENCE BUREAU ]
-            </span>
-            <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
-              2026-YANG-FINAL
-            </span>
-          </div>
+          <span className="block">五份卷宗，五种模样。</span>
+          <span className="block">曼妙、温柔、捣蛋、担当、傲娇。</span>
+          <span className="block mt-5">拆开看，是五段互不相同的侧写；</span>
+          <span className="block">合起来看，却只指向同一个坐标。</span>
+        </div>
 
-          <div className="relative px-8 py-12 text-center sm:px-12">
-            {/* 四角金色括标 */}
-            {["top-3 left-3", "top-3 right-3", "bottom-3 left-3", "bottom-3 right-3"].map((pos, i) => (
-              <div
-                key={pos}
-                className={`absolute ${pos} h-4 w-4`}
-                style={{
-                  borderTop: i < 2 ? "1.5px solid #D4AF37" : undefined,
-                  borderBottom: i >= 2 ? "1.5px solid #D4AF37" : undefined,
-                  borderLeft: i % 2 === 0 ? "1.5px solid #D4AF37" : undefined,
-                  borderRight: i % 2 === 1 ? "1.5px solid #D4AF37" : undefined,
-                }}
-              />
+        {/* 核心句 */}
+        <p
+          className="mt-10"
+          style={{
+            fontFamily: "var(--font-serif), serif",
+            fontSize: "clamp(1.5rem, 3.5vw, 2.1rem)",
+            color: "#D8A7B1",
+            letterSpacing: "0.1em",
+            fontWeight: 700,
+          }}
+        >
+          万千猫格，皆是洋洋。
+        </p>
+
+        {/* 五色归档索引：分隔线中嵌入带标签的图例 */}
+        <div className="mx-auto mt-16 flex max-w-md items-center gap-3">
+          <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF3760)" }} />
+          <div className="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1.5 px-2">
+            {fusionPersonalities.map((p) => (
+              <span key={p.label} className="inline-flex items-center gap-1.5">
+                <span
+                  className="inline-block rounded-full"
+                  style={{ width: 6, height: 6, backgroundColor: p.color, boxShadow: `0 0 4px ${p.color}90` }}
+                />
+                <span
+                  className="font-mono"
+                  style={{ fontSize: "0.58rem", letterSpacing: "0.1em", color: "#6A4551" }}
+                >
+                  {p.label}
+                </span>
+              </span>
             ))}
-
-            {/* 结案正文 */}
-            <div
-              className="mx-auto"
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
-                lineHeight: 2.3,
-                color: "#3C3C3E",
-                letterSpacing: "0.08em",
-                maxWidth: 560,
-              }}
-            >
-              <span className="block" style={{ color: "#8E8E93", fontSize: "0.6rem", letterSpacing: "0.4em" }}>
-                本局结案陈词——
-              </span>
-              <span className="block mt-4">五份卷宗，五种模样</span>
-              <span className="block">曼妙、温柔、捣蛋、担当、傲娇</span>
-              <span className="block">拆开看，是五段互不相同的侧写</span>
-              <span className="block mt-6">合起来看</span>
-              <span className="block">
-                却只指向<span style={{ color: "#D8A7B1" }}>同一个坐标</span>
-              </span>
-              <span className="block mt-6" style={{ color: "#D8A7B1", fontFamily: "var(--font-serif), serif", fontSize: "1.05em" }}>
-                万千猫格，皆是洋洋
-              </span>
-            </div>
-
-            {/* 五格融合徽章 */}
-            <div className="mx-auto my-12 flex justify-center">
-              <FusionOrb />
-            </div>
-
-            {/* 核心标签卡 */}
-            <div
-              className="mx-auto mb-12 overflow-hidden"
-              style={{
-                maxWidth: 460,
-                border: "1px solid rgba(212,175,55,0.35)",
-                backgroundColor: "rgba(250,247,245,0.7)",
-                boxShadow: "0 4px 30px rgba(212,175,55,0.1)",
-              }}
-            >
-              <div className="px-7 py-7">
-                <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.46rem", letterSpacing: "0.4em", color: "#D4AF37", marginBottom: "0.7rem" }}>
-                  CORE INTEL TAG · 情报局核心标签
-                </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-serif), serif",
-                    fontSize: "clamp(1.05rem, 2.3vw, 1.5rem)",
-                    color: "#1C1C1E",
-                    fontStyle: "italic",
-                    lineHeight: 1.7,
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  &ldquo;柔软但坚定，自由但深情。&rdquo;
-                </p>
-                <p className="mt-3" style={{ fontFamily: "var(--font-sans)", fontSize: "0.58rem", letterSpacing: "0.3em", color: "#D4AF37" }}>
-                  MUZIYANG · FELINE INTELLIGENCE BUREAU
-                </p>
-              </div>
-            </div>
-
-            {/* 探长亲笔署名 */}
-            <div
-              className="mx-auto mb-10"
-              style={{
-                opacity: sigVisible ? 1 : 0,
-                transform: sigVisible ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 1.2s ease, transform 1s ease",
-              }}
-            >
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.4em", color: "#8E8E93", marginBottom: "0.5rem" }}>
-                猫探长本人亲笔签署
-              </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-handwriting), cursive",
-                  fontSize: "clamp(1.5rem, 4vw, 2.6rem)",
-                  color: "#D8A7B1",
-                  opacity: 0.85,
-                  letterSpacing: "0.08em",
-                }}
-              >
-                MuZiyang · 木子洋
-              </p>
-              <div
-                className="mx-auto mt-2"
-                style={{ width: "clamp(120px, 30%, 200px)", height: "0.5px", background: "linear-gradient(90deg, transparent, #D8A7B1, transparent)" }}
-              />
-            </div>
-
-            {/* 火漆印章按钮 */}
-            <div className="flex flex-col items-center">
-              <button
-                onClick={onEggTrigger}
-                data-clickable
-                aria-label="点击拆开火漆印章，查看情报局深层档案密信"
-                className="flex items-center justify-center outline-none"
-                style={{ background: "none", border: "none", cursor: "none" }}
-              >
-                <div
-                  className={`relative ${stampVisible ? "stamp-animate" : "opacity-0"}`}
-                  style={{ width: 100, height: 100, filter: "drop-shadow(0 8px 18px rgba(124,42,34,0.35))" }}
-                >
-                  <Image src="/huoqi.png" alt="情报局火漆印章" fill style={{ objectFit: "contain" }} />
-                </div>
-              </button>
-              <p className="mt-4" style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.6 }}>
-                ↑ 火漆未拆 · 点击拆封解锁深层情报
-              </p>
-            </div>
-
-            {/* 五维颜色条 */}
-            <div className="mt-14 flex h-1 w-full overflow-hidden" style={{ boxShadow: "0 0 0 1px rgba(212,175,55,0.2)" }}>
-              {fusionPersonalities.map((p) => (
-                <div key={p.label} style={{ flex: 1, backgroundColor: p.color }} />
-              ))}
-            </div>
           </div>
+          <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, #D4AF3760, transparent)" }} />
+        </div>
+
+        {/* 收尾：终端卡片 + 英文题眼 */}
+        <div
+          className="mt-16"
+          style={{
+            opacity: closingVisible ? 1 : 0,
+            transform: closingVisible ? "translateY(0)" : "translateY(10px)",
+            transition: "opacity 1.1s ease, transform 1.1s ease",
+          }}
+        >
+          <TerminalCard
+            lines={["目标人物观测日志已永久封存."]}
+            visible={closingVisible}
+          />
+          <p
+            className="mt-6"
+            style={{
+              fontFamily: "var(--font-serif), serif",
+              fontStyle: "italic",
+              fontSize: "clamp(0.95rem, 2vw, 1.15rem)",
+              color: "#D4AF37",
+              letterSpacing: "0.06em",
+            }}
+          >
+            The only truth is MU ZIYANG.
+          </p>
+        </div>
+
+        {/* 解密进度环按钮 */}
+        <div className="mt-16 flex flex-col items-center">
+          <DecryptButton onTrigger={onEggTrigger} visible={buttonVisible} />
+          <p className="mt-4" style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.6 }}>
+            ↑ 档案未解 · 点击解密查看深层情报
+          </p>
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center" style={{ fontFamily: "var(--font-sans)", fontSize: "0.55rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.4 }}>
+        <p className="mt-14" style={{ fontFamily: "var(--font-sans)", fontSize: "0.55rem", letterSpacing: "0.3em", color: "#8E8E93", opacity: 0.4 }}>
           FELINE INTELLIGENCE BUREAU · CASE NO. 2026-YANG · 5 DOSSIERS FILED
         </p>
       </div>
+
+      <style jsx>{`
+        @keyframes decrypt-idle-spin {
+          from { stroke-dashoffset: 0; }
+          to { stroke-dashoffset: -${2 * Math.PI * 51}; }
+        }
+        @keyframes decrypt-progress {
+          from { stroke-dashoffset: ${2 * Math.PI * 51}; }
+          to { stroke-dashoffset: 0; }
+        }
+        @keyframes decrypt-text-flicker {
+          0%, 100% { opacity: 1; }
+          20%, 60% { opacity: 0.3; }
+          40%, 80% { opacity: 1; }
+        }
+      `}</style>
     </section>
-  )
-}
-
-function FusionOrb() {
-  return (
-    <div className="relative" style={{ width: "min(300px, 78vw)", height: "min(300px, 78vw)" }}>
-      <svg viewBox="0 0 320 320" width="100%" height="100%" fill="none" style={{ overflow: "visible" }}>
-        <defs>
-          <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#FAF7F5" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="160" cy="160" r="100" fill="url(#centerGlow)" />
-
-        {fusionPersonalities.map((p, i) => {
-          const angle = (i * (360 / fusionPersonalities.length) * Math.PI) / 180 - Math.PI / 2
-          const cx = parseFloat((160 + 78 * Math.cos(angle)).toFixed(4))
-          const cy = parseFloat((160 + 78 * Math.sin(angle)).toFixed(4))
-          const tx = parseFloat((160 + 128 * Math.cos(angle)).toFixed(4))
-          const ty = parseFloat((160 + 128 * Math.sin(angle)).toFixed(4))
-          return (
-            <g key={p.label}>
-              <circle cx={cx} cy={cy} r="38" fill={p.color} opacity="0.2" />
-              <circle cx={cx} cy={cy} r="28" fill={p.color} opacity="0.16" />
-              <circle cx={cx} cy={cy} r="17" fill={p.color} opacity="0.28" />
-              <line x1="160" y1="160" x2={cx} y2={cy} stroke={p.color} strokeWidth="0.8" opacity="0.4" />
-              <text x={tx} y={ty + 4} textAnchor="middle" fill={p.color} fontSize="11" opacity="0.85" fontFamily="var(--font-serif), serif">
-                {p.label}
-              </text>
-            </g>
-          )
-        })}
-
-        <circle cx="160" cy="160" r="140" stroke="#D4AF37" strokeWidth="0.6" opacity="0.3" strokeDasharray="6 4" />
-        <polygon points="160,130 190,160 160,190 130,160" fill="#D4AF37" opacity="0.12" />
-        <polygon points="160,140 180,160 160,180 140,160" stroke="#D4AF37" strokeWidth="0.8" fill="none" opacity="0.5" />
-        <circle cx="160" cy="160" r="6" fill="#D4AF37" opacity="0.7" />
-        <circle cx="160" cy="160" r="2.5" fill="#FAF7F5" opacity="0.8" />
-      </svg>
-    </div>
   )
 }

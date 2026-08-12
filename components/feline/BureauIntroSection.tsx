@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react"
 
-export default function BureauIntroSection() {
+interface BureauIntroSectionProps {
+  isActive?: boolean
+}
+
+export default function BureauIntroSection({ isActive = true }: BureauIntroSectionProps) {
   const [phase, setPhase] = useState<"idle" | "typing" | "done">("idle")
   const [typed, setTyped] = useState("")
   const [showSub, setShowSub] = useState(false)
@@ -11,9 +15,10 @@ export default function BureauIntroSection() {
   const fullText = "亲爱的侦探小姐，\n欢迎进入木子猫情报局，\n祝您今日交易愉快~"
 
   useEffect(() => {
+    if (!isActive || phase !== "idle") return
     const t0 = setTimeout(() => setPhase("typing"), 600)
     return () => clearTimeout(t0)
-  }, [])
+  }, [isActive, phase])
 
   useEffect(() => {
     if (phase !== "typing") return
@@ -82,8 +87,28 @@ export default function BureauIntroSection() {
         CASE NO. 2026-YANG · ACCESS TERMINAL
       </div>
 
-      {/* 主体内容 */}
-      <div className="relative z-10 flex flex-col items-center px-6 text-center" style={{ maxWidth: 700 }}>
+      {/* 档案封面：首屏作为“取阅前的机密卷宗”，为后续翻页建立书本语境 */}
+      <div
+        className="relative z-10 flex w-[min(760px,calc(100vw-3rem))] flex-col items-center px-6 py-10 text-center sm:px-12 sm:py-14"
+        style={{
+          border: "1px solid rgba(212,175,55,0.5)",
+          background: "linear-gradient(135deg, rgba(255,253,248,0.78), rgba(244,226,229,0.72))",
+          boxShadow: "0 18px 70px rgba(87,45,55,0.14), inset 0 0 0 5px rgba(212,175,55,0.06)",
+          maxWidth: 760,
+        }}
+      >
+        <span aria-hidden="true" className="absolute left-3 top-3 h-7 w-7 border-l border-t border-[#D4AF37]/55" />
+        <span aria-hidden="true" className="absolute right-3 top-3 h-7 w-7 border-r border-t border-[#D4AF37]/55" />
+        <span aria-hidden="true" className="absolute bottom-3 left-3 h-7 w-7 border-b border-l border-[#D4AF37]/55" />
+        <span aria-hidden="true" className="absolute bottom-3 right-3 h-7 w-7 border-b border-r border-[#D4AF37]/55" />
+        <div
+          className="mb-8 flex items-center gap-3"
+          style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.35em", color: "#9C7A2E" }}
+        >
+          <span className="h-px w-8 bg-[#D4AF37]/60" />
+          RESTRICTED ARCHIVE · 01
+          <span className="h-px w-8 bg-[#D4AF37]/60" />
+        </div>
         {/* 情报局 logo 区（罗盘式徽标） */}
         <div
           className="mb-12 flex items-center justify-center"

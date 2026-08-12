@@ -458,18 +458,16 @@ export default function FelineArchivePage() {
           accent: "#D4AF37",
           variant: "letter",
           letterLines: [
-            "如果你看到这里，说明五份卷宗你都翻完了。",
-            "谢谢你愿意花这些时间，认真地认识一遍「洋洋」。",
-            "曼妙、温柔、捣蛋、担当、傲娇——",
-            "其实哪一面都不是刻意扮演的角色，",
-            "只是不同的时刻，恰好露出了不同的自己。",
-            "谢谢你没有只选一面来定义我，",
-            "谢谢你愿意把五份都看完。",
-            "以后的路还很长，",
-            "希望你还愿意继续陪着看下去。",
+            "【系统提示：最终观测报告生成中……】",
+            "【权限确认：绝密档案解封】",
+            "木经岁寒，拆卷宗以阅万千侧写；",
+            "子夜微光，合坐标而定唯一归程；",
+            "洋波入定，任猫格流转皆为此身。",
+            "【系统提示：目标人物观测日志已永久存档。】",
+            "The only truth is MU ZIYANG.",
           ],
           signature: "MuZiyang · 木子洋",
-        })} />
+          })} />
 
         <section className="relative overflow-hidden py-32 px-6" style={{ backgroundColor: "#FAF7F5" }}>
           <div

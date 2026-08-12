@@ -12,7 +12,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
   const [titleVisible, setTitleVisible] = useState(false)
   const [subtitleVisible, setSubtitleVisible] = useState(false)
   const [tagVisible, setTagVisible] = useState(false)
-  const [blinking, setBlinking] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -28,23 +27,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
   }, [mounted])
 
   // Random blink — only after mount to avoid hydration mismatch
-  useEffect(() => {
-    if (!mounted) return
-    let timeoutId: ReturnType<typeof setTimeout>
-    const scheduleBlink = () => {
-      const delay = 4000 + Math.random() * 5000
-      timeoutId = setTimeout(() => {
-        setBlinking(true)
-        timeoutId = setTimeout(() => {
-          setBlinking(false)
-          scheduleBlink()
-        }, 600)
-      }, delay)
-    }
-    scheduleBlink()
-    return () => clearTimeout(timeoutId)
-  }, [mounted])
-
   return (
     <section
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
@@ -115,7 +97,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
           className="relative mb-16"
           style={{ background: "none", border: "none" }}
         >
-          <CatEyeSVG blinking={blinking} />
+          <CatEyeVideo />
         </div>
 
         {/* Main title */}
@@ -262,7 +244,7 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
   )
 }
 
-function CatEyeSVG({ blinking }: { blinking: boolean }) {
+function CatEyeVideo() {
   return (
     <div className="relative" style={{ width: 550, height: 200 }}>
       {/* Ambient glow，保留原来的氛围光晕效果 */}
@@ -276,29 +258,26 @@ function CatEyeSVG({ blinking }: { blinking: boolean }) {
         }}
       />
 
-      {/* 睁眼图 */}
-      <img
-        src="/eyes/eye-open.png"
-        alt="睁眼"
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-label="猫探长眼部影像"
         className="absolute inset-0 h-full w-full object-contain"
         style={{
-          filter: "drop-shadow(0 0 18px rgba(216,167,177,0.5))",
-          opacity: blinking ? 0 : 1,
-          transition: "opacity 0.6s ease-out",
+          filter: "brightness(1.08) contrast(1.05) drop-shadow(0 0 18px rgba(216,167,177,0.45))",
+          mixBlendMode: "screen",
+          maskImage: "radial-gradient(ellipse 72% 78% at center, #000 48%, rgba(0,0,0,0.78) 65%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 72% 78% at center, #000 48%, rgba(0,0,0,0.78) 65%, transparent 100%)",
         }}
-      />
+      >
+        <source src="/eyes/eyes.mp4" type="video/mp4" />
+      </video>
+
+      {/* 睁眼图 */}
 
       {/* 闭眼图 */}
-      <img
-        src="/eyes/eye-close.png"
-        alt="闭眼"
-        className="absolute inset-0 h-full w-full object-contain"
-        style={{
-          filter: "drop-shadow(0 0 18px rgba(216,167,177,0.5))",
-          opacity: blinking ? 1 : 0,
-          transition: "opacity 0.6s ease-in",
-        }}
-      />
     </div>
   )
 }

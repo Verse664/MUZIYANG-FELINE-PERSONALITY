@@ -207,6 +207,28 @@ export default function SpeciesSection() {
                   CN SPECIAL OPERATIONS · SUBJECT PORTRAIT
                 </p>
 
+                <div
+                  aria-label="可公开"
+                  className="absolute right-5 top-8 z-10 flex select-none flex-col items-center justify-center sm:right-8 sm:top-9"
+                  style={{
+                    width: 96,
+                    height: 36,
+                    border: "1.5px solid #B4483F",
+                    boxShadow: "inset 0 0 0 1.5px #F3DCCF, inset 0 0 0 2.5px #B4483F, 1px 1px 0 rgba(84,41,54,0.1)",
+                    color: "#B4483F",
+                    fontFamily: "var(--font-sans)",
+                    fontWeight: 700,
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.16em",
+                    opacity: 0.76,
+                    transform: "rotate(-3deg)",
+                    mixBlendMode: "multiply",
+                    backgroundImage: "repeating-linear-gradient(90deg, transparent 0 7px, rgba(180,72,63,0.12) 7px 8px)",
+                  }}
+                >
+                  可公开
+                </div>
+
                 <div className="relative mt-4 flex justify-center">
                   {/* 照片主体 */}
                   <div
