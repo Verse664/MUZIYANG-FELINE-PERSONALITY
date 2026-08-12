@@ -396,7 +396,7 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                       <span
                         className="relative block overflow-hidden border transition-all duration-500 group-hover:-translate-y-2 group-focus-visible:-translate-y-2"
                         style={{
-                          height: "clamp(240px, 31vw, 390px)",
+                          height: "clamp(280px, 35vw, 430px)",
                           borderColor: `${dossier.accent}80`,
                           boxShadow: `0 12px 26px ${dossier.accent}28`,
                         }}

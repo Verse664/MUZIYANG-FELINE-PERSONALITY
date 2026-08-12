@@ -14,22 +14,25 @@ const fusionPersonalities = [
   { label: "傲娇", color: "#C0718A" },
 ]
 
-// 浅色版终端卡片：等宽字体 + 行号 + OK 标签 + 故障闪烁
-function TerminalCard({
+// 无框终端文字：等宽字体 + 故障闪烁，去掉行号和卡片背景，直接漂浮在页面上
+function TerminalText({
   lines,
   visible,
+  showCursor = false,
 }: {
   lines: string[]
   visible: boolean
+  showCursor?: boolean
 }) {
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
-  const [showCursor, setShowCursor] = useState(true)
+  const [cursorOn, setCursorOn] = useState(true)
 
   useEffect(() => {
-    const blink = window.setInterval(() => setShowCursor((v) => !v), 480)
+    if (!showCursor) return
+    const blink = window.setInterval(() => setCursorOn((v) => !v), 480)
     return () => window.clearInterval(blink)
-  }, [])
+  }, [showCursor])
 
   useEffect(() => {
     if (!visible) return
@@ -48,63 +51,44 @@ function TerminalCard({
 
   return (
     <div
-      className="relative mx-auto max-w-md overflow-hidden rounded-lg border px-5 py-4 text-left"
+      className="mx-auto max-w-md space-y-1.5 text-center font-mono"
       style={{
-        borderColor: "#D4AF3760",
-        backgroundColor: "#FBF5EE",
-        boxShadow: "0 6px 24px rgba(196,140,60,0.1)",
+        fontSize: "0.72rem",
+        lineHeight: 1.95,
         transform: glitchActive ? `translateX(${glitchOffset}px)` : "translateX(0)",
         transition: glitchActive ? "none" : "transform 120ms ease-out",
       }}
     >
-      {/* 扫描线纹理 */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: "repeating-linear-gradient(0deg, #6B4230 0px, transparent 1px, transparent 3px)",
-          opacity: glitchActive ? 0.1 : 0.045,
-          transition: "opacity 90ms ease-out",
-        }}
-      />
-      {/* 故障色差闪 */}
-      {glitchActive ? (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-1/2"
-          style={{ height: "1.5px", backgroundColor: "rgba(180,72,63,0.4)", transform: `translateY(${glitchOffset}px)` }}
-        />
-      ) : null}
-
-      <div className="relative flex items-center gap-2" style={{ marginBottom: "0.6rem" }}>
-        <i className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: "#B4483F" }} />
-        <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", letterSpacing: "0.24em", color: "#B4483F" }}>
-          ARCHIVE LOG
-        </span>
-      </div>
-
-      <div className="relative space-y-1.5 font-mono" style={{ fontSize: "0.72rem", lineHeight: 1.9 }}>
-        {lines.map((line, i) => (
-          <p key={i} className="flex flex-wrap items-baseline gap-2">
-            <span style={{ color: "#B99B7A" }}>[{String(i + 1).padStart(2, "0")}]</span>
+      {lines.map((line, i) => {
+        const isQuoteLine = /truth is/i.test(line)
+        const isLast = i === lines.length - 1
+        return (
+          <p key={i} className="flex flex-wrap items-baseline justify-center gap-2">
             <span
               style={{
-                color: "#6B4230",
-                textShadow: glitchActive ? "1px 0 rgba(180,72,63,0.5), -1px 0 rgba(212,175,55,0.4)" : "none",
+                color: isQuoteLine ? "#D4AF37" : "#6B4230",
+                fontStyle: isQuoteLine ? "italic" : "normal",
+                fontSize: isQuoteLine ? "1.35rem" : undefined,
+                fontWeight: isQuoteLine ? 700 : 500,
+                letterSpacing: isQuoteLine ? "0.08em" : undefined,
+                lineHeight: isQuoteLine ? 1.4 : undefined,
+                textShadow: glitchActive
+                  ? "1px 0 rgba(180,72,63,0.7), -1px 0 rgba(212,175,55,0.6), 0 0 12px rgba(212,175,55,0.45)"
+                  : "0 0 12px rgba(212,175,55,0.22)",
               }}
             >
               {line}
             </span>
-            <span style={{ color: "#B99B7A" }}>OK</span>
+            {!isQuoteLine ? <span style={{ color: "#B99B7A" }}>OK</span> : null}
+            {showCursor && isLast ? (
+              <span
+                className="inline-block h-3.5 w-1.5 align-middle"
+                style={{ backgroundColor: "#B4483F", opacity: cursorOn ? 1 : 0 }}
+              />
+            ) : null}
           </p>
-        ))}
-        <p className="flex items-center gap-1 pt-0.5">
-          <span
-            className="inline-block h-3.5 w-1.5 align-middle"
-            style={{ backgroundColor: "#B4483F", opacity: showCursor ? 1 : 0 }}
-          />
-        </p>
-      </div>
+        )
+      })}
     </div>
   )
 }
@@ -144,16 +128,7 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
       }}
     >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute inset-0">
-        {/* 底环 */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="#D4AF3735"
-          strokeWidth={strokeWidth}
-        />
-        {/* 呼吸光效外圈（未解密时） */}
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#D4AF3735" strokeWidth={strokeWidth} />
         {!decrypting ? (
           <circle
             cx={size / 2}
@@ -163,13 +138,9 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
             stroke="#D4AF37"
             strokeWidth={strokeWidth}
             strokeDasharray={`${circumference * 0.28} ${circumference}`}
-            style={{
-              transformOrigin: "center",
-              animation: "decrypt-idle-spin 4.5s linear infinite",
-            }}
+            style={{ transformOrigin: "center", animation: "decrypt-idle-spin 4.5s linear infinite" }}
           />
         ) : (
-          /* 解密中：进度环快速转一圈 */
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -189,7 +160,6 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
         )}
       </svg>
 
-      {/* 中心呼吸光晕 */}
       <div
         aria-hidden="true"
         className="absolute rounded-full"
@@ -201,24 +171,19 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
         }}
       />
 
-      {/* 中心文字 */}
       <div className="relative z-10 flex flex-col items-center gap-1">
         <span
           className="font-mono"
           style={{
             fontSize: "0.6rem",
             letterSpacing: "0.18em",
-            color: decrypting ? "#B4483F" : "#B4483F",
-            opacity: decrypting ? [1, 0.3, 1, 0.3, 1][0] : 1,
+            color: "#B4483F",
             animation: decrypting ? "decrypt-text-flicker 0.9s steps(5, end) forwards" : "none",
           }}
         >
           {decrypting ? "解密中" : "DECRYPT"}
         </span>
-        <span
-          className="font-mono"
-          style={{ fontSize: "0.46rem", letterSpacing: "0.12em", color: "#B99B7A" }}
-        >
+        <span className="font-mono" style={{ fontSize: "0.46rem", letterSpacing: "0.12em", color: "#B99B7A" }}>
           {decrypting ? "..." : "点击解密"}
         </span>
       </div>
@@ -322,9 +287,9 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           BUREAU CLOSURE · FINAL DOSSIER
         </p>
 
-        {/* 开场：终端卡片 */}
+        {/* 开场：无框终端文字 */}
         <div className="mb-16">
-          <TerminalCard
+          <TerminalText
             lines={["最终观测报告生成中......", "权限确认：绝密档案解封"]}
             visible={visible}
           />
@@ -360,7 +325,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           万千猫格，皆是洋洋。
         </p>
 
-        {/* 五色归档索引：分隔线中嵌入带标签的图例 */}
+        {/* 五色归档索引 */}
         <div className="mx-auto mt-16 flex max-w-md items-center gap-3">
           <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF3760)" }} />
           <div className="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1.5 px-2">
@@ -370,10 +335,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
                   className="inline-block rounded-full"
                   style={{ width: 6, height: 6, backgroundColor: p.color, boxShadow: `0 0 4px ${p.color}90` }}
                 />
-                <span
-                  className="font-mono"
-                  style={{ fontSize: "0.58rem", letterSpacing: "0.1em", color: "#6A4551" }}
-                >
+                <span className="font-mono" style={{ fontSize: "0.58rem", letterSpacing: "0.1em", color: "#6A4551" }}>
                   {p.label}
                 </span>
               </span>
@@ -382,7 +344,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           <span style={{ flex: 1, height: "0.5px", background: "linear-gradient(90deg, #D4AF3760, transparent)" }} />
         </div>
 
-        {/* 收尾：终端卡片 + 英文题眼 */}
+        {/* 收尾：无框终端文字（日志 + 英文题眼归并在同一组），光标只出现在此处最后一行 */}
         <div
           className="mt-16"
           style={{
@@ -391,22 +353,11 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             transition: "opacity 1.1s ease, transform 1.1s ease",
           }}
         >
-          <TerminalCard
-            lines={["目标人物观测日志已永久封存."]}
+          <TerminalText
+            lines={["目标人物观测日志已永久封存.", "The only truth is MU ZIYANG."]}
             visible={closingVisible}
+            showCursor
           />
-          <p
-            className="mt-6"
-            style={{
-              fontFamily: "var(--font-serif), serif",
-              fontStyle: "italic",
-              fontSize: "clamp(0.95rem, 2vw, 1.15rem)",
-              color: "#D4AF37",
-              letterSpacing: "0.06em",
-            }}
-          >
-            The only truth is MU ZIYANG.
-          </p>
         </div>
 
         {/* 解密进度环按钮 */}

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 
 interface EasterEggModalProps {
   open: boolean
@@ -10,11 +9,9 @@ interface EasterEggModalProps {
   title?: string
   subtitle?: string
   accent?: string
-  // video 模式专用
   description?: string
   videoSrc?: string
   posterSrc?: string
-  // letter 模式专用
   letterLines?: string[]
   signature?: string
 }
@@ -24,7 +21,6 @@ const defaultLetterLines = [
   "谢谢你愿意花这些时间，认真地认识一遍「洋洋」。",
 ]
 
-// 判断一行是不是系统提示（以【开头）
 function isSystemLine(line: string): boolean {
   return line.trim().startsWith("【")
 }
@@ -50,48 +46,53 @@ export default function EasterEggModal({
 
   useEffect(() => {
     if (!open) return
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose()
     }
+
     const previousOverflow = document.body.style.overflow
     window.addEventListener("keydown", handleKey)
     document.body.style.overflow = "hidden"
+
     return () => {
       window.removeEventListener("keydown", handleKey)
       document.body.style.overflow = previousOverflow
     }
   }, [open, onClose])
 
-  // 光标闪烁（letter 模式）
   useEffect(() => {
     if (!open || variant !== "letter") return
+
     const blink = window.setInterval(() => setShowCursor((v) => !v), 480)
     return () => window.clearInterval(blink)
   }, [open, variant])
 
-  // 故障闪烁（letter 模式）
   useEffect(() => {
     if (!open || variant !== "letter") return
+
     const glitchLoop = window.setInterval(() => {
       if (Math.random() < 0.3) {
         setGlitchActive(true)
         setGlitchOffset((Math.random() - 0.5) * 5)
+
         window.setTimeout(() => {
           setGlitchActive(false)
           setGlitchOffset(0)
         }, 80 + Math.random() * 100)
       }
     }, 1000)
+
     return () => window.clearInterval(glitchLoop)
   }, [open, variant])
 
-  // 逐行淡入（letter 模式）
   useEffect(() => {
     if (!open || variant !== "letter") {
       setVisibleCount(0)
       setSigVisible(false)
       return
     }
+
     let cancelled = false
     let i = 0
     const timeouts: number[] = []
@@ -100,6 +101,7 @@ export default function EasterEggModal({
       if (cancelled) return
       i += 1
       setVisibleCount(i)
+
       if (i < letterLines.length) {
         timeouts.push(window.setTimeout(revealNext, 480))
       } else {
@@ -112,6 +114,7 @@ export default function EasterEggModal({
     }
 
     timeouts.push(window.setTimeout(revealNext, 500))
+
     return () => {
       cancelled = true
       timeouts.forEach((id) => window.clearTimeout(id))
@@ -136,7 +139,6 @@ export default function EasterEggModal({
       aria-label={variant === "letter" ? "深层档案密信" : "视频弹窗"}
     >
       {variant === "letter" ? (
-        // ============ 终端密信模式 ============
         <div
           className="relative w-full max-w-xl"
           onClick={(e) => e.stopPropagation()}
@@ -152,7 +154,6 @@ export default function EasterEggModal({
               transition: glitchActive ? "none" : "transform 120ms ease-out",
             }}
           >
-            {/* 扫描线纹理 */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0"
@@ -170,7 +171,6 @@ export default function EasterEggModal({
               />
             ) : null}
 
-            {/* 四角取景框 */}
             <span aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 border-l border-t" style={{ borderColor: "#D8A7B1" }} />
             <span aria-hidden="true" className="absolute right-3 top-3 h-4 w-4 border-r border-t" style={{ borderColor: "#D8A7B1" }} />
             <span aria-hidden="true" className="absolute bottom-3 left-3 h-4 w-4 border-b border-l" style={{ borderColor: "#D8A7B1" }} />
@@ -208,6 +208,7 @@ export default function EasterEggModal({
               <div className="space-y-3">
                 {(() => {
                   let logIndex = 0
+
                   return letterLines.map((line, i) => {
                     const active = i < visibleCount
                     const system = isSystemLine(line)
@@ -241,7 +242,6 @@ export default function EasterEggModal({
                       )
                     }
 
-                    // 诗句 / 英文题眼：更大字号、衬线字体、居中，视觉上跳出日志流
                     return (
                       <p
                         key={i}
@@ -265,6 +265,7 @@ export default function EasterEggModal({
                     )
                   })
                 })()}
+
                 {visibleCount < letterLines.length ? (
                   <div className="flex justify-center pt-1">
                     <span
@@ -303,7 +304,6 @@ export default function EasterEggModal({
           </div>
         </div>
       ) : (
-        // ============ 视频模式（原样保留） ============
         <div
           className="relative w-full max-w-3xl"
           onClick={(e) => e.stopPropagation()}

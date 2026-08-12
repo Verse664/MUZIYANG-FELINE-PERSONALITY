@@ -239,12 +239,6 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
         </div>
       </div>
 
-      {/* Bottom edge fade：从当前深色底部渐隐到下一版块的浅色背景 #FAF7F5，保证过渡自然 */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-0 right-0 h-40"
-        style={{ background: "linear-gradient(to bottom, transparent, #FAF7F5)" }}
-      />
     </section>
   )
 }
