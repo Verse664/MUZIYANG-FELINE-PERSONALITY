@@ -660,6 +660,26 @@ export default function FelineArchivePage() {
           >
             本档案为粉丝自制内容，仅用于表达喜爱，不代表官方立场。
           </p>
+          <p
+            className="mt-3"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.5rem",
+              letterSpacing: "0.06em",
+              color: "#B0B0B3",
+              opacity: 0.7,
+            }}
+          >
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-clickable
+              style={{ color: "#B0B0B3", textDecoration: "none" }}
+            >
+              鄂ICP备2026043331号
+            </a>
+          </p>
         </div>
       </main>
 
