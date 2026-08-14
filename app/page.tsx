@@ -668,18 +668,17 @@ export default function FelineArchivePage() {
               letterSpacing: "0.06em",
               color: "#B0B0B3",
               opacity: 0.7,
-            }}
-          >
-            <a
-              href="https://beian.miit.gov.cn/"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-clickable
-              style={{ color: "#B0B0B3", textDecoration: "none" }}
-            >
-              鄂ICP备2026043331号
-            </a>
-          </p>
+              }}
+              >
+                <a
+                href="https://beian.miit.gov.cn/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#B0B0B3", textDecoration: "none" }}
+                >
+                  鄂ICP备2026043331号
+                  </a>
+                </p>
         </div>
       </main>
 
