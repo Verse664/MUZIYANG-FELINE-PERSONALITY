@@ -1,12 +1,120 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 interface BureauIntroSectionProps {
   isActive?: boolean
 }
 
 type VerifyPhase = "idle" | "typing" | "starting" | "verifying" | "verified" | "done"
+
+// 猫眼徽标：静态低强度呼吸闪烁 + 随机故障（色差撕裂 + 抖动 + 扫描线）
+function CatMarkGlitch() {
+  const [glitchActive, setGlitchActive] = useState(false)
+  const [glitchOffset, setGlitchOffset] = useState(0)
+
+  useEffect(() => {
+    const loop = window.setInterval(() => {
+      if (Math.random() < 0.35) {
+        setGlitchActive(true)
+        setGlitchOffset((Math.random() - 0.5) * 5)
+        window.setTimeout(() => {
+          setGlitchActive(false)
+          setGlitchOffset(0)
+        }, 90 + Math.random() * 120)
+      }
+    }, 1400)
+    return () => window.clearInterval(loop)
+  }, [])
+
+  return (
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: 56, height: 56 }}
+    >
+      
+
+      {/* 底层猫像 */}
+      <div
+        className="relative overflow-hidden rounded-full"
+        style={{
+          width: 48,
+          height: 48,
+          border: "1px solid rgba(212,175,55,0.4)",
+          boxShadow: glitchActive
+            ? "0 0 14px 3px rgba(180,72,63,0.35)"
+            : "0 0 8px 2px rgba(212,175,55,0.18)",
+          transform: glitchActive ? `translateX(${glitchOffset}px)` : "translateX(0)",
+          transition: glitchActive ? "none" : "transform 140ms ease-out, box-shadow 0.4s ease",
+          filter: glitchActive ? "contrast(1.25) saturate(1.3)" : "none",
+        }}
+      >
+        <Image
+          src="/blackcat.png"
+          alt="猫探长情报局徽标"
+          fill
+          sizes="48px"
+          className="object-cover"
+          style={{ opacity: glitchActive ? 0.9 : 1 }}
+        />
+
+        {/* 色差撕裂层：故障时叠加双色偏移 */}
+        {glitchActive ? (
+          <>
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 mix-blend-screen"
+              style={{
+                backgroundColor: "rgba(180,72,63,0.28)",
+                transform: `translateX(${glitchOffset * 1.6}px)`,
+              }}
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 mix-blend-screen"
+              style={{
+                backgroundColor: "rgba(111,227,217,0.16)",
+                transform: `translateX(${-glitchOffset * 1.4}px)`,
+              }}
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0"
+              style={{
+                height: "2px",
+                top: `${20 + Math.random() * 55}%`,
+                backgroundColor: "rgba(246,220,227,0.4)",
+              }}
+            />
+          </>
+        ) : null}
+
+        {/* 常驻极淡扫描线，呼应全站终端质感 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: "repeating-linear-gradient(0deg, #000 0px, transparent 1px, transparent 3px)",
+            opacity: glitchActive ? 0.12 : 0.05,
+          }}
+        />
+      </div>
+
+      {/* 呼吸信号点，保留原有终端语言 */}
+      <span
+        className="absolute -bottom-1 -right-1 rounded-full"
+        style={{
+          width: 6,
+          height: 6,
+          backgroundColor: "#D4AF37",
+          boxShadow: "0 0 8px 2px rgba(212,175,55,0.5)",
+          animation: "glow-pulse 1.8s ease-in-out infinite",
+        }}
+      />
+    </div>
+  )
+}
 
 export default function BureauIntroSection({ isActive = true }: BureauIntroSectionProps) {
   const [phase, setPhase] = useState<VerifyPhase>("idle")
@@ -194,33 +302,9 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
           02
         </span>
 
-        {/* 终端风格装饰符 */}
+        {/* 猫探长徽标：替代原终端方框装饰符 */}
         <div className="mb-10 flex flex-col items-center gap-2">
-          <div
-            className="flex items-center justify-center"
-            style={{ width: 40, height: 40, border: "1px solid rgba(212,175,55,0.4)", position: "relative" }}
-          >
-            <span
-              aria-hidden="true"
-              className="absolute left-1 top-1 h-1.5 w-1.5 border-l border-t"
-              style={{ borderColor: "#D4AF37", opacity: 0.6 }}
-            />
-            <span
-              aria-hidden="true"
-              className="absolute bottom-1 right-1 h-1.5 w-1.5 border-b border-r"
-              style={{ borderColor: "#D4AF37", opacity: 0.6 }}
-            />
-            <span
-              className="rounded-full"
-              style={{
-                width: 6,
-                height: 6,
-                backgroundColor: "#D4AF37",
-                boxShadow: "0 0 8px 2px rgba(212,175,55,0.5)",
-                animation: "glow-pulse 1.8s ease-in-out infinite",
-              }}
-            />
-          </div>
+          <CatMarkGlitch />
         </div>
 
         {/* 打字机主文本：仅两行问候语，衬线字体 */}
