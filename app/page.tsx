@@ -454,7 +454,7 @@ export default function FelineArchivePage() {
       />
         <SelfConsistentSection onEggTrigger={() => setVideoModal({
           title: "情报局 · 归档深层情报",
-          subtitle: "SEALED LETTER · 火漆密信",
+          subtitle: "SEALED LETTER",
           accent: "#D4AF37",
           variant: "letter",
           letterLines: [

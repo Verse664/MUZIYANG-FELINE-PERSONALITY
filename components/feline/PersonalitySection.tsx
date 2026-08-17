@@ -171,14 +171,12 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
           <div className="space-y-3 font-mono" style={{ fontSize: "0.9rem", lineHeight: 2, color: "#F6DCE3" }}>
             {visibleLines.map((line, index) => (
               <p key={`${line}-${index}`} className="flex flex-wrap items-baseline gap-2">
-                <span style={{ color: "#7A4456" }}>[{String(index + 1).padStart(2, "0")}]</span>
                 <span style={{ color: line.includes("确认") ? "#F4A6B8" : "#F6DCE3" }}>{line}</span>
                 <span style={{ color: "#7A4456" }}>OK</span>
               </p>
             ))}
             {lineIndex < bootSequence.length ? (
               <p className="flex items-baseline gap-2">
-                <span style={{ color: "#7A4456" }}>[{String(lineIndex + 1).padStart(2, "0")}]</span>
                 <span style={{ textShadow: glitchActive ? "1.5px 0 rgba(244,166,184,0.7), -1.5px 0 rgba(111,227,217,0.5)" : "none" }}>
                   {displayedLine}
                   <span
@@ -499,75 +497,6 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                     </div>
                   </article>
                 ))}
-              </div>
-            </div>
-
-            {/* 观测者日志：图钉钉在便签上 */}
-            <div className="hidden" aria-hidden="true">
-              <div className="relative -mx-6 overflow-x-auto px-6 pb-10 pt-4 sm:mx-0 sm:px-0 sm:overflow-visible">
-                <div className="relative flex w-max items-start gap-10 sm:w-full sm:justify-between sm:gap-6">
-                  {/* 背景连线：走在便签下方，只在便签之间的空隙露出 */}
-                  <svg
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-0 top-[14px] hidden w-full sm:block"
-                    style={{ height: 24, zIndex: 0 }}
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                  >
-                    <polyline
-                      points="10,5 28,2 46,7 64,2 82,7 90,5"
-                      fill="none"
-                      stroke="#D08298"
-                      strokeWidth="0.6"
-                      strokeOpacity="0.85"
-                    />
-                  </svg>
-
-                  {dossiers.map((dossier, index) => (
-                    <div key={dossier.id} className="relative w-44 shrink-0 pt-6 sm:w-auto sm:flex-1">
-                      <div
-                        className="relative px-4 pb-4 pt-5 text-left"
-                        style={{
-                          backgroundColor: "#FFFBF7",
-                          border: `1px solid ${dossier.accent}55`,
-                          boxShadow: "0 10px 22px rgba(84,41,54,0.14)",
-                          transform: `rotate(${index % 2 === 0 ? "-1deg" : "1.2deg"})`,
-                          clipPath: "polygon(0% 2%, 3% 0%, 97% 1%, 100% 3%, 99% 97%, 96% 100%, 4% 99%, 0% 96%)",
-                          zIndex: 1,
-                        }}
-                      >
-                        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.48rem", color: dossier.accent, letterSpacing: "0.16em" }}>
-                          {dossier.chinese} · 观测者日志
-                        </p>
-                        <p
-                          className="mt-1.5"
-                          style={{ fontFamily: "var(--font-sans)", fontSize: "0.68rem", lineHeight: 1.7, color: "#6A4551", letterSpacing: "0.02em" }}
-                        >
-                          {dossier.observerLog}
-                        </p>
-                      </div>
-
-                      {/* 图钉：一半嵌入便签顶部，制造"扎进纸里"的效果 */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute left-1/2 z-10 -translate-x-1/2 rounded-full"
-                        style={{
-                          top: 14,
-                          width: 12,
-                          height: 12,
-                          backgroundColor: dossier.accent,
-                          boxShadow: "0 3px 5px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -1px 2px rgba(0,0,0,0.2)",
-                        }}
-                      />
-                      {/* 针尖阴影：落在便签纸面上，加强"被扎穿"的错觉 */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute left-1/2 z-[3] -translate-x-1/2 rounded-full"
-                        style={{ top: 24, width: 5, height: 3, backgroundColor: "#7A4456", opacity: 0.35, filter: "blur(0.5px)" }}
-                      />
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>

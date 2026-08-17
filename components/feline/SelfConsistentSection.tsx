@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 interface SelfConsistentSectionProps {
   onEggTrigger: () => void
@@ -93,7 +94,88 @@ function TerminalText({
   )
 }
 
-// 解密进度环按钮：呼吸光效 → 点击后扫描解锁动效 → 触发弹窗
+// 猫探长头像：黑猫铺满整个圆形按钮，保持清晰可见，解密进行中强化故障效果
+function CatAvatarGlitch({ intense }: { intense: boolean }) {
+  const [glitchActive, setGlitchActive] = useState(false)
+  const [glitchOffset, setGlitchOffset] = useState(0)
+
+  useEffect(() => {
+    const loop = window.setInterval(() => {
+      if (Math.random() < 0.35) {
+        setGlitchActive(true)
+        setGlitchOffset((Math.random() - 0.5) * 5)
+        window.setTimeout(() => {
+          setGlitchActive(false)
+          setGlitchOffset(0)
+        }, 90 + Math.random() * 120)
+      }
+    }, 1400)
+    return () => window.clearInterval(loop)
+  }, [])
+
+  const active = glitchActive || intense
+
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden rounded-full"
+      style={{
+        backgroundColor: "#FAF7F5",
+        transform: active
+          ? `translateX(${intense ? (Math.random() - 0.5) * 3 : glitchOffset}px)`
+          : "translateX(0)",
+        transition: active
+          ? "none"
+          : "transform 140ms ease-out",
+      }}
+    >
+      <Image
+        src="/blackcat.png"
+        alt="猫探长情报局徽标"
+        fill
+        sizes="108px"
+        className="object-contain"
+        style={{
+          opacity: 1,
+          transform: "scale(1.16)",
+        }}
+      />
+
+      {active ? (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 mix-blend-multiply"
+            style={{
+              backgroundColor: "rgba(180,72,63,0.08)",
+              transform: `translateX(${(intense ? 2 : glitchOffset) * 1.2}px)`,
+            }}
+          />
+
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 mix-blend-screen"
+            style={{
+              backgroundColor: "rgba(111,227,217,0.06)",
+              transform: `translateX(${(intense ? -2 : -glitchOffset) * 1.1}px)`,
+            }}
+          />
+        </>
+      ) : null}
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-full"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(28,28,30,0.10) 0px, transparent 1px, transparent 4px)",
+          opacity: active ? 0.16 : 0.05,
+        }}
+      />
+    </div>
+  )
+}
+
+// 解密进度环按钮：黑猫铺满圆形按钮 + 文字浮在黑猫上方 → 点击后扫描解锁动效 → 触发弹窗
 function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible: boolean }) {
   const [decrypting, setDecrypting] = useState(false)
 
@@ -116,19 +198,36 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
       onClick={handleClick}
       data-clickable
       aria-label="点击解密，查看情报局深层档案"
-      className="relative flex items-center justify-center outline-none"
+      className="relative flex items-center justify-center overflow-hidden rounded-full outline-none"
       style={{
         width: size,
         height: size,
-        background: "none",
+        backgroundColor: "#FAF7F5",
         border: "none",
         cursor: "none",
         opacity: visible ? 1 : 0,
         transition: "opacity 0.6s ease",
       }}
     >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="absolute inset-0">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#D4AF3735" strokeWidth={strokeWidth} />
+      {/* 黑猫：现在直接占据整个圆形按钮 */}
+      <CatAvatarGlitch intense={decrypting} />
+
+      {/* 原来的金色进度环保持不变 */}
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="pointer-events-none absolute inset-0 z-20"
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#D4AF3735"
+          strokeWidth={strokeWidth}
+        />
+
         {!decrypting ? (
           <circle
             cx={size / 2}
@@ -138,7 +237,10 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
             stroke="#D4AF37"
             strokeWidth={strokeWidth}
             strokeDasharray={`${circumference * 0.28} ${circumference}`}
-            style={{ transformOrigin: "center", animation: "decrypt-idle-spin 4.5s linear infinite" }}
+            style={{
+              transformOrigin: "center",
+              animation: "decrypt-idle-spin 4.5s linear infinite",
+            }}
           />
         ) : (
           <circle
@@ -160,31 +262,37 @@ function DecryptButton({ onTrigger, visible }: { onTrigger: () => void; visible:
         )}
       </svg>
 
+      {/* 原来的金色光晕保留，但放到黑猫下面、文字上面 */}
       <div
         aria-hidden="true"
-        className="absolute rounded-full"
+        className="absolute rounded-full pointer-events-none z-10"
         style={{
           width: size - 26,
           height: size - 26,
-          background: "radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 70%)",
           animation: decrypting ? "none" : "glow-pulse 3s ease-in-out infinite",
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-center gap-1">
+      {/* 中文文字：直接浮在黑猫图片中央 */}
+      <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
         <span
-          className="font-mono"
           style={{
-            fontSize: "0.6rem",
-            letterSpacing: "0.18em",
-            color: "#B4483F",
-            animation: decrypting ? "decrypt-text-flicker 0.9s steps(5, end) forwards" : "none",
+            fontFamily:
+              'var(--font-serif), "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif',
+            fontSize: decrypting ? "0.72rem" : "0.76rem",
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            color: "#f089b2",
+            whiteSpace: "nowrap",
+            textShadow: "0 1px 2px rgba(250,247,245,0.95)",
+            animation: decrypting
+              ? "decrypt-text-flicker 0.9s steps(5, end) forwards"
+              : "none",
           }}
         >
-          {decrypting ? "解密中" : "DECRYPT"}
-        </span>
-        <span className="font-mono" style={{ fontSize: "0.46rem", letterSpacing: "0.12em", color: "#B99B7A" }}>
-          {decrypting ? "..." : "点击解密"}
+          {decrypting ? "解密中" : "点击解密"}
         </span>
       </div>
     </button>
@@ -230,6 +338,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             "repeating-linear-gradient(0deg, #1C1C1E 0px, transparent 1px, transparent 32px, #1C1C1E 32px, transparent 33px)",
         }}
       />
+
       {/* 金色光晕 */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div
@@ -242,6 +351,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           }}
         />
       </div>
+
       {/* 放射线纹理 */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.025]">
         <svg viewBox="0 0 400 400" width="min(400px, 80vw)" height="min(400px, 80vw)">
@@ -283,6 +393,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         >
           情报归档
         </h2>
+
         <p className="mt-3 mb-14" style={{ fontFamily: "var(--font-sans)", fontSize: "0.72rem", letterSpacing: "0.25em", color: "#8E8E93" }}>
           BUREAU CLOSURE · FINAL DOSSIER
         </p>
@@ -376,17 +487,37 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
 
       <style jsx>{`
         @keyframes decrypt-idle-spin {
-          from { stroke-dashoffset: 0; }
-          to { stroke-dashoffset: -${2 * Math.PI * 51}; }
+          from {
+            stroke-dashoffset: 0;
+          }
+
+          to {
+            stroke-dashoffset: -${2 * Math.PI * 51};
+          }
         }
+
         @keyframes decrypt-progress {
-          from { stroke-dashoffset: ${2 * Math.PI * 51}; }
-          to { stroke-dashoffset: 0; }
+          from {
+            stroke-dashoffset: ${2 * Math.PI * 51};
+          }
+
+          to {
+            stroke-dashoffset: 0;
+          }
         }
+
         @keyframes decrypt-text-flicker {
-          0%, 100% { opacity: 1; }
-          20%, 60% { opacity: 0.3; }
-          40%, 80% { opacity: 1; }
+          0%, 100% {
+            opacity: 1;
+          }
+
+          20%, 60% {
+            opacity: 0.3;
+          }
+
+          40%, 80% {
+            opacity: 1;
+          }
         }
       `}</style>
     </section>
