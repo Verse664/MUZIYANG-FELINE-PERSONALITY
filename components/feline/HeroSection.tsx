@@ -271,7 +271,7 @@ function CatEyeVideo() {
           WebkitMaskImage: "radial-gradient(ellipse 68% 74% at center, #000 42%, rgba(0,0,0,0.55) 62%, transparent 92%)",
         }}
       >
-        <source src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/eyes.mp4" type="video/mp4" />
+        <source src="/eyes/eyes-web.mp4" type="video/mp4" />
       </video>
     </div>
   )
