@@ -244,9 +244,52 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
 }
 
 function CatEyeVideo() {
+  const [isWeChat, setIsWeChat] = useState(false)
+  const [wechatReady, setWechatReady] = useState(false)
+
+  useEffect(() => {
+    // 检测微信环境
+    const ua = navigator.userAgent.toLowerCase()
+    const inWeChat = ua.includes("micromessenger")
+    setIsWeChat(inWeChat)
+
+    if (!inWeChat) return
+
+    // 微信内置浏览器需要等 WeixinJSBridgeReady 事件后才能可靠触发自动播放
+    const tryPlay = () => {
+      const video = document.getElementById("cat-eye-video") as HTMLVideoElement | null
+      if (video) {
+        video.play().catch(() => {
+          // 自动播放仍失败时，静默忽略，等待用户交互触发（见下方点击兜底）
+        })
+      }
+      setWechatReady(true)
+    }
+
+    // @ts-expect-error 微信注入的全局对象，标准环境下不存在
+    if (window.WeixinJSBridge) {
+      tryPlay()
+    } else {
+      document.addEventListener("WeixinJSBridgeReady", tryPlay, false)
+    }
+
+    return () => {
+      document.removeEventListener("WeixinJSBridgeReady", tryPlay)
+    }
+  }, [])
+
   return (
-    <div className="relative" style={{ width: 550, height: 200 }}>
-      {/* Ambient glow：在深色底上改用暖粉更浓郁的光晕，帮助视频边缘"融进"背景而不是漂浮在上面 */}
+    <div
+      className="relative"
+      style={{ width: 550, height: 200 }}
+      onClick={(e) => {
+        // 微信环境下点击兜底：万一自动播放仍未成功，用户点一下也能触发
+        if (!isWeChat) return
+        const video = e.currentTarget.querySelector("video")
+        video?.play().catch(() => {})
+      }}
+    >
+      {/* Ambient glow */}
       <div
         aria-hidden="true"
         className="absolute inset-0 rounded-full"
@@ -258,21 +301,49 @@ function CatEyeVideo() {
       />
 
       <video
+        id="cat-eye-video"
         autoPlay
         loop
         muted
         playsInline
+        // 微信 X5 内核专属属性，缺一不可，否则可能不触发内联自动播放
+        x5-playsinline="true"
+        webkit-playsinline="true"
+        x5-video-player-type="h5"
+        preload="auto"
         aria-label="猫探长眼部影像"
         className="absolute inset-0 h-full w-full object-contain"
-        style={{
-          filter: "brightness(1.15) contrast(1.1) drop-shadow(0 0 24px rgba(244,166,184,0.35))",
-          mixBlendMode: "screen",
-          maskImage: "radial-gradient(ellipse 68% 74% at center, #000 42%, rgba(0,0,0,0.55) 62%, transparent 92%)",
-          WebkitMaskImage: "radial-gradient(ellipse 68% 74% at center, #000 42%, rgba(0,0,0,0.55) 62%, transparent 92%)",
-        }}
+        style={
+          isWeChat
+            ? {
+                // 微信环境降级：去掉 mix-blend-mode + mask-image 组合，
+                // 改用更保守的方式呈现相近的融合效果，规避 X5 内核渲染异常导致视频不可见的问题
+                filter: "brightness(1.05) contrast(1.05)",
+                opacity: 0.92,
+              }
+            : {
+                filter: "brightness(1.15) contrast(1.1) drop-shadow(0 0 24px rgba(244,166,184,0.35))",
+                mixBlendMode: "screen",
+                maskImage: "radial-gradient(ellipse 68% 74% at center, #000 42%, rgba(0,0,0,0.55) 62%, transparent 92%)",
+                WebkitMaskImage: "radial-gradient(ellipse 68% 74% at center, #000 42%, rgba(0,0,0,0.55) 62%, transparent 92%)",
+              }
+        }
       >
         <source src="/eyes/eyes-web.mp4" type="video/mp4" />
       </video>
+
+      {/* 微信环境下用一层柔和的暗角遮罩模拟原来 mask-image 的收边效果，
+          用纯 CSS 渐变叠层代替对 video 元素的 CSS mask，兼容性更稳 */}
+      {isWeChat ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 68% 74% at center, transparent 55%, rgba(42,18,25,0.55) 78%, #2A1219 96%)",
+          }}
+        />
+      ) : null}
     </div>
   )
 }
