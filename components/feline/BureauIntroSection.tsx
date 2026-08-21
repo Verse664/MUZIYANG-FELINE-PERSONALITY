@@ -133,15 +133,17 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  // 标记用户是否已经交互过（点击了"打开卷宗"）
+  const [hasUserInteracted, setHasUserInteracted] = useState(false)
 
   const fullText = "欢迎各位侦探小姐\n莅临\"猫咪情报局\"\n\n本情报局观测对象\n百万男神木子洋"
 
   // 用户点击"打开卷宗"后，开始整个流程；该点击同时为后续带声音视频提供用户交互上下文。
   const openDossier = () => {
     if (!isActive || phase !== "dossier-ready") return
+    setHasUserInteracted(true) // 标记用户已交互
     setPhase("dossier-opening")
 
-    // 尽早调用 play()，避免在后续延时动画中丢失浏览器的用户手势上下文。
     window.setTimeout(() => {
       setPhase("typing")
     }, 750)
@@ -176,7 +178,7 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
     return () => window.clearTimeout(t)
   }, [phase])
 
-  // 视频播放逻辑
+  // 视频播放逻辑 - 带声音播放
   useEffect(() => {
     if (phase !== "video-playing") return
     const video = videoRef.current
@@ -184,15 +186,20 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
 
     video.currentTime = 0
     
+    // 如果有用户交互上下文，尝试播放（可能带声音）
     const playPromise = video.play()
     if (playPromise) {
-      playPromise.catch((err) => {
-        console.warn("视频播放失败:", err)
-        // 降级方案：重新加载
-        video.load()
-        setTimeout(() => {
-          video.play().catch(() => {})
-        }, 100)
+      playPromise.catch(() => {
+        // 如果浏览器阻止有声播放，降级为静音播放
+        video.muted = true
+        video.play().catch(() => {
+          // 如果还是失败，重新加载后重试
+          video.load()
+          setTimeout(() => {
+            video.muted = true
+            video.play().catch(() => {})
+          }, 100)
+        })
       })
     }
   }, [phase])
@@ -532,9 +539,8 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
               <span aria-hidden="true" className="absolute bottom-2 right-2 z-10 h-5 w-5 border-b border-r border-[#D4AF37]/60" />
               <video
                 ref={videoRef}
-                src="/videos/baiwan-web.mp4"
+                src="/videos/baiwan-25s-audio.mp4"
                 playsInline
-                muted
                 preload="auto"
                 onEnded={handleVideoEnded}
                 className="block h-auto w-full"
