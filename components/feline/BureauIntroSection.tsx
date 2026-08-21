@@ -539,7 +539,7 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
               <span aria-hidden="true" className="absolute bottom-2 right-2 z-10 h-5 w-5 border-b border-r border-[#D4AF37]/60" />
               <video
                 ref={videoRef}
-                src="/videos/baiwan-25s-audio.mp4"
+                src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
                 playsInline
                 preload="auto"
                 onEnded={handleVideoEnded}
