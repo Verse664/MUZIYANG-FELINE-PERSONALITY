@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface HeroSectionProps {
   onEggTrigger: () => void
@@ -245,50 +245,69 @@ export default function HeroSection({ onEggTrigger, scrollY }: HeroSectionProps)
 
 function CatEyeVideo() {
   const [isWeChat, setIsWeChat] = useState(false)
-  const [wechatReady, setWechatReady] = useState(false)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
-    // 检测微信环境
     const ua = navigator.userAgent.toLowerCase()
     const inWeChat = ua.includes("micromessenger")
     setIsWeChat(inWeChat)
 
-    if (!inWeChat) return
+    const video = videoRef.current
+    if (!video) return
 
-    // 微信内置浏览器需要等 WeixinJSBridgeReady 事件后才能可靠触发自动播放
-    const tryPlay = () => {
-      const video = document.getElementById("cat-eye-video") as HTMLVideoElement | null
-      if (video) {
-        video.play().catch(() => {
-          // 自动播放仍失败时，静默忽略，等待用户交互触发（见下方点击兜底）
+    // 显式用 JS 设置静音属性——微信部分版本会忽略 HTML 里写的 muted，
+    // 必须在脚本里主动赋值一次才会真正生效
+    video.muted = true
+    video.defaultMuted = true
+
+    let attempts = 0
+    let cancelled = false
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
+
+    const attemptPlay = () => {
+      if (cancelled) return
+      video
+        .play()
+        .then(() => {
+          // 播放成功即停止重试
         })
-      }
-      setWechatReady(true)
+        .catch(() => {
+          // 播放失败：微信环境下视频解码/权限判定常常需要多试几次才成功，
+          // 在最初几秒内间隔重试，避免只靠用户点击才能触发
+          attempts += 1
+          if (attempts < 20) {
+            retryTimer = setTimeout(attemptPlay, 150)
+          }
+        })
     }
 
+    attemptPlay()
+
+    // 微信 JS 桥接就绪后再触发一次，作为额外保险
+    const onBridgeReady = () => attemptPlay()
     // @ts-expect-error 微信注入的全局对象，标准环境下不存在
     if (window.WeixinJSBridge) {
-      tryPlay()
+      attemptPlay()
     } else {
-      document.addEventListener("WeixinJSBridgeReady", tryPlay, false)
+      document.addEventListener("WeixinJSBridgeReady", onBridgeReady, false)
     }
 
+    // 页面从后台切回前台时（比如用户切了微信小程序又切回来）也重新尝试一次
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") attemptPlay()
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange)
+
     return () => {
-      document.removeEventListener("WeixinJSBridgeReady", tryPlay)
+      cancelled = true
+      if (retryTimer) clearTimeout(retryTimer)
+      document.removeEventListener("WeixinJSBridgeReady", onBridgeReady)
+      document.removeEventListener("visibilitychange", onVisibilityChange)
     }
   }, [])
 
   return (
-    <div
-      className="relative"
-      style={{ width: 550, height: 200 }}
-      onClick={(e) => {
-        // 微信环境下点击兜底：万一自动播放仍未成功，用户点一下也能触发
-        if (!isWeChat) return
-        const video = e.currentTarget.querySelector("video")
-        video?.play().catch(() => {})
-      }}
-    >
+    <div className="relative" style={{ width: 550, height: 200 }}>
       {/* Ambient glow */}
       <div
         aria-hidden="true"
@@ -301,7 +320,7 @@ function CatEyeVideo() {
       />
 
       <video
-        id="cat-eye-video"
+        ref={videoRef}
         autoPlay
         loop
         muted
@@ -311,13 +330,14 @@ function CatEyeVideo() {
         webkit-playsinline="true"
         x5-video-player-type="h5"
         preload="auto"
+        // 首帧静态图：在视频尚未开始播放的极短时间内也不会出现空白画面，
+        // 需要你准备一张眼睛的静态截图放在 /public/eyes/eyes-poster.jpg
+        poster="/eyes/eyes-poster.jpg"
         aria-label="猫探长眼部影像"
         className="absolute inset-0 h-full w-full object-contain"
         style={
           isWeChat
             ? {
-                // 微信环境降级：去掉 mix-blend-mode + mask-image 组合，
-                // 改用更保守的方式呈现相近的融合效果，规避 X5 内核渲染异常导致视频不可见的问题
                 filter: "brightness(1.05) contrast(1.05)",
                 opacity: 0.92,
               }
@@ -332,8 +352,7 @@ function CatEyeVideo() {
         <source src="/eyes/eyes-web.mp4" type="video/mp4" />
       </video>
 
-      {/* 微信环境下用一层柔和的暗角遮罩模拟原来 mask-image 的收边效果，
-          用纯 CSS 渐变叠层代替对 video 元素的 CSS mask，兼容性更稳 */}
+      {/* 微信环境下用一层柔和的暗角遮罩模拟原来 mask-image 的收边效果 */}
       {isWeChat ? (
         <div
           aria-hidden="true"
