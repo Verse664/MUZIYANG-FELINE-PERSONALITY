@@ -132,16 +132,14 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
   const [showBadge, setShowBadge] = useState(false)
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
+  const [videoMuted, setVideoMuted] = useState(true) // 新增：视频静音状态
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  // 标记用户是否已经交互过（点击了"打开卷宗"）
-  const [hasUserInteracted, setHasUserInteracted] = useState(false)
 
   const fullText = "欢迎各位侦探小姐\n莅临\"猫咪情报局\"\n\n本情报局观测对象\n百万男神木子洋"
 
   // 用户点击"打开卷宗"后，开始整个流程；该点击同时为后续带声音视频提供用户交互上下文。
   const openDossier = () => {
     if (!isActive || phase !== "dossier-ready") return
-    setHasUserInteracted(true) // 标记用户已交互
     setPhase("dossier-opening")
 
     window.setTimeout(() => {
@@ -178,30 +176,40 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
     return () => window.clearTimeout(t)
   }, [phase])
 
-  // 视频播放逻辑 - 带声音播放
+  // 视频播放逻辑 - 替换为更稳健的移动端兼容方案
   useEffect(() => {
     if (phase !== "video-playing") return
     const video = videoRef.current
     if (!video) return
 
     video.currentTime = 0
-    
-    // 如果有用户交互上下文，尝试播放（可能带声音）
-    const playPromise = video.play()
-    if (playPromise) {
-      playPromise.catch(() => {
-        // 如果浏览器阻止有声播放，降级为静音播放
-        video.muted = true
+    // 先确保静音状态，保证移动端一定能渲染画面并自动播放
+    video.muted = true
+    setVideoMuted(true)
+
+    video
+      .play()
+      .then(() => {
+        // 播放成功后，尝试解除静音（如果浏览器仍在用户交互有效期内会成功，否则静默失败不影响画面）
+        video.muted = false
+        setVideoMuted(false)
+        // 解除静音后需要重新调用 play() 才能让声音生效
         video.play().catch(() => {
-          // 如果还是失败，重新加载后重试
-          video.load()
-          setTimeout(() => {
-            video.muted = true
-            video.play().catch(() => {})
-          }, 100)
+          // 解除静音后播放被拒绝，说明当前环境不允许带声音自动播放，回退为静音继续播放
+          video.muted = true
+          setVideoMuted(true)
+          video.play().catch(() => {})
         })
       })
-    }
+      .catch(() => {
+        // 极少数情况下连静音播放都失败，重新加载后再试一次
+        video.load()
+        window.setTimeout(() => {
+          video.muted = true
+          setVideoMuted(true)
+          video.play().catch(() => {})
+        }, 100)
+      })
   }, [phase])
 
   const handleVideoEnded = () => {
@@ -520,7 +528,7 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
               opacity: phase === "video-playing" ? 1 : 0,
               transform: phase === "video-playing" ? "scale(1)" : "scale(0.96)",
               transition: "opacity 0.6s ease, transform 0.6s ease",
-              pointerEvents: "none",
+              pointerEvents: phase === "video-playing" ? "auto" : "none", // 改为动态控制，播放时允许交互
             }}
           >
             <div
@@ -538,15 +546,43 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
               <span aria-hidden="true" className="absolute bottom-2 left-2 z-10 h-5 w-5 border-b border-l border-[#D4AF37]/60" />
               <span aria-hidden="true" className="absolute bottom-2 right-2 z-10 h-5 w-5 border-b border-r border-[#D4AF37]/60" />
               
-             <video
-             ref={videoRef}
-             src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
-             playsInline
-             preload="auto"
-             onEnded={handleVideoEnded}
-             className="block h-auto w-full"
-             style={{ aspectRatio: "16 / 9", objectFit: "contain", background: "#1C1C1E" }}
-             />
+              <video
+                ref={videoRef}
+                src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
+                playsInline
+                muted // 关键：添加 muted 属性保证移动端渲染
+                autoPlay // 关键：添加 autoPlay 属性
+                preload="auto"
+                onEnded={handleVideoEnded}
+                className="block h-auto w-full"
+                style={{ aspectRatio: "16 / 9", objectFit: "contain", background: "#1C1C1E" }}
+              />
+
+              {/* 静音状态下显示一个可点击的小图标，方便用户手动开启声音 */}
+              {videoMuted && phase === "video-playing" ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const video = videoRef.current
+                    if (!video) return
+                    video.muted = false
+                    setVideoMuted(false)
+                  }}
+                  aria-label="开启声音"
+                  className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full px-2.5 py-1"
+                  style={{
+                    backgroundColor: "rgba(28,28,30,0.6)",
+                    border: "1px solid rgba(212,175,55,0.5)",
+                    pointerEvents: "auto",
+                  }}
+                >
+                  <span style={{ fontSize: "0.7rem" }}>🔇</span>
+                  <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.1em", color: "#F6DCE3" }}>
+                    点击开启声音
+                  </span>
+                </button>
+              ) : null}
             </div>
           </div>
         ) : null}
