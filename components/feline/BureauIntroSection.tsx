@@ -132,10 +132,14 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
   const [showBadge, setShowBadge] = useState(false)
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
-  const [videoMuted, setVideoMuted] = useState(true) // 新增：视频静音状态
+  const [videoMuted, setVideoMuted] = useState(true)
+  const [videoReady, setVideoReady] = useState(false) // 视频是否已就绪
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   const fullText = "欢迎各位侦探小姐\n莅临\"猫咪情报局\"\n\n本情报局观测对象\n百万男神木子洋"
+
+  // 检测微信环境
+  const isWechat = typeof window !== "undefined" && /MicroMessenger/i.test(navigator.userAgent)
 
   // 用户点击"打开卷宗"后，开始整个流程；该点击同时为后续带声音视频提供用户交互上下文。
   const openDossier = () => {
@@ -176,33 +180,41 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
     return () => window.clearTimeout(t)
   }, [phase])
 
-  // 视频播放逻辑 - 替换为更稳健的移动端兼容方案
+  // 视频播放逻辑 - 针对微信环境做特殊处理
   useEffect(() => {
     if (phase !== "video-playing") return
     const video = videoRef.current
     if (!video) return
 
     video.currentTime = 0
-    // 先确保静音状态，保证移动端一定能渲染画面并自动播放
+
+    if (isWechat) {
+      // 微信环境：必须由用户点击触发，先加载视频等待点击
+      video.muted = true
+      setVideoMuted(true)
+      setVideoReady(false)
+      video.load()
+      // 微信中尝试预加载
+      video.addEventListener("canplay", () => setVideoReady(true), { once: true })
+      return
+    }
+
+    // 非微信环境：正常播放逻辑
     video.muted = true
     setVideoMuted(true)
 
     video
       .play()
       .then(() => {
-        // 播放成功后，尝试解除静音（如果浏览器仍在用户交互有效期内会成功，否则静默失败不影响画面）
         video.muted = false
         setVideoMuted(false)
-        // 解除静音后需要重新调用 play() 才能让声音生效
         video.play().catch(() => {
-          // 解除静音后播放被拒绝，说明当前环境不允许带声音自动播放，回退为静音继续播放
           video.muted = true
           setVideoMuted(true)
           video.play().catch(() => {})
         })
       })
       .catch(() => {
-        // 极少数情况下连静音播放都失败，重新加载后再试一次
         video.load()
         window.setTimeout(() => {
           video.muted = true
@@ -210,10 +222,31 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
           video.play().catch(() => {})
         }, 100)
       })
-  }, [phase])
+  }, [phase, isWechat])
 
   const handleVideoEnded = () => {
     setPhase("video-exit")
+  }
+
+  // 微信环境：用户点击播放视频
+  const handleWechatPlay = () => {
+    const video = videoRef.current
+    if (!video) return
+
+    // 微信中尝试播放（通常是静音的）
+    video.muted = false
+    setVideoMuted(false)
+    video
+      .play()
+      .then(() => {
+        // 播放成功
+      })
+      .catch(() => {
+        // 如果带声音失败，回退为静音
+        video.muted = true
+        setVideoMuted(true)
+        video.play().catch(() => {})
+      })
   }
 
   // 视频退出后接回原有身份核验流程。
@@ -528,7 +561,7 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
               opacity: phase === "video-playing" ? 1 : 0,
               transform: phase === "video-playing" ? "scale(1)" : "scale(0.96)",
               transition: "opacity 0.6s ease, transform 0.6s ease",
-              pointerEvents: phase === "video-playing" ? "auto" : "none", // 改为动态控制，播放时允许交互
+              pointerEvents: phase === "video-playing" ? "auto" : "none",
             }}
           >
             <div
@@ -550,16 +583,57 @@ export default function BureauIntroSection({ isActive = true }: BureauIntroSecti
                 ref={videoRef}
                 src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
                 playsInline
-                muted // 关键：添加 muted 属性保证移动端渲染
-                autoPlay // 关键：添加 autoPlay 属性
+                muted
+                autoPlay
                 preload="auto"
                 onEnded={handleVideoEnded}
                 className="block h-auto w-full"
                 style={{ aspectRatio: "16 / 9", objectFit: "contain", background: "#1C1C1E" }}
               />
 
-              {/* 静音状态下显示一个可点击的小图标，方便用户手动开启声音 */}
-              {videoMuted && phase === "video-playing" ? (
+              {/* 微信环境：显示点击播放覆盖层 */}
+              {isWechat && phase === "video-playing" ? (
+                <button
+                  type="button"
+                  onClick={handleWechatPlay}
+                  className="absolute inset-0 z-20 flex flex-col items-center justify-center"
+                  style={{
+                    backgroundColor: "rgba(28,28,30,0.45)",
+                    pointerEvents: "auto",
+                    backdropFilter: "blur(2px)",
+                  }}
+                >
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: "rgba(212,175,55,0.15)",
+                      border: "2px solid rgba(212,175,55,0.5)",
+                      boxShadow: "0 0 30px rgba(212,175,55,0.15)",
+                    }}
+                  >
+                    <span style={{ fontSize: "2rem", color: "#F6DCE3" }}>▶</span>
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.12em",
+                      color: "#F6DCE3",
+                      marginTop: "14px",
+                      backgroundColor: "rgba(28,28,30,0.5)",
+                      padding: "6px 18px",
+                      borderRadius: "20px",
+                      backdropFilter: "blur(4px)",
+                      border: "1px solid rgba(212,175,55,0.2)",
+                    }}
+                  >
+                    点击播放视频
+                  </span>
+                </button>
+              ) : null}
+
+              {/* 非微信环境：静音状态显示声音开关 */}
+              {!isWechat && videoMuted && phase === "video-playing" ? (
                 <button
                   type="button"
                   onClick={(e) => {
