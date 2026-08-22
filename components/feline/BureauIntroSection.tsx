@@ -24,20 +24,14 @@ type VerifyPhase =
 // 猫眼徽标：静态低强度呼吸闪烁 + 随机故障
 // ============================================================
 function CatMarkGlitch() {
-  const [glitchActive, setGlitchActive] =
-    useState(false)
-
-  const [glitchOffset, setGlitchOffset] =
-    useState(0)
+  const [glitchActive, setGlitchActive] = useState(false)
+  const [glitchOffset, setGlitchOffset] = useState(0)
 
   useEffect(() => {
     const loop = window.setInterval(() => {
       if (Math.random() < 0.35) {
         setGlitchActive(true)
-
-        setGlitchOffset(
-          (Math.random() - 0.5) * 5
-        )
+        setGlitchOffset((Math.random() - 0.5) * 5)
 
         window.setTimeout(() => {
           setGlitchActive(false)
@@ -46,8 +40,7 @@ function CatMarkGlitch() {
       }
     }, 1400)
 
-    return () =>
-      window.clearInterval(loop)
+    return () => window.clearInterval(loop)
   }, [])
 
   return (
@@ -63,8 +56,7 @@ function CatMarkGlitch() {
         style={{
           width: 48,
           height: 48,
-          border:
-            "1px solid rgba(212,175,55,0.4)",
+          border: "1px solid rgba(212,175,55,0.4)",
           boxShadow: glitchActive
             ? "0 0 14px 3px rgba(180,72,63,0.35)"
             : "0 0 8px 2px rgba(212,175,55,0.18)",
@@ -98,7 +90,8 @@ function CatMarkGlitch() {
               style={{
                 backgroundColor:
                   "rgba(180,72,63,0.28)",
-                transform: `translateX(${glitchOffset * 1.6}px)`,
+                transform:
+                  `translateX(${glitchOffset * 1.6}px)`,
               }}
             />
 
@@ -108,7 +101,8 @@ function CatMarkGlitch() {
               style={{
                 backgroundColor:
                   "rgba(111,227,217,0.16)",
-                transform: `translateX(${-glitchOffset * 1.4}px)`,
+                transform:
+                  `translateX(${-glitchOffset * 1.4}px)`,
               }}
             />
 
@@ -117,7 +111,8 @@ function CatMarkGlitch() {
               className="absolute inset-x-0"
               style={{
                 height: "2px",
-                top: `${20 + Math.random() * 55}%`,
+                top:
+                  `${20 + Math.random() * 55}%`,
                 backgroundColor:
                   "rgba(246,220,227,0.4)",
               }}
@@ -131,9 +126,8 @@ function CatMarkGlitch() {
           style={{
             backgroundImage:
               "repeating-linear-gradient(0deg, #000 0px, transparent 1px, transparent 3px)",
-            opacity: glitchActive
-              ? 0.12
-              : 0.05,
+            opacity:
+              glitchActive ? 0.12 : 0.05,
           }}
         />
       </div>
@@ -158,18 +152,11 @@ export default function BureauIntroSection({
   isActive = true,
 }: BureauIntroSectionProps) {
   const [phase, setPhase] =
-    useState<VerifyPhase>(
-      "dossier-ready"
-    )
+    useState<VerifyPhase>("dossier-ready")
 
-  const [typed, setTyped] =
-    useState("")
-
-  const [progress, setProgress] =
-    useState(0)
-
-  const [showBadge, setShowBadge] =
-    useState(false)
+  const [typed, setTyped] = useState("")
+  const [progress, setProgress] = useState(0)
+  const [showBadge, setShowBadge] = useState(false)
 
   const [glitchActive, setGlitchActive] =
     useState(false)
@@ -180,10 +167,8 @@ export default function BureauIntroSection({
   const [isWeChat, setIsWeChat] =
     useState(false)
 
-  const [
-    wechatVideoStarted,
-    setWechatVideoStarted,
-  ] = useState(false)
+  const [wechatVideoStarted, setWechatVideoStarted] =
+    useState(false)
 
   const [videoLoading, setVideoLoading] =
     useState(false)
@@ -197,10 +182,8 @@ export default function BureauIntroSection({
   // ============================================================
   // ★ 核心文字
   //
-  // 这里已经统一修改成：
-  // 「木子猫星光情报站」
-  //
-  // 每一个字符都会通过 typed.slice() 逐字出现。
+  // 所有“猫咪情报局”已经统一改成：
+  // “木子猫星光情报站”
   // ============================================================
   const fullText =
     "欢迎各位侦探小姐\n莅临「木子猫星光情报站」\n\n本情报局观测对象\n「百万男神木子洋」"
@@ -222,10 +205,12 @@ export default function BureauIntroSection({
   }, [])
 
   // ============================================================
-  // 点击打开卷宗
+  // 打开卷宗
   // ============================================================
   const openDossier = () => {
-    if (!isActive) return
+    if (!isActive) {
+      return
+    }
 
     if (phase !== "dossier-ready") {
       return
@@ -240,7 +225,10 @@ export default function BureauIntroSection({
   }
 
   // ============================================================
-  // ★ 真正逐字打字机
+  // ★ 打字机
+  //
+  // 保持完整逐字打印。
+  // 「木子猫星光情报站」不会跳过。
   // ============================================================
   useEffect(() => {
     if (phase !== "typing") {
@@ -260,22 +248,20 @@ export default function BureauIntroSection({
         )
 
         if (i >= fullText.length) {
-          window.clearInterval(
-            interval
-          )
+          window.clearInterval(interval)
 
           window.setTimeout(() => {
             setPhase("text-hold")
           }, 700)
         }
-      }, 75)
+      }, 55)
 
     return () =>
       window.clearInterval(interval)
   }, [phase])
 
   // ============================================================
-  // 打字完成后停留
+  // 打字结束后停留
   // ============================================================
   useEffect(() => {
     if (phase !== "text-hold") {
@@ -309,10 +295,13 @@ export default function BureauIntroSection({
   }, [phase])
 
   // ============================================================
-  // 视频兼容属性
+  // 设置移动端视频兼容属性
   //
-  // 不直接写 webkit-playsinline / x5-playsinline，
-  // 避免 TypeScript JSX 属性报错。
+  // 不直接写：
+  // webkit-playsinline
+  // x5-playsinline
+  //
+  // 避免 TypeScript JSX 类型报错。
   // ============================================================
   const prepareVideo = (
     video: HTMLVideoElement
@@ -351,7 +340,13 @@ export default function BureauIntroSection({
   }
 
   // ============================================================
-  // 视频播放逻辑
+  // 视频播放
+  //
+  // Safari / Chrome：
+  // 尝试自动播放。
+  //
+  // 微信：
+  // 不自动播放，等待用户点击。
   // ============================================================
   useEffect(() => {
     if (phase !== "video-playing") {
@@ -369,11 +364,9 @@ export default function BureauIntroSection({
     setVideoError(false)
     setVideoLoading(false)
 
-    // ----------------------------------------------------------
-    // 微信：
-    // 不自动播放。
-    // 等待用户点击。
-    // ----------------------------------------------------------
+    // ==========================================================
+    // 微信
+    // ==========================================================
     if (isWeChat) {
       try {
         video.pause()
@@ -390,10 +383,12 @@ export default function BureauIntroSection({
       return
     }
 
-    // ----------------------------------------------------------
-    // Safari / Chrome：
-    // 首先尝试有声音自动播放。
-    // ----------------------------------------------------------
+    // ==========================================================
+    // Safari / Chrome
+    //
+    // 先尝试带声音。
+    // 如果浏览器阻止，则自动静音播放。
+    // ==========================================================
     video.currentTime = 0
     video.muted = false
 
@@ -407,8 +402,6 @@ export default function BureauIntroSection({
           setVideoLoading(false)
           setVideoError(false)
         } catch {
-          // 浏览器禁止带声音自动播放，
-          // 自动退回静音播放。
           try {
             video.muted = true
 
@@ -433,7 +426,10 @@ export default function BureauIntroSection({
   }, [phase, isWeChat])
 
   // ============================================================
-  // 微信点击播放
+  // ★ 微信点击播放
+  //
+  // 用户主动点击后：
+  // 允许播放声音。
   // ============================================================
   const startWechatVideo =
     async () => {
@@ -452,8 +448,6 @@ export default function BureauIntroSection({
         video.currentTime = 0
       } catch {}
 
-      // 微信用户已经真实点击，
-      // 此时允许带声音播放。
       video.muted = false
 
       try {
@@ -505,7 +499,7 @@ export default function BureauIntroSection({
         video.currentTime = 0
       } catch {}
 
-      // 微信重新回到点击播放
+      // 微信重新回到点击播放状态
       if (isWeChat) {
         setVideoLoading(false)
         setWechatVideoStarted(false)
@@ -574,7 +568,7 @@ export default function BureauIntroSection({
   }, [phase])
 
   // ============================================================
-  // 身份校验进度
+  // 身份校验
   // ============================================================
   useEffect(() => {
     if (phase !== "verifying") {
@@ -585,46 +579,16 @@ export default function BureauIntroSection({
       target: number
       delay: number
     }[] = [
-      {
-        target: 12,
-        delay: 260,
-      },
-      {
-        target: 24,
-        delay: 220,
-      },
-      {
-        target: 24,
-        delay: 500,
-      },
-      {
-        target: 41,
-        delay: 180,
-      },
-      {
-        target: 52,
-        delay: 240,
-      },
-      {
-        target: 63,
-        delay: 200,
-      },
-      {
-        target: 63,
-        delay: 420,
-      },
-      {
-        target: 78,
-        delay: 190,
-      },
-      {
-        target: 88,
-        delay: 210,
-      },
-      {
-        target: 100,
-        delay: 260,
-      },
+      { target: 12, delay: 260 },
+      { target: 24, delay: 220 },
+      { target: 24, delay: 500 },
+      { target: 41, delay: 180 },
+      { target: 52, delay: 240 },
+      { target: 63, delay: 200 },
+      { target: 63, delay: 420 },
+      { target: 78, delay: 190 },
+      { target: 88, delay: 210 },
+      { target: 100, delay: 260 },
     ]
 
     let cancelled = false
@@ -663,9 +627,9 @@ export default function BureauIntroSection({
     return () => {
       cancelled = true
 
-      timeouts.forEach((id) =>
+      timeouts.forEach((id) => {
         window.clearTimeout(id)
-      )
+      })
     }
   }, [phase])
 
@@ -704,7 +668,7 @@ export default function BureauIntroSection({
   }, [phase])
 
   // ============================================================
-  // 进度条故障闪烁
+  // 进度条故障
   // ============================================================
   useEffect(() => {
     if (phase !== "verifying") {
@@ -734,7 +698,7 @@ export default function BureauIntroSection({
   }, [phase])
 
   // ============================================================
-  // 进度条
+  // 状态
   // ============================================================
   const barLength = 30
 
@@ -750,9 +714,6 @@ export default function BureauIntroSection({
       barLength - filled
     )
 
-  // ============================================================
-  // 各阶段显示状态
-  // ============================================================
   const showProgressBar =
     phase === "verifying" ||
     phase === "verified"
@@ -777,22 +738,20 @@ export default function BureauIntroSection({
     phase === "done"
 
   const showPersistentText =
-    (phase === "starting" ||
+    (
+      phase === "starting" ||
       phase === "verifying" ||
       phase === "verified" ||
-      phase === "done") &&
+      phase === "done"
+    ) &&
     typed.length ===
       fullText.length
 
   // ============================================================
-  // ★ 逐行计算
+  // ★ 精确逐行打字
   //
-  // 这是这次修复“木子猫星光情报站没有打印出来”的关键。
-  //
-  // 不再用模糊的 slice 边界，
-  // 每一行都根据 fullText 的真实位置计算。
+  // 防止第二行“木子猫星光情报站”漏字。
   // ============================================================
-
   const line1 =
     "欢迎各位侦探小姐"
 
@@ -814,32 +773,29 @@ export default function BureauIntroSection({
     line1End + 1
 
   const line2End =
-    line2Start + line2.length
+    line2Start +
+    line2.length
 
   const line3Start =
     line2End + 2
 
   const line3End =
-    line3Start + line3.length
+    line3Start +
+    line3.length
 
   const line4Start =
     line3End + 1
 
   const line4End =
-    line4Start + line4.length
+    line4Start +
+    line4.length
 
-  // ------------------------------------------------------------
-  // 第一行
-  // ------------------------------------------------------------
   const typedLine1 =
     typed.slice(
       line1Start,
       line1End
     )
 
-  // ------------------------------------------------------------
-  // 第二行
-  // ------------------------------------------------------------
   const typedLine2 =
     typed.length > line2Start
       ? typed.slice(
@@ -848,9 +804,6 @@ export default function BureauIntroSection({
         )
       : ""
 
-  // ------------------------------------------------------------
-  // 第三行
-  // ------------------------------------------------------------
   const typedLine3 =
     typed.length > line3Start
       ? typed.slice(
@@ -859,9 +812,6 @@ export default function BureauIntroSection({
         )
       : ""
 
-  // ------------------------------------------------------------
-  // 第四行
-  // ------------------------------------------------------------
   const typedLine4 =
     typed.length > line4Start
       ? typed.slice(
@@ -871,7 +821,8 @@ export default function BureauIntroSection({
       : ""
 
   const introComplete =
-    typed.length >= line3Start
+    typed.length >=
+    line3Start
 
   return (
     <section
@@ -881,7 +832,9 @@ export default function BureauIntroSection({
           "linear-gradient(160deg, #F4E2E5 0%, #FAF7F5 40%, #E8D3D8 75%, #EDD5D9 100%)",
       }}
     >
-      {/* 背景光晕 */}
+      {/* ========================================================
+          背景光晕
+         ======================================================== */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -913,9 +866,11 @@ export default function BureauIntroSection({
         }}
       />
 
-      {/* 顶部标记 */}
+      {/* ========================================================
+          顶部标记
+         ======================================================== */}
       <div
-        className="absolute left-0 right-0 top-6 flex items-center justify-center gap-2"
+        className="absolute left-0 right-0 top-6 flex items-center justify-center gap-2 px-4"
         style={{
           opacity: 0.5,
         }}
@@ -934,9 +889,13 @@ export default function BureauIntroSection({
           style={{
             fontFamily:
               "var(--font-sans)",
-            fontSize: "0.48rem",
-            letterSpacing: "0.4em",
+            fontSize:
+              "clamp(0.38rem, 1.8vw, 0.48rem)",
+            letterSpacing:
+              "0.32em",
             color: "#8E8E93",
+            whiteSpace:
+              "nowrap",
           }}
         >
           FELINE INTELLIGENCE BUREAU
@@ -953,36 +912,52 @@ export default function BureauIntroSection({
         />
       </div>
 
-      {/* 案号 */}
+      {/* ========================================================
+          案号
+         ======================================================== */}
       <div
-        className="absolute top-16"
+        className="absolute top-16 px-4 text-center"
         style={{
           opacity: 0.55,
           fontFamily:
             "var(--font-sans)",
-          fontSize: "0.5rem",
-          letterSpacing: "0.3em",
+          fontSize:
+            "clamp(0.4rem, 1.8vw, 0.5rem)",
+          letterSpacing:
+            "0.22em",
           color: "#D4AF37",
+          whiteSpace:
+            "nowrap",
         }}
       >
         CASE NO. 2026-YANG · ACCESS TERMINAL
       </div>
 
       {/* ========================================================
-          主流程
+          ★ 主流程
+          
+          不再有外层画布。
+          使用真正的 flex 居中。
          ======================================================== */}
       <div
-        className="relative z-10 flex w-full flex-col items-center text-center"
+        className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center text-center"
         style={{
-          minHeight: "100vh",
-          paddingTop: 100,
-          paddingBottom: 100,
+          boxSizing: "border-box",
+
+          paddingTop:
+            "clamp(92px, 14vh, 120px)",
+
+          paddingBottom:
+            "clamp(82px, 12vh, 110px)",
+
           transition:
             "opacity 0.6s ease, transform 0.6s ease",
+
           opacity:
             phase === "dossier-opening"
               ? 0.35
               : 1,
+
           transform:
             phase === "dossier-opening"
               ? "scale(0.96)"
@@ -990,7 +965,7 @@ export default function BureauIntroSection({
         }}
       >
         {/* ======================================================
-            打开卷宗
+            第一幕：打开卷宗
            ====================================================== */}
         {showDossierGate ? (
           <button
@@ -1003,6 +978,8 @@ export default function BureauIntroSection({
                 phase === "dossier-ready"
                   ? "pointer"
                   : "default",
+              WebkitTapHighlightColor:
+                "transparent",
             }}
           >
             <div
@@ -1012,6 +989,7 @@ export default function BureauIntroSection({
                   "clamp(168px, 58vw, 220px)",
                 height:
                   "clamp(168px, 58vw, 220px)",
+
                 animation:
                   phase === "dossier-ready"
                     ? "dossier-breathe 2.8s ease-in-out infinite"
@@ -1099,9 +1077,9 @@ export default function BureauIntroSection({
                 fontFamily:
                   "var(--font-sans)",
                 fontSize:
-                  "clamp(0.58rem, 2.4vw, 0.72rem)",
+                  "clamp(0.56rem, 2.3vw, 0.72rem)",
                 letterSpacing:
-                  "0.18em",
+                  "0.16em",
                 lineHeight: 1.8,
                 color: "#9A9698",
                 opacity: 0.78,
@@ -1117,35 +1095,44 @@ export default function BureauIntroSection({
            ====================================================== */}
         {showIntroText ? (
           <div
-            className="flex w-full flex-col items-center justify-center px-5"
+            className="flex w-full flex-col items-center justify-center px-4"
             style={{
-              minHeight: "42vh",
+              minHeight:
+                "42vh",
+
               opacity:
                 phase === "text-hold"
                   ? 0
                   : 1,
+
               transform:
                 phase === "text-hold"
                   ? "translateY(-12px)"
                   : "translateY(0)",
+
               transition:
                 "opacity 0.5s ease, transform 0.5s ease",
             }}
           >
-            {/* --------------------------------------------------
-                第一组
-               -------------------------------------------------- */}
+            {/* 第一组 */}
             <div
               style={{
                 fontFamily:
                   '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
+
                 fontSize:
-                  "clamp(1.25rem, 5.2vw, 2rem)",
+                  "clamp(1.22rem, 5.2vw, 2rem)",
+
                 fontWeight: 500,
+
                 letterSpacing:
-                  "0.12em",
+                  "0.11em",
+
                 lineHeight: 1.9,
+
                 color: "#292326",
+
+                width: "100%",
               }}
             >
               {/* 第一行 */}
@@ -1175,12 +1162,7 @@ export default function BureauIntroSection({
                 ) : null}
               </div>
 
-              {/* =================================================
-                  ★ 第二行
-                  「木子猫星光情报站」
-                  
-                  这里是本次重点修复。
-                  ================================================= */}
+              {/* 第二行 */}
               <div
                 style={{
                   minHeight:
@@ -1210,44 +1192,51 @@ export default function BureauIntroSection({
               </div>
             </div>
 
-            {/* --------------------------------------------------
-                分隔线
-               -------------------------------------------------- */}
+            {/* 分隔线 */}
             <div
               style={{
                 width: 34,
                 height: 1,
                 marginTop: 24,
                 marginBottom: 24,
+
                 background:
                   "linear-gradient(90deg, transparent, #D4AF37, transparent)",
+
                 opacity:
                   introComplete
                     ? 0.7
                     : 0,
+
                 transform:
                   introComplete
                     ? "scaleX(1)"
                     : "scaleX(0)",
+
                 transition:
                   "opacity 0.35s ease, transform 0.35s ease",
               }}
             />
 
-            {/* --------------------------------------------------
-                第二组
-               -------------------------------------------------- */}
+            {/* 第二组 */}
             <div
               style={{
                 fontFamily:
                   '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
+
                 fontSize:
                   "clamp(0.95rem, 3.7vw, 1.3rem)",
+
                 fontWeight: 400,
+
                 letterSpacing:
-                  "0.16em",
+                  "0.15em",
+
                 lineHeight: 1.9,
+
                 color: "#6F6266",
+
+                width: "100%",
               }}
             >
               {/* 第三行 */}
@@ -1284,13 +1273,18 @@ export default function BureauIntroSection({
                 style={{
                   minHeight:
                     "1.9em",
+
                   marginTop: 7,
+
                   fontSize:
-                    "clamp(1.15rem, 4.8vw, 1.65rem)",
+                    "clamp(1.12rem, 4.8vw, 1.65rem)",
+
                   color: "#6A4551",
+
                   fontWeight: 600,
+
                   letterSpacing:
-                    "0.14em",
+                    "0.13em",
                 }}
               >
                 {typedLine4}
@@ -1319,7 +1313,8 @@ export default function BureauIntroSection({
         ) : null}
 
         {/* ======================================================
-            视频
+            ★ 视频
+            横向沾满手机屏幕
            ====================================================== */}
         {showVideo ? (
           <div
@@ -1329,25 +1324,30 @@ export default function BureauIntroSection({
                 phase === "video-playing"
                   ? 1
                   : 0,
+
               transform:
                 phase === "video-playing"
                   ? "scale(1)"
                   : "scale(0.96)",
+
               transition:
                 "opacity 0.6s ease, transform 0.6s ease",
+
               pointerEvents:
                 phase === "video-playing"
                   ? "auto"
                   : "none",
+
+              width: "100vw",
             }}
           >
             <div
               className="relative w-screen overflow-hidden"
               style={{
-                marginLeft:
-                  "calc(50% - 50vw)",
                 width: "100vw",
                 maxWidth: "100vw",
+                marginLeft:
+                  "calc(50% - 50vw)",
                 background:
                   "#1C1C1E",
               }}
@@ -1356,7 +1356,6 @@ export default function BureauIntroSection({
                 ref={videoRef}
                 src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
                 playsInline
-                muted={false}
                 autoPlay={!isWeChat}
                 preload="auto"
                 controls={false}
@@ -1378,17 +1377,22 @@ export default function BureauIntroSection({
                   height: "auto",
                   aspectRatio:
                     "16 / 9",
-                  objectFit:
-                    "cover",
+                  objectFit: "cover",
                   display: "block",
                   background:
                     "#1C1C1E",
                 }}
               />
 
-              {/* =================================================
-                  微信点击播放
-                 ================================================= */}
+              {/* ==================================================
+                  ★ 微信播放按钮
+                  
+                  更简洁、更高级：
+                  半透明玻璃圆环
+                  金色细线
+                  极简三角播放符号
+                  不再像普通视频播放器
+                 ================================================== */}
               {isWeChat &&
               !wechatVideoStarted &&
               !videoError ? (
@@ -1397,92 +1401,208 @@ export default function BureauIntroSection({
                   onClick={
                     startWechatVideo
                   }
-                  aria-label="点击播放"
+                  aria-label="点击播放视频"
                   className="absolute inset-0 z-30 flex items-center justify-center"
                   style={{
-                    background:
-                      "linear-gradient(180deg, rgba(28,28,30,0.08), rgba(28,28,30,0.38))",
                     border: "none",
+                    padding: 0,
                     cursor: "pointer",
+
                     WebkitTapHighlightColor:
                       "transparent",
+
+                    background:
+                      "linear-gradient(180deg, rgba(20,18,20,0.02) 0%, rgba(20,18,20,0.24) 100%)",
                   }}
                 >
                   <div
                     className="flex flex-col items-center"
                     style={{
-                      gap: 12,
+                      gap: 13,
+                      transform:
+                        "translateY(2px)",
                     }}
                   >
+                    {/* 播放圆环 */}
                     <div
                       style={{
-                        width: 70,
-                        height: 70,
+                        position:
+                          "relative",
+
+                        width:
+                          "clamp(68px, 18vw, 82px)",
+
+                        height:
+                          "clamp(68px, 18vw, 82px)",
+
                         borderRadius:
                           "50%",
+
                         display:
                           "flex",
+
                         alignItems:
                           "center",
+
                         justifyContent:
                           "center",
-                        border:
-                          "1px solid rgba(212,175,55,0.8)",
+
                         background:
-                          "rgba(28,28,30,0.62)",
+                          "rgba(20,18,20,0.42)",
+
+                        backdropFilter:
+                          "blur(8px)",
+
+                        WebkitBackdropFilter:
+                          "blur(8px)",
+
+                        border:
+                          "1px solid rgba(255,245,230,0.48)",
+
                         boxShadow:
-                          "0 0 30px rgba(212,175,55,0.24)",
+                          "0 8px 30px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(212,175,55,0.18)",
+
                         animation:
-                          "wechat-play-pulse 2s ease-in-out infinite",
+                          "wechat-play-pulse 2.4s ease-in-out infinite",
+                      }}
+                    >
+                      {/* 内金色细环 */}
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position:
+                            "absolute",
+
+                          inset: 5,
+
+                          borderRadius:
+                            "50%",
+
+                          border:
+                            "1px solid rgba(212,175,55,0.34)",
+                        }}
+                      />
+
+                      {/* 播放三角 */}
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          width: 0,
+                          height: 0,
+
+                          marginLeft: 4,
+
+                          borderTop:
+                            "9px solid transparent",
+
+                          borderBottom:
+                            "9px solid transparent",
+
+                          borderLeft:
+                            "14px solid rgba(255,248,240,0.94)",
+
+                          filter:
+                            "drop-shadow(0 1px 3px rgba(0,0,0,0.35))",
+                        }}
+                      />
+
+                      {/* 金色小光点 */}
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position:
+                            "absolute",
+
+                          top: 12,
+                          right: 17,
+
+                          width: 3,
+                          height: 3,
+
+                          borderRadius:
+                            "50%",
+
+                          background:
+                            "#D4AF37",
+
+                          boxShadow:
+                            "0 0 8px rgba(212,175,55,0.8)",
+                        }}
+                      />
+                    </div>
+
+                    {/* 中文提示 */}
+                    <div
+                      style={{
+                        display:
+                          "flex",
+
+                        flexDirection:
+                          "column",
+
+                        alignItems:
+                          "center",
+
+                        gap: 5,
                       }}
                     >
                       <span
                         style={{
-                          marginLeft: 5,
+                          fontFamily:
+                            '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
+
                           fontSize:
-                            "1.4rem",
+                            "clamp(0.78rem, 3.2vw, 0.9rem)",
+
+                          fontWeight: 500,
+
+                          letterSpacing:
+                            "0.22em",
+
+                          paddingLeft:
+                            "0.22em",
+
                           color:
-                            "#D4AF37",
+                            "rgba(255,248,240,0.94)",
+
+                          textShadow:
+                            "0 1px 5px rgba(0,0,0,0.45)",
                         }}
                       >
-                        ▶
+                        点击播放
+                      </span>
+
+                      <span
+                        style={{
+                          fontFamily:
+                            "var(--font-sans)",
+
+                          fontSize:
+                            "clamp(0.4rem, 1.8vw, 0.48rem)",
+
+                          letterSpacing:
+                            "0.18em",
+
+                          paddingLeft:
+                            "0.18em",
+
+                          color:
+                            "rgba(255,240,230,0.62)",
+
+                          textShadow:
+                            "0 1px 4px rgba(0,0,0,0.5)",
+                        }}
+                      >
+                        SOUND ON
                       </span>
                     </div>
-
-                    <span
-                      style={{
-                        fontFamily:
-                          '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
-                        fontSize:
-                          "0.82rem",
-                        letterSpacing:
-                          "0.18em",
-                        color:
-                          "#F6DCE3",
-                      }}
-                    >
-                      点击播放
-                    </span>
-
-                    <span
-                      style={{
-                        fontFamily:
-                          "var(--font-sans)",
-                        fontSize:
-                          "0.48rem",
-                        letterSpacing:
-                          "0.12em",
-                        color:
-                          "rgba(246,220,227,0.68)",
-                      }}
-                    >
-                      TAP TO PLAY WITH SOUND
-                    </span>
                   </div>
                 </button>
               ) : null}
 
-              {/* 微信加载 */}
+              {/* ==================================================
+                  微信播放后的加载
+                 ================================================== */}
               {isWeChat &&
               wechatVideoStarted &&
               videoLoading &&
@@ -1529,7 +1649,9 @@ export default function BureauIntroSection({
                 </div>
               ) : null}
 
-              {/* 非微信加载 */}
+              {/* ==================================================
+                  非微信加载
+                 ================================================== */}
               {!isWeChat &&
               videoLoading &&
               !videoError ? (
@@ -1557,13 +1679,14 @@ export default function BureauIntroSection({
                 </div>
               ) : null}
 
-              {/* =================================================
+              {/* ==================================================
                   播放异常
-                  不出现任何“微信视频播放失败”字样
-                 ================================================= */}
+                  
+                  不写“微信视频播放失败”
+                 ================================================== */}
               {videoError ? (
                 <div
-                  className="absolute inset-0 z-40 flex flex-col items-center justify-center"
+                  className="absolute inset-0 z-40 flex items-center justify-center"
                   style={{
                     background:
                       "rgba(28,28,30,0.78)",
@@ -1578,6 +1701,7 @@ export default function BureauIntroSection({
                     style={{
                       cursor:
                         "pointer",
+
                       WebkitTapHighlightColor:
                         "transparent",
                     }}
@@ -1587,8 +1711,10 @@ export default function BureauIntroSection({
                       style={{
                         width: 54,
                         height: 54,
+
                         border:
                           "1px solid rgba(212,175,55,0.65)",
+
                         background:
                           "rgba(28,28,30,0.55)",
                       }}
@@ -1631,27 +1757,36 @@ export default function BureauIntroSection({
            ====================================================== */}
         {showVerification ? (
           <>
-            <div className="mb-4 flex flex-col items-center gap-2">
+            {/* 猫眼徽标 */}
+            <div
+              className="mb-4 flex flex-col items-center gap-2"
+            >
               <CatMarkGlitch />
             </div>
 
-            {/* 完整保留之前打出来的档案文字 */}
+            {/* 持久化文字 */}
             {showPersistentText ? (
               <div
-                className="mb-6 px-5"
+                className="mb-6 px-5 text-center"
                 style={{
                   fontFamily:
                     '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
+
                   fontSize:
                     "clamp(0.95rem, 3.8vw, 1.6rem)",
-                  color:
-                    "#1C1C1E",
+
+                  color: "#1C1C1E",
+
                   letterSpacing:
                     "0.1em",
+
                   lineHeight: 1.9,
+
                   whiteSpace:
                     "pre-line",
+
                   opacity: 0.85,
+
                   animation:
                     "fade-in-only 0.6s ease forwards",
                 }}
@@ -1660,6 +1795,7 @@ export default function BureauIntroSection({
               </div>
             ) : null}
 
+            {/* 身份核验 */}
             <div
               className="mt-4 flex w-full flex-col items-center gap-3 font-mono"
               style={{
@@ -1669,9 +1805,11 @@ export default function BureauIntroSection({
                 paddingRight: 20,
               }}
             >
-              <div className="relative flex h-[1.6em] w-full items-center justify-center">
+              <div
+                className="relative flex h-[1.6em] w-full items-center justify-center"
+              >
                 {phase ===
-                  "starting" && (
+                  "starting" ? (
                   <p
                     key="starting"
                     className="absolute"
@@ -1688,10 +1826,10 @@ export default function BureauIntroSection({
                   >
                     现在开始身份校核
                   </p>
-                )}
+                ) : null}
 
                 {phase ===
-                  "verifying" && (
+                  "verifying" ? (
                   <p
                     key="verifying"
                     className="absolute flex items-center gap-2"
@@ -1721,10 +1859,10 @@ export default function BureauIntroSection({
                       身份核对中......
                     </span>
                   </p>
-                )}
+                ) : null}
 
                 {phase ===
-                  "verified" && (
+                  "verified" ? (
                   <p
                     key="verified"
                     className="absolute flex items-baseline gap-2"
@@ -1752,28 +1890,34 @@ export default function BureauIntroSection({
                       身份已核实
                     </span>
                   </p>
-                )}
+                ) : null}
               </div>
 
+              {/* 进度条 */}
               {showProgressBar ? (
                 <div
                   className="w-full max-w-[26rem] text-center"
                   style={{
                     fontSize:
                       "0.66rem",
+
                     letterSpacing:
                       "0.01em",
+
                     color:
                       phase ===
                       "verified"
                         ? "#D4AF37"
                         : "#8E8E93",
+
                     transition:
                       "color 0.4s ease, opacity 0.4s ease",
+
                     transform:
                       glitchActive
                         ? `translateX(${glitchOffset}px)`
                         : "translateX(0)",
+
                     textShadow:
                       glitchActive
                         ? "1px 0 rgba(180,72,63,0.5), -1px 0 rgba(212,175,55,0.4)"
@@ -1787,19 +1931,25 @@ export default function BureauIntroSection({
                 </div>
               ) : null}
 
+              {/* 完成 */}
               {phase ===
                 "done" ? (
                 <p
                   style={{
                     fontFamily:
                       '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
+
                     fontSize:
                       "1rem",
+
                     letterSpacing:
                       "0.16em",
+
                     color:
                       "#3C3C3E",
+
                     opacity: 0,
+
                     animation:
                       "fade-slide-up 0.7s ease forwards",
                   }}
@@ -1814,13 +1964,13 @@ export default function BureauIntroSection({
               className="mt-10"
               style={{
                 opacity:
-                  showBadge
-                    ? 1
-                    : 0,
+                  showBadge ? 1 : 0,
+
                 transform:
                   showBadge
                     ? "scale(1) rotate(0deg)"
                     : "scale(0.7) rotate(-8deg)",
+
                 transition:
                   "opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
               }}
@@ -1829,23 +1979,33 @@ export default function BureauIntroSection({
                 style={{
                   display:
                     "inline-flex",
+
                   flexDirection:
                     "column",
+
                   alignItems:
                     "center",
+
                   justifyContent:
                     "center",
+
                   gap: 3,
+
                   width: 76,
                   height: 76,
+
                   borderRadius:
                     "50%",
+
                   border:
                     "1.5px solid rgba(216,167,177,0.45)",
+
                   backgroundColor:
                     "rgba(216,167,177,0.05)",
+
                   boxShadow:
                     "0 0 0 5px rgba(216,167,177,0.04)",
+
                   position:
                     "relative",
                 }}
@@ -1855,9 +2015,12 @@ export default function BureauIntroSection({
                   style={{
                     position:
                       "absolute",
+
                     inset: 6,
+
                     borderRadius:
                       "50%",
+
                     border:
                       "1px solid rgba(216,167,177,0.25)",
                   }}
@@ -1867,12 +2030,16 @@ export default function BureauIntroSection({
                   style={{
                     fontFamily:
                       "var(--font-sans)",
+
                     fontSize:
                       "0.4rem",
+
                     letterSpacing:
                       "0.25em",
+
                     color:
                       "#D8A7B1",
+
                     zIndex: 1,
                   }}
                 >
@@ -1884,9 +2051,12 @@ export default function BureauIntroSection({
                     width: 16,
                     height:
                       "0.5px",
+
                     backgroundColor:
                       "#D8A7B1",
+
                     opacity: 0.35,
+
                     zIndex: 1,
                   }}
                 />
@@ -1895,12 +2065,16 @@ export default function BureauIntroSection({
                   style={{
                     fontFamily:
                       "var(--font-sans)",
+
                     fontSize:
                       "0.35rem",
+
                     letterSpacing:
                       "0.15em",
+
                     color:
                       "#8E8E93",
+
                     zIndex: 1,
                   }}
                 >
@@ -1912,16 +2086,18 @@ export default function BureauIntroSection({
         ) : null}
       </div>
 
-      {/* 底部翻页指示 */}
+      {/* ========================================================
+          底部翻页指示
+         ======================================================== */}
       <div
         className="absolute bottom-10 flex flex-col items-center gap-2"
         style={{
           opacity:
-            showBadge
-              ? 0.6
-              : 0,
+            showBadge ? 0.6 : 0,
+
           transition:
             "opacity 1s ease 0.3s",
+
           animation:
             showBadge
               ? "scroll-hint-bounce 2.2s ease-in-out infinite"
@@ -1932,10 +2108,13 @@ export default function BureauIntroSection({
           style={{
             fontFamily:
               "var(--font-sans)",
+
             fontSize:
               "0.45rem",
+
             letterSpacing:
               "0.4em",
+
             color:
               "#8E8E93",
           }}
@@ -1976,6 +2155,9 @@ export default function BureauIntroSection({
         }}
       />
 
+      {/* ========================================================
+          动画
+         ======================================================== */}
       <style jsx>{`
         @keyframes fade-in-only {
           from {
@@ -2085,18 +2267,41 @@ export default function BureauIntroSection({
           }
         }
 
+        /* 微信播放按钮轻微呼吸 */
         @keyframes wechat-play-pulse {
           0%,
           100% {
             transform: scale(1);
             box-shadow:
-              0 0 24px rgba(212, 175, 55, 0.2);
+              0 8px 30px rgba(0, 0, 0, 0.22),
+              0 0 0 rgba(212, 175, 55, 0);
           }
 
           50% {
-            transform: scale(1.05);
+            transform: scale(1.035);
             box-shadow:
-              0 0 32px rgba(212, 175, 55, 0.32);
+              0 10px 34px rgba(0, 0, 0, 0.24),
+              0 0 22px rgba(212, 175, 55, 0.18);
+          }
+        }
+
+        @media (max-width: 480px) {
+          /*
+           * 小屏幕再稍微收紧顶部/底部空间，
+           * 让真正的内容中心落在手机视觉中心。
+           */
+          section {
+            min-height: 100svh;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          *,
+          *::before,
+          *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
           }
         }
       `}</style>
