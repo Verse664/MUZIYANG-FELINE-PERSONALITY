@@ -43,7 +43,10 @@ function CatMarkGlitch() {
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ width: 56, height: 56 }}
+      style={{
+        width: 56,
+        height: 56,
+      }}
     >
       <div
         className="relative overflow-hidden rounded-full"
@@ -60,7 +63,9 @@ function CatMarkGlitch() {
           transition: glitchActive
             ? "none"
             : "transform 140ms ease-out, box-shadow 0.4s ease",
-          filter: glitchActive ? "contrast(1.25) saturate(1.3)" : "none",
+          filter: glitchActive
+            ? "contrast(1.25) saturate(1.3)"
+            : "none",
         }}
       >
         <Image
@@ -69,7 +74,9 @@ function CatMarkGlitch() {
           fill
           sizes="48px"
           className="object-cover"
-          style={{ opacity: glitchActive ? 0.9 : 1 }}
+          style={{
+            opacity: glitchActive ? 0.9 : 1,
+          }}
         />
 
         {glitchActive ? (
@@ -142,10 +149,12 @@ export default function BureauIntroSection({
   const [glitchActive, setGlitchActive] = useState(false)
   const [glitchOffset, setGlitchOffset] = useState(0)
 
-  // 视频相关状态
-  const [videoMuted, setVideoMuted] = useState(true)
+  // 视频
+  const [isWeChat, setIsWeChat] = useState(false)
+  const [wechatVideoStarted, setWechatVideoStarted] = useState(false)
   const [videoLoading, setVideoLoading] = useState(false)
   const [videoError, setVideoError] = useState(false)
+  const [videoMuted, setVideoMuted] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoStartedRef = useRef(false)
@@ -154,28 +163,26 @@ export default function BureauIntroSection({
   const fullText =
     '欢迎各位侦探小姐\n莅临"猫咪情报局"\n\n本情报局观测对象\n百万男神木子洋'
 
-  /*
-   * 微信 / Safari / Chrome 兼容的视频地址
-   *
-   * 如果以后把视频放到自己的域名，建议改成：
-   * const VIDEO_SRC = "/videos/baiwan-25s-audio.mp4"
-   *
-   * 当前继续使用你原来的腾讯云 COS 地址。
-   */
   const VIDEO_SRC =
     "https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
 
   /*
-   * 判断是否为微信内置浏览器
+   * ================================
+   * 微信浏览器检测
+   * ================================
    */
-  const isWeChatBrowser = () => {
-    if (typeof navigator === "undefined") return false
+  useEffect(() => {
+    if (typeof navigator === "undefined") return
 
-    return /MicroMessenger/i.test(navigator.userAgent)
-  }
+    const ua = navigator.userAgent || ""
+
+    setIsWeChat(/MicroMessenger/i.test(ua))
+  }, [])
 
   /*
+   * ================================
    * 打开卷宗
+   * ================================
    */
   const openDossier = () => {
     if (!isActive || phase !== "dossier-ready") return
@@ -188,7 +195,9 @@ export default function BureauIntroSection({
   }
 
   /*
+   * ================================
    * 打字机
+   * ================================
    */
   useEffect(() => {
     if (phase !== "typing") return
@@ -213,42 +222,93 @@ export default function BureauIntroSection({
   }, [phase])
 
   /*
-   * 文字结束
+   * ================================
+   * 文字停留
+   * ================================
    */
   useEffect(() => {
     if (phase !== "text-hold") return
 
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setPhase("video-enter")
     }, 1200)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
-   * 视频进入动画
+   * ================================
+   * 视频进入
+   * ================================
    */
   useEffect(() => {
     if (phase !== "video-enter") return
 
-    const t = window.setTimeout(() => {
+    setVideoError(false)
+    setVideoLoading(false)
+    setWechatVideoStarted(false)
+    setVideoMuted(false)
+    videoStartedRef.current = false
+    videoRetryRef.current = 0
+
+    const timer = window.setTimeout(() => {
       setPhase("video-playing")
     }, 550)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
-   * 微信 / Safari / Chrome 核心兼容逻辑
+   * ================================
+   * 设置视频兼容属性
+   * ================================
+   */
+  const prepareVideo = (
+    video: HTMLVideoElement
+  ) => {
+    video.playsInline = true
+
+    video.setAttribute(
+      "playsinline",
+      "true"
+    )
+
+    video.setAttribute(
+      "webkit-playsinline",
+      "true"
+    )
+
+    video.setAttribute(
+      "x5-playsinline",
+      "true"
+    )
+
+    video.setAttribute(
+      "x5-video-player-type",
+      "h5"
+    )
+
+    video.setAttribute(
+      "x5-video-player-fullscreen",
+      "false"
+    )
+
+    video.setAttribute(
+      "x5-video-orientation",
+      "portraint"
+    )
+  }
+
+  /*
+   * ================================
+   * 视频阶段
    *
-   * 原则：
+   * 微信：
+   *   不自动播放
    *
-   * 1. 永远先 muted=true
-   * 2. 永远 playsInline
-   * 3. 不在自动播放成功后立即解除静音
-   * 4. 用户点击按钮以后才解除静音
-   * 5. play() 失败自动重试
-   * 6. 防止 effect 重复执行 play()
+   * Safari / Chrome：
+   *   自动播放 + 尝试声音
+   * ================================
    */
   useEffect(() => {
     if (phase !== "video-playing") return
@@ -257,204 +317,260 @@ export default function BureauIntroSection({
 
     if (!video) return
 
-    if (videoStartedRef.current) return
+    prepareVideo(video)
 
-    videoStartedRef.current = true
-
+    videoStartedRef.current = false
     videoRetryRef.current = 0
 
-    setVideoLoading(true)
     setVideoError(false)
+    setVideoLoading(false)
 
-    // 微信 / iOS Safari 必须保证这些属性
-    video.muted = true
-    video.defaultMuted = true
-    video.playsInline = true
+    /*
+     * 微信：
+     *
+     * 不自动调用 play()
+     * 等用户点击按钮。
+     */
+    if (isWeChat) {
+      try {
+        video.pause()
+      } catch {}
 
-    setVideoMuted(true)
+      video.currentTime = 0
+      video.muted = false
 
-    const startVideo = async () => {
+      setVideoMuted(false)
+      setWechatVideoStarted(false)
+
+      return
+    }
+
+    /*
+     * Chrome / Safari：
+     *
+     * 尝试自动播放有声音。
+     */
+    video.currentTime = 0
+    video.muted = false
+
+    setVideoMuted(false)
+    setVideoLoading(true)
+
+    const playAutomatically = async () => {
       try {
         await video.play()
 
         setVideoLoading(false)
         setVideoError(false)
-      } catch (error) {
-        console.warn("视频第一次播放失败:", error)
-
+        videoStartedRef.current = true
+      } catch {
         /*
-         * 微信有时需要重新 load 一次
+         * 某些浏览器不允许有声音自动播放。
+         *
+         * 自动退回静音播放。
+         *
+         * 不显示任何错误提示。
          */
-        if (videoRetryRef.current < 2) {
-          videoRetryRef.current += 1
+        try {
+          video.muted = true
 
-          try {
-            video.pause()
-          } catch {}
+          setVideoMuted(true)
 
-          video.load()
+          await video.play()
 
-          window.setTimeout(() => {
-            video.muted = true
-            video.defaultMuted = true
-
-            video.play().catch((retryError) => {
-              console.warn("视频重试失败:", retryError)
-
-              setVideoLoading(false)
-              setVideoError(true)
-            })
-          }, 250)
-        } else {
+          setVideoLoading(false)
+          setVideoError(false)
+          videoStartedRef.current = true
+        } catch {
           setVideoLoading(false)
           setVideoError(true)
         }
       }
     }
 
-    /*
-     * 给 DOM 一点时间
-     */
     const timer = window.setTimeout(() => {
-      startVideo()
-    }, 50)
+      playAutomatically()
+    }, 100)
 
     return () => {
       window.clearTimeout(timer)
     }
-  }, [phase])
+  }, [phase, isWeChat])
 
   /*
-   * 每次重新进入视频阶段时重置
+   * ================================
+   * 微信点击播放
+   *
+   * 必须由用户点击触发
+   * ================================
    */
-  useEffect(() => {
-    if (phase === "video-enter") {
-      videoStartedRef.current = false
-      videoRetryRef.current = 0
-
-      setVideoMuted(true)
-      setVideoLoading(true)
-      setVideoError(false)
-    }
-  }, [phase])
-
-  /*
-   * 用户主动开启声音
-   *
-   * 这是微信环境最关键的地方。
-   *
-   * 不要在自动播放成功后：
-   *
-   * video.muted = false
-   *
-   * 而应该等用户点击。
-   */
-  const enableVideoSound = async () => {
+  const startWechatVideo = async () => {
     const video = videoRef.current
 
     if (!video) return
 
-    try {
-      video.muted = false
+    prepareVideo(video)
 
+    setVideoError(false)
+    setVideoLoading(true)
+
+    try {
+      video.currentTime = 0
+    } catch {}
+
+    video.muted = false
+
+    setVideoMuted(false)
+
+    try {
       await video.play()
 
-      setVideoMuted(false)
-    } catch (error) {
-      console.warn("开启声音失败:", error)
-
+      videoStartedRef.current = true
+      setWechatVideoStarted(true)
+      setVideoLoading(false)
+      setVideoError(false)
+    } catch {
       /*
-       * 微信 / Safari 如果不允许解除静音，
-       * 回退到静音播放，避免视频直接停止。
+       * 不在页面上显示任何错误文字。
+       *
+       * 保持当前画面。
        */
-      video.muted = true
-      setVideoMuted(true)
-
-      try {
-        await video.play()
-      } catch {}
+      setVideoLoading(false)
+      setVideoError(true)
     }
   }
 
   /*
-   * 视频播放结束
+   * ================================
+   * 视频结束
+   * ================================
    */
   const handleVideoEnded = () => {
     videoStartedRef.current = false
+    setWechatVideoStarted(false)
     setPhase("video-exit")
   }
 
   /*
-   * 视频播放错误
+   * ================================
+   * 视频错误
+   * ================================
    */
   const handleVideoError = () => {
-    console.warn("HTML5 video error")
-
     setVideoLoading(false)
     setVideoError(true)
   }
 
   /*
-   * 手动重试视频
+   * ================================
+   * 重新播放
+   * ================================
    */
-  const retryVideo = () => {
+  const retryVideo = async () => {
     const video = videoRef.current
 
     if (!video) return
 
+    prepareVideo(video)
+
     setVideoError(false)
     setVideoLoading(true)
 
-    videoStartedRef.current = false
     videoRetryRef.current = 0
 
-    video.muted = true
-    video.defaultMuted = true
+    try {
+      video.currentTime = 0
+    } catch {}
 
-    video.load()
+    /*
+     * 微信重新播放：
+     * 仍然需要用户点击。
+     */
+    if (isWeChat) {
+      setVideoLoading(false)
+      setWechatVideoStarted(false)
 
-    window.setTimeout(() => {
-      video.play().catch((error) => {
-        console.warn("手动重试失败:", error)
+      try {
+        video.pause()
+      } catch {}
+
+      return
+    }
+
+    /*
+     * 普通浏览器重新尝试声音播放
+     */
+    video.muted = false
+    setVideoMuted(false)
+
+    try {
+      await video.play()
+
+      setVideoLoading(false)
+      setVideoError(false)
+      videoStartedRef.current = true
+    } catch {
+      /*
+       * 回退静音播放
+       */
+      try {
+        video.muted = true
+        setVideoMuted(true)
+
+        await video.play()
+
+        setVideoLoading(false)
+        setVideoError(false)
+        videoStartedRef.current = true
+      } catch {
         setVideoLoading(false)
         setVideoError(true)
-      })
-    }, 150)
+      }
+    }
   }
 
   /*
+   * ================================
    * 视频退出
+   * ================================
    */
   useEffect(() => {
     if (phase !== "video-exit") return
 
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setPhase("starting")
     }, 600)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
-   * starting
+   * ================================
+   * Starting
+   * ================================
    */
   useEffect(() => {
     if (phase !== "starting") return
 
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setPhase("verifying")
     }, 1700)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
+   * ================================
    * 身份核验
+   * ================================
    */
   useEffect(() => {
     if (phase !== "verifying") return
 
-    const steps: { target: number; delay: number }[] = [
+    const steps: {
+      target: number
+      delay: number
+    }[] = [
       { target: 12, delay: 260 },
       { target: 24, delay: 220 },
       { target: 24, delay: 500 },
@@ -471,12 +587,12 @@ export default function BureauIntroSection({
 
     const timeouts: number[] = []
 
-    let acc = 0
+    let accumulated = 0
 
     steps.forEach((step) => {
-      acc += step.delay
+      accumulated += step.delay
 
-      const id = window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
         if (cancelled) return
 
         setProgress(step.target)
@@ -488,45 +604,54 @@ export default function BureauIntroSection({
             }
           }, 400)
         }
-      }, acc)
+      }, accumulated)
 
-      timeouts.push(id)
+      timeouts.push(timer)
     })
 
     return () => {
       cancelled = true
-      timeouts.forEach((id) => window.clearTimeout(id))
+
+      timeouts.forEach((timer) => {
+        window.clearTimeout(timer)
+      })
     }
   }, [phase])
 
   /*
-   * verified
+   * ================================
+   * Verified
+   * ================================
    */
   useEffect(() => {
     if (phase !== "verified") return
 
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setPhase("done")
     }, 1100)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
-   * done
+   * ================================
+   * Done
+   * ================================
    */
   useEffect(() => {
     if (phase !== "done") return
 
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setShowBadge(true)
     }, 700)
 
-    return () => window.clearTimeout(t)
+    return () => window.clearTimeout(timer)
   }, [phase])
 
   /*
-   * 进度条故障
+   * ================================
+   * 故障效果
+   * ================================
    */
   useEffect(() => {
     if (phase !== "verifying") return
@@ -534,7 +659,9 @@ export default function BureauIntroSection({
     const glitchLoop = window.setInterval(() => {
       if (Math.random() < 0.4) {
         setGlitchActive(true)
-        setGlitchOffset((Math.random() - 0.5) * 6)
+        setGlitchOffset(
+          (Math.random() - 0.5) * 6
+        )
 
         window.setTimeout(() => {
           setGlitchActive(false)
@@ -548,13 +675,17 @@ export default function BureauIntroSection({
 
   const barLength = 30
 
-  const filled = Math.round((progress / 100) * barLength)
+  const filled = Math.round(
+    (progress / 100) * barLength
+  )
 
   const barString =
-    "█".repeat(filled) + "░".repeat(barLength - filled)
+    "█".repeat(filled) +
+    "░".repeat(barLength - filled)
 
   const showProgressBar =
-    phase === "verifying" || phase === "verified"
+    phase === "verifying" ||
+    phase === "verified"
 
   const showDossierGate =
     phase === "dossier-ready" ||
@@ -624,7 +755,9 @@ export default function BureauIntroSection({
       {/* 顶部标记 */}
       <div
         className="absolute left-0 right-0 top-6 flex items-center justify-center gap-2"
-        style={{ opacity: 0.5 }}
+        style={{
+          opacity: 0.5,
+        }}
       >
         <span
           style={{
@@ -686,8 +819,12 @@ export default function BureauIntroSection({
             ? "none"
             : "0 18px 70px rgba(87,45,55,0.14), inset 0 0 0 5px rgba(212,175,55,0.06)",
           maxWidth: 760,
-          transition: "opacity 0.6s ease, transform 0.6s ease",
-          opacity: phase === "dossier-opening" ? 0.35 : 1,
+          transition:
+            "opacity 0.6s ease, transform 0.6s ease",
+          opacity:
+            phase === "dossier-opening"
+              ? 0.35
+              : 1,
           transform:
             phase === "dossier-opening"
               ? "scale(0.96)"
@@ -700,14 +837,17 @@ export default function BureauIntroSection({
               aria-hidden="true"
               className="absolute left-3 top-3 h-7 w-7 border-l border-t border-[#D4AF37]/55"
             />
+
             <span
               aria-hidden="true"
               className="absolute right-3 top-3 h-7 w-7 border-r border-t border-[#D4AF37]/55"
             />
+
             <span
               aria-hidden="true"
               className="absolute bottom-3 left-3 h-7 w-7 border-b border-l border-[#D4AF37]/55"
             />
+
             <span
               aria-hidden="true"
               className="absolute bottom-3 right-3 h-7 w-7 border-b border-r border-[#D4AF37]/55"
@@ -715,7 +855,9 @@ export default function BureauIntroSection({
           </>
         ) : null}
 
-        {/* 开卷入口 */}
+        {/* ============================
+            开卷入口
+           ============================ */}
         {showDossierGate ? (
           <button
             type="button"
@@ -732,8 +874,10 @@ export default function BureauIntroSection({
             <div
               className="relative flex items-center justify-center"
               style={{
-                width: "clamp(168px, 58vw, 220px)",
-                height: "clamp(168px, 58vw, 220px)",
+                width:
+                  "clamp(168px, 58vw, 220px)",
+                height:
+                  "clamp(168px, 58vw, 220px)",
                 animation:
                   phase === "dossier-ready"
                     ? "dossier-breathe 2.8s ease-in-out infinite"
@@ -796,8 +940,10 @@ export default function BureauIntroSection({
               <span
                 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
                 style={{
-                  fontFamily: "var(--font-serif), serif",
-                  fontSize: "clamp(1.05rem, 5vw, 1.45rem)",
+                  fontFamily:
+                    "var(--font-serif), serif",
+                  fontSize:
+                    "clamp(1.05rem, 5vw, 1.45rem)",
                   fontWeight: 600,
                   letterSpacing: "0.08em",
                   color: "#F28DA8",
@@ -813,7 +959,8 @@ export default function BureauIntroSection({
               className="mt-7"
               style={{
                 fontFamily: "var(--font-sans)",
-                fontSize: "clamp(0.58rem, 2.4vw, 0.72rem)",
+                fontSize:
+                  "clamp(0.58rem, 2.4vw, 0.72rem)",
                 letterSpacing: "0.22em",
                 color: "#9A9698",
                 opacity: 0.78,
@@ -824,12 +971,16 @@ export default function BureauIntroSection({
           </button>
         ) : null}
 
-        {/* 打字 */}
+        {/* ============================
+            打字文字
+           ============================ */}
         {showIntroText ? (
           <div
             style={{
-              fontFamily: "var(--font-serif), serif",
-              fontSize: "clamp(1.2rem, 3.2vw, 2rem)",
+              fontFamily:
+                "var(--font-serif), serif",
+              fontSize:
+                "clamp(1.2rem, 3.2vw, 2rem)",
               color: "#1C1C1E",
               letterSpacing: "0.1em",
               lineHeight: 1.9,
@@ -838,7 +989,8 @@ export default function BureauIntroSection({
               alignItems: "center",
               justifyContent: "center",
               whiteSpace: "pre-line",
-              opacity: phase === "text-hold" ? 0 : 1,
+              opacity:
+                phase === "text-hold" ? 0 : 1,
               transform:
                 phase === "text-hold"
                   ? "translateY(-8px)"
@@ -869,14 +1021,15 @@ export default function BureauIntroSection({
           </div>
         ) : null}
 
-        {/* =========================
+        {/* ============================
             视频
-           ========================= */}
+           ============================ */}
         {showVideo ? (
           <div
             className="relative flex w-full items-center justify-center"
             style={{
-              opacity: phase === "video-playing" ? 1 : 0,
+              opacity:
+                phase === "video-playing" ? 1 : 0,
               transform:
                 phase === "video-playing"
                   ? "scale(1)"
@@ -893,7 +1046,8 @@ export default function BureauIntroSection({
               className="relative w-full overflow-hidden"
               style={{
                 maxWidth: 640,
-                border: "1px solid rgba(212,175,55,0.55)",
+                border:
+                  "1px solid rgba(212,175,55,0.55)",
                 padding: 8,
                 background:
                   "rgba(255,253,248,0.55)",
@@ -901,6 +1055,7 @@ export default function BureauIntroSection({
                   "0 12px 42px rgba(87,45,55,0.14), inset 0 0 0 1px rgba(212,175,55,0.08)",
               }}
             >
+              {/* 四角装饰 */}
               <span
                 aria-hidden="true"
                 className="absolute left-2 top-2 z-10 h-5 w-5 border-l border-t border-[#D4AF37]/60"
@@ -921,17 +1076,14 @@ export default function BureauIntroSection({
                 className="absolute bottom-2 right-2 z-10 h-5 w-5 border-b border-r border-[#D4AF37]/60"
               />
 
+              {/* 视频 */}
               <video
                 ref={videoRef}
                 src={VIDEO_SRC}
                 playsInline
-                webkit-playsinline="true"
-                x5-playsinline="true"
-                x5-video-player-type="h5"
-                x5-video-player-fullscreen="false"
-                muted
-                autoPlay
-                preload="metadata"
+                muted={false}
+                autoPlay={!isWeChat}
+                preload="auto"
                 controls={false}
                 onEnded={handleVideoEnded}
                 onError={handleVideoError}
@@ -949,129 +1101,236 @@ export default function BureauIntroSection({
                 }}
               />
 
-              {/* 视频加载 */}
-              {videoLoading && !videoError ? (
-                <div
-                  className="absolute inset-0 z-20 flex items-center justify-center"
-                  style={{
-                    background:
-                      "rgba(28,28,30,0.55)",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontSize: "0.62rem",
-                      letterSpacing: "0.12em",
-                      color: "#F6DCE3",
-                    }}
-                  >
-                    正在解密影像……
-                  </div>
-                </div>
-              ) : null}
-
-              {/* 视频失败 */}
-              {videoError ? (
-                <div
-                  className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3"
-                  style={{
-                    background:
-                      "rgba(28,28,30,0.86)",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: "var(--font-serif), serif",
-                      fontSize: "0.95rem",
-                      color: "#F6DCE3",
-                      letterSpacing: "0.12em",
-                    }}
-                  >
-                    影像读取失败
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={retryVideo}
-                    className="rounded-full px-4 py-2"
-                    style={{
-                      background:
-                        "rgba(212,175,55,0.12)",
-                      border:
-                        "1px solid rgba(212,175,55,0.55)",
-                      color: "#D4AF37",
-                      fontFamily:
-                        "var(--font-sans)",
-                      fontSize: "0.58rem",
-                      letterSpacing: "0.12em",
-                    }}
-                  >
-                    重新读取
-                  </button>
-                </div>
-              ) : null}
-
-              {/* 开启声音 */}
-              {videoMuted &&
-              phase === "video-playing" &&
+              {/* ============================
+                  微信播放按钮
+                 ============================ */}
+              {isWeChat &&
+              !wechatVideoStarted &&
               !videoError ? (
                 <button
                   type="button"
-                  onClick={enableVideoSound}
-                  aria-label="开启声音"
-                  className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full px-2.5 py-1"
+                  onClick={startWechatVideo}
+                  aria-label="点击播放"
+                  className="absolute inset-0 z-30 flex items-center justify-center"
                   style={{
-                    backgroundColor:
-                      "rgba(28,28,30,0.65)",
-                    border:
-                      "1px solid rgba(212,175,55,0.5)",
-                    pointerEvents: "auto",
+                    background:
+                      "rgba(28,28,30,0.30)",
+                    cursor: "pointer",
+                    border: "none",
                     WebkitTapHighlightColor:
                       "transparent",
                   }}
                 >
-                  <span style={{ fontSize: "0.7rem" }}>
-                    🔇
-                  </span>
-
-                  <span
+                  <div
+                    className="flex flex-col items-center gap-3"
                     style={{
                       fontFamily:
                         "var(--font-sans)",
-                      fontSize: "0.5rem",
-                      letterSpacing: "0.1em",
-                      color: "#F6DCE3",
                     }}
                   >
-                    点击开启声音
-                  </span>
+                    <div
+                      className="flex items-center justify-center rounded-full"
+                      style={{
+                        width: 68,
+                        height: 68,
+                        border:
+                          "1px solid rgba(212,175,55,0.78)",
+                        background:
+                          "rgba(28,28,30,0.68)",
+                        boxShadow:
+                          "0 0 24px rgba(212,175,55,0.20)",
+                        animation:
+                          "wechat-play-pulse 2s ease-in-out infinite",
+                      }}
+                    >
+                      <span
+                        style={{
+                          marginLeft: 4,
+                          fontSize: "1.45rem",
+                          color: "#D4AF37",
+                        }}
+                      >
+                        ▶
+                      </span>
+                    </div>
+
+                    <span
+                      style={{
+                        color: "#F6DCE3",
+                        fontSize: "0.68rem",
+                        letterSpacing: "0.16em",
+                      }}
+                    >
+                      点击播放
+                    </span>
+
+                    <span
+                      style={{
+                        color:
+                          "rgba(246,220,227,0.72)",
+                        fontSize: "0.48rem",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      TAP TO PLAY WITH SOUND
+                    </span>
+                  </div>
                 </button>
               ) : null}
 
-              {/* 微信提示 */}
-              {isWeChatBrowser() &&
-              videoMuted &&
+              {/* ============================
+                  微信播放后的加载状态
+                 ============================ */}
+              {isWeChat &&
+              wechatVideoStarted &&
+              videoLoading &&
               !videoError ? (
                 <div
-                  className="pointer-events-none absolute bottom-3 left-3 z-20"
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                  style={{
+                    background:
+                      "rgba(28,28,30,0.24)",
+                  }}
+                >
+                  <div
+                    className="flex items-center gap-2"
+                    style={{
+                      fontFamily:
+                        "var(--font-sans)",
+                      fontSize: "0.58rem",
+                      letterSpacing: "0.12em",
+                      color: "#F6DCE3",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        border:
+                          "1px solid rgba(212,175,55,0.35)",
+                        borderTopColor:
+                          "#D4AF37",
+                        borderRadius: "50%",
+                        animation:
+                          "spin-loader 0.8s linear infinite",
+                      }}
+                    />
+
+                    <span>正在读取影像</span>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* ============================
+                  普通浏览器加载
+                 ============================ */}
+              {!isWeChat &&
+              videoLoading &&
+              !videoError ? (
+                <div
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                  style={{
+                    background:
+                      "rgba(28,28,30,0.20)",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily:
+                        "var(--font-sans)",
+                      fontSize: "0.56rem",
+                      letterSpacing: "0.12em",
+                      color: "#F6DCE3",
+                    }}
+                  >
+                    正在读取影像
+                  </div>
+                </div>
+              ) : null}
+
+              {/* ============================
+                  视频失败
+                  不显示技术错误
+                 ============================ */}
+              {videoError ? (
+                <div
+                  className="absolute inset-0 z-40 flex flex-col items-center justify-center"
+                  style={{
+                    background:
+                      "rgba(28,28,30,0.78)",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={retryVideo}
+                    className="flex flex-col items-center gap-3 border-0 bg-transparent"
+                    style={{
+                      cursor: "pointer",
+                      WebkitTapHighlightColor:
+                        "transparent",
+                    }}
+                  >
+                    <div
+                      className="flex items-center justify-center rounded-full"
+                      style={{
+                        width: 54,
+                        height: 54,
+                        border:
+                          "1px solid rgba(212,175,55,0.65)",
+                        background:
+                          "rgba(28,28,30,0.55)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "1.1rem",
+                          color: "#D4AF37",
+                        }}
+                      >
+                        ↻
+                      </span>
+                    </div>
+
+                    <span
+                      style={{
+                        fontFamily:
+                          "var(--font-sans)",
+                        fontSize: "0.58rem",
+                        letterSpacing: "0.15em",
+                        color: "#F6DCE3",
+                      }}
+                    >
+                      重新播放
+                    </span>
+                  </button>
+                </div>
+              ) : null}
+
+              {/* 微信底部小提示 */}
+              {isWeChat &&
+              !wechatVideoStarted &&
+              !videoError ? (
+                <div
+                  className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap"
                   style={{
                     fontFamily:
                       "var(--font-sans)",
                     fontSize: "0.42rem",
-                    letterSpacing: "0.08em",
+                    letterSpacing: "0.1em",
                     color:
-                      "rgba(246,220,227,0.65)",
+                      "rgba(246,220,227,0.55)",
                   }}
                 >
-                  WECHAT · TAP FOR AUDIO
+                  FELINE INTELLIGENCE BUREAU
                 </div>
               ) : null}
             </div>
           </div>
         ) : null}
 
-        {/* 身份核验 */}
+        {/* ============================
+            身份核验
+           ============================ */}
         {showVerification ? (
           <>
             <div className="mb-4 flex flex-col items-center gap-2">
@@ -1213,6 +1472,7 @@ export default function BureauIntroSection({
               ) : null}
             </div>
 
+            {/* 印章 */}
             <div
               className="mt-10"
               style={{
@@ -1300,7 +1560,8 @@ export default function BureauIntroSection({
         className="absolute bottom-10 flex flex-col items-center gap-2"
         style={{
           opacity: showBadge ? 0.6 : 0,
-          transition: "opacity 1s ease 0.3s",
+          transition:
+            "opacity 1s ease 0.3s",
           animation: showBadge
             ? "scroll-hint-bounce 2.2s ease-in-out infinite"
             : "none",
@@ -1455,6 +1716,21 @@ export default function BureauIntroSection({
           50% {
             opacity: 1;
             transform: scale(1.1);
+          }
+        }
+
+        @keyframes wechat-play-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+            box-shadow:
+              0 0 24px rgba(212, 175, 55, 0.2);
+          }
+
+          50% {
+            transform: scale(1.05);
+            box-shadow:
+              0 0 32px rgba(212, 175, 55, 0.32);
           }
         }
       `}</style>
