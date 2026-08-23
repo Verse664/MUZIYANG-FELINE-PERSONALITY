@@ -148,6 +148,105 @@ function CatMarkGlitch() {
   )
 }
 
+// ============================================================
+// ★ 开场文字：分段配置（重点句放大加重，叙述句缩小变浅）
+// ============================================================
+const introSegments = [
+  {
+    text: "叮——",
+    fontSize: "clamp(1.3rem, 5.6vw, 2.1rem)",
+    fontWeight: 700,
+    color: "#D4AF37",
+    letterSpacing: "0.14em",
+    lineHeight: 1.6,
+    marginTop: 0,
+  },
+  {
+    text: "尊敬的侦探小姐，",
+    fontSize: "clamp(1.05rem, 4.4vw, 1.5rem)",
+    fontWeight: 500,
+    color: "#292326",
+    letterSpacing: "0.12em",
+    lineHeight: 1.8,
+    marginTop: 10,
+  },
+  {
+    text: "欢迎光临「木子猫星光情报站」",
+    fontSize: "clamp(1.18rem, 5vw, 1.75rem)",
+    fontWeight: 700,
+    color: "#6A4551",
+    letterSpacing: "0.09em",
+    lineHeight: 1.8,
+    marginTop: 4,
+  },
+  {
+    text: "🎯 侦查目标已锁定，请配合出示您的身份证明。",
+    fontSize: "clamp(0.88rem, 3.6vw, 1.05rem)",
+    fontWeight: 500,
+    color: "#6F6266",
+    letterSpacing: "0.06em",
+    lineHeight: 1.85,
+    marginTop: 26,
+  },
+  {
+    text: "嘘……",
+    fontSize: "clamp(0.85rem, 3.4vw, 1rem)",
+    fontWeight: 400,
+    color: "#9A9698",
+    letterSpacing: "0.2em",
+    lineHeight: 1.8,
+    marginTop: 16,
+    fontStyle: "italic" as const,
+  },
+  {
+    text: "木子猫正隐于暗处，尾巴尖漫不经心地扫过门铃铜链",
+    fontSize: "clamp(0.8rem, 3.2vw, 0.92rem)",
+    fontWeight: 400,
+    color: "#9A9698",
+    letterSpacing: "0.04em",
+    lineHeight: 1.85,
+    marginTop: 6,
+  },
+  {
+    text: "随着一声轻响，他已默许您的到来",
+    fontSize: "clamp(0.8rem, 3.2vw, 0.92rem)",
+    fontWeight: 400,
+    color: "#9A9698",
+    letterSpacing: "0.04em",
+    lineHeight: 1.85,
+    marginTop: 2,
+  },
+  {
+    text: "你们的游戏，即将开始",
+    fontSize: "clamp(0.95rem, 3.8vw, 1.12rem)",
+    fontWeight: 600,
+    color: "#6A4551",
+    letterSpacing: "0.08em",
+    lineHeight: 1.85,
+    marginTop: 14,
+  },
+  {
+    text: "🔘 [ 确认入局，推开情报站大门 ]",
+    fontSize: "clamp(0.92rem, 3.8vw, 1.1rem)",
+    fontWeight: 700,
+    color: "#B4483F",
+    letterSpacing: "0.06em",
+    lineHeight: 1.9,
+    marginTop: 22,
+  },
+]
+
+// 计算每段文字在完整字符串中的起止位置，供打字机逐段渲染使用
+const introBoundaries = (() => {
+  let cursor = 0
+  return introSegments.map((seg) => {
+    const start = cursor
+    const end = start + seg.text.length
+    cursor = end + 1 // +1 对应换行符
+    return { start, end }
+  })
+})()
+
 export default function BureauIntroSection({
   isActive = true,
 }: BureauIntroSectionProps) {
@@ -167,7 +266,11 @@ export default function BureauIntroSection({
   const [isWeChat, setIsWeChat] =
     useState(false)
 
-  const [wechatVideoStarted, setWechatVideoStarted] =
+  // ★ 新增：移动端设备检测（不限于微信），用于统一带声播放的兜底策略
+  const [isMobileDevice, setIsMobileDevice] =
+    useState(false)
+
+  const [videoStarted, setVideoStarted] =
     useState(false)
 
   const [videoLoading, setVideoLoading] =
@@ -179,17 +282,19 @@ export default function BureauIntroSection({
   const videoRef =
     useRef<HTMLVideoElement | null>(null)
 
-  // ============================================================
-  // ★ 核心文字
-  //
-  // 所有“猫咪情报局”已经统一改成：
-  // “木子猫星光情报站”
-  // ============================================================
-  const fullText =
-    "欢迎各位侦探小姐\n莅临「木子猫星光情报站」\n\n本情报局观测对象\n「百万男神木子洋」"
+  const fullText = introSegments
+    .map((seg) => seg.text)
+    .join("\n")
 
   // ============================================================
-  // 微信浏览器检测
+  // 微信 / 移动端浏览器检测
+  //
+  // ★ 修复说明：
+  // 移动端浏览器（iOS Safari、Android Chrome 等）和微信一样，
+  // 都会强制拦截"不经用户点击、直接自动播放且带声音"的视频，
+  // 之前只对微信做了"等待用户点击播放"的处理，非微信的手机浏览器
+  // 走的是自动播放分支，声音被浏览器静默拦截，导致"没有声音"。
+  // 这里把判定范围从"仅微信"扩大为"微信 或 移动设备"。
   // ============================================================
   useEffect(() => {
     if (typeof navigator === "undefined") {
@@ -202,7 +307,15 @@ export default function BureauIntroSection({
     setIsWeChat(
       /MicroMessenger/i.test(ua)
     )
+
+    setIsMobileDevice(
+      /iPhone|iPad|iPod|Android/i.test(ua)
+    )
   }, [])
+
+  // 是否需要"点击播放"来保证带声音播放（微信 或 任意移动设备）
+  const needsTapToPlay =
+    isWeChat || isMobileDevice
 
   // ============================================================
   // 打开卷宗
@@ -225,10 +338,7 @@ export default function BureauIntroSection({
   }
 
   // ============================================================
-  // ★ 打字机
-  //
-  // 保持完整逐字打印。
-  // 「木子猫星光情报站」不会跳过。
+  // 打字机
   // ============================================================
   useEffect(() => {
     if (phase !== "typing") {
@@ -296,12 +406,6 @@ export default function BureauIntroSection({
 
   // ============================================================
   // 设置移动端视频兼容属性
-  //
-  // 不直接写：
-  // webkit-playsinline
-  // x5-playsinline
-  //
-  // 避免 TypeScript JSX 类型报错。
   // ============================================================
   const prepareVideo = (
     video: HTMLVideoElement
@@ -342,11 +446,8 @@ export default function BureauIntroSection({
   // ============================================================
   // 视频播放
   //
-  // Safari / Chrome：
-  // 尝试自动播放。
-  //
-  // 微信：
-  // 不自动播放，等待用户点击。
+  // 桌面端：尝试自动播放。
+  // 微信 / 移动设备：不自动播放，等待用户点击（保证带声音）。
   // ============================================================
   useEffect(() => {
     if (phase !== "video-playing") {
@@ -365,9 +466,9 @@ export default function BureauIntroSection({
     setVideoLoading(false)
 
     // ==========================================================
-    // 微信
+    // 微信 / 移动设备：等待用户点击
     // ==========================================================
-    if (isWeChat) {
+    if (needsTapToPlay) {
       try {
         video.pause()
       } catch {}
@@ -378,16 +479,15 @@ export default function BureauIntroSection({
 
       video.muted = false
 
-      setWechatVideoStarted(false)
+      setVideoStarted(false)
 
       return
     }
 
     // ==========================================================
-    // Safari / Chrome
+    // 桌面浏览器
     //
-    // 先尝试带声音。
-    // 如果浏览器阻止，则自动静音播放。
+    // 先尝试带声音，浏览器阻止则自动静音播放。
     // ==========================================================
     video.currentTime = 0
     video.muted = false
@@ -423,15 +523,14 @@ export default function BureauIntroSection({
 
     return () =>
       window.clearTimeout(timer)
-  }, [phase, isWeChat])
+  }, [phase, needsTapToPlay])
 
   // ============================================================
-  // ★ 微信点击播放
+  // ★ 点击播放（微信 / 移动设备通用）
   //
-  // 用户主动点击后：
-  // 允许播放声音。
+  // 用户主动点击后：允许播放声音。
   // ============================================================
-  const startWechatVideo =
+  const startVideo =
     async () => {
       const video = videoRef.current
 
@@ -453,7 +552,7 @@ export default function BureauIntroSection({
       try {
         await video.play()
 
-        setWechatVideoStarted(true)
+        setVideoStarted(true)
         setVideoLoading(false)
         setVideoError(false)
       } catch {
@@ -499,10 +598,10 @@ export default function BureauIntroSection({
         video.currentTime = 0
       } catch {}
 
-      // 微信重新回到点击播放状态
-      if (isWeChat) {
+      // 微信 / 移动设备重新回到点击播放状态
+      if (needsTapToPlay) {
         setVideoLoading(false)
-        setWechatVideoStarted(false)
+        setVideoStarted(false)
 
         try {
           video.pause()
@@ -747,83 +846,6 @@ export default function BureauIntroSection({
     typed.length ===
       fullText.length
 
-  // ============================================================
-  // ★ 精确逐行打字
-  //
-  // 防止第二行“木子猫星光情报站”漏字。
-  // ============================================================
-  const line1 =
-    "欢迎各位侦探小姐"
-
-  const line2 =
-    "莅临「木子猫星光情报站」"
-
-  const line3 =
-    "本情报局观测对象"
-
-  const line4 =
-    "「百万男神木子洋」"
-
-  const line1Start = 0
-
-  const line1End =
-    line1.length
-
-  const line2Start =
-    line1End + 1
-
-  const line2End =
-    line2Start +
-    line2.length
-
-  const line3Start =
-    line2End + 2
-
-  const line3End =
-    line3Start +
-    line3.length
-
-  const line4Start =
-    line3End + 1
-
-  const line4End =
-    line4Start +
-    line4.length
-
-  const typedLine1 =
-    typed.slice(
-      line1Start,
-      line1End
-    )
-
-  const typedLine2 =
-    typed.length > line2Start
-      ? typed.slice(
-          line2Start,
-          line2End
-        )
-      : ""
-
-  const typedLine3 =
-    typed.length > line3Start
-      ? typed.slice(
-          line3Start,
-          line3End
-        )
-      : ""
-
-  const typedLine4 =
-    typed.length > line4Start
-      ? typed.slice(
-          line4Start,
-          line4End
-        )
-      : ""
-
-  const introComplete =
-    typed.length >=
-    line3Start
-
   return (
     <section
       className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden"
@@ -935,9 +957,6 @@ export default function BureauIntroSection({
 
       {/* ========================================================
           ★ 主流程
-          
-          不再有外层画布。
-          使用真正的 flex 居中。
          ======================================================== */}
       <div
         className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center text-center"
@@ -1091,14 +1110,14 @@ export default function BureauIntroSection({
         ) : null}
 
         {/* ======================================================
-            ★ 打字机
+            ★ 打字机：分段渲染，重点句放大加重
            ====================================================== */}
         {showIntroText ? (
           <div
-            className="flex w-full flex-col items-center justify-center px-4"
+            className="flex w-full flex-col items-center justify-center px-5"
             style={{
               minHeight:
-                "42vh",
+                "58vh",
 
               opacity:
                 phase === "text-hold"
@@ -1114,200 +1133,61 @@ export default function BureauIntroSection({
                 "opacity 0.5s ease, transform 0.5s ease",
             }}
           >
-            {/* 第一组 */}
             <div
               style={{
                 fontFamily:
                   '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
-
-                fontSize:
-                  "clamp(1.22rem, 5.2vw, 2rem)",
-
-                fontWeight: 500,
-
-                letterSpacing:
-                  "0.11em",
-
-                lineHeight: 1.9,
-
-                color: "#292326",
-
                 width: "100%",
+                maxWidth: 420,
               }}
             >
-              {/* 第一行 */}
-              <div
-                style={{
-                  minHeight:
-                    "1.9em",
-                }}
-              >
-                {typedLine1}
+              {introSegments.map((seg, idx) => {
+                const { start, end } = introBoundaries[idx]
 
-                {phase === "typing" &&
-                typed.length <=
-                  line1End ? (
-                  <span
-                    aria-hidden="true"
-                    className="ml-[3px] inline-block align-middle"
+                const isActive =
+                  idx === 0
+                    ? typed.length <= end
+                    : typed.length > start && typed.length <= end
+
+                const displayed =
+                  idx === 0
+                    ? typed.slice(0, Math.min(typed.length, end))
+                    : typed.length > start
+                      ? typed.slice(start, Math.min(typed.length, end))
+                      : ""
+
+                return (
+                  <div
+                    key={idx}
                     style={{
-                      width: 2,
-                      height: "1.1em",
-                      backgroundColor:
-                        "#D4AF37",
-                      animation:
-                        "cursor-blink 0.9s step-end infinite",
+                      minHeight: "1.6em",
+                      marginTop: seg.marginTop,
+                      fontSize: seg.fontSize,
+                      fontWeight: seg.fontWeight,
+                      color: seg.color,
+                      letterSpacing: seg.letterSpacing,
+                      lineHeight: seg.lineHeight,
+                      fontStyle: seg.fontStyle ?? "normal",
                     }}
-                  />
-                ) : null}
-              </div>
+                  >
+                    {displayed}
 
-              {/* 第二行 */}
-              <div
-                style={{
-                  minHeight:
-                    "1.9em",
-                }}
-              >
-                {typedLine2}
-
-                {phase === "typing" &&
-                typed.length >
-                  line2Start &&
-                typed.length <=
-                  line2End ? (
-                  <span
-                    aria-hidden="true"
-                    className="ml-[3px] inline-block align-middle"
-                    style={{
-                      width: 2,
-                      height: "1.1em",
-                      backgroundColor:
-                        "#D4AF37",
-                      animation:
-                        "cursor-blink 0.9s step-end infinite",
-                    }}
-                  />
-                ) : null}
-              </div>
-            </div>
-
-            {/* 分隔线 */}
-            <div
-              style={{
-                width: 34,
-                height: 1,
-                marginTop: 24,
-                marginBottom: 24,
-
-                background:
-                  "linear-gradient(90deg, transparent, #D4AF37, transparent)",
-
-                opacity:
-                  introComplete
-                    ? 0.7
-                    : 0,
-
-                transform:
-                  introComplete
-                    ? "scaleX(1)"
-                    : "scaleX(0)",
-
-                transition:
-                  "opacity 0.35s ease, transform 0.35s ease",
-              }}
-            />
-
-            {/* 第二组 */}
-            <div
-              style={{
-                fontFamily:
-                  '"Noto Serif SC", "Songti SC", "STSong", "SimSun", serif',
-
-                fontSize:
-                  "clamp(0.95rem, 3.7vw, 1.3rem)",
-
-                fontWeight: 400,
-
-                letterSpacing:
-                  "0.15em",
-
-                lineHeight: 1.9,
-
-                color: "#6F6266",
-
-                width: "100%",
-              }}
-            >
-              {/* 第三行 */}
-              <div
-                style={{
-                  minHeight:
-                    "1.9em",
-                }}
-              >
-                {typedLine3}
-
-                {phase === "typing" &&
-                typed.length >
-                  line3Start &&
-                typed.length <=
-                  line3End ? (
-                  <span
-                    aria-hidden="true"
-                    className="ml-[3px] inline-block align-middle"
-                    style={{
-                      width: 2,
-                      height: "1.1em",
-                      backgroundColor:
-                        "#D4AF37",
-                      animation:
-                        "cursor-blink 0.9s step-end infinite",
-                    }}
-                  />
-                ) : null}
-              </div>
-
-              {/* 第四行 */}
-              <div
-                style={{
-                  minHeight:
-                    "1.9em",
-
-                  marginTop: 7,
-
-                  fontSize:
-                    "clamp(1.12rem, 4.8vw, 1.65rem)",
-
-                  color: "#6A4551",
-
-                  fontWeight: 600,
-
-                  letterSpacing:
-                    "0.13em",
-                }}
-              >
-                {typedLine4}
-
-                {phase === "typing" &&
-                typed.length >
-                  line4Start &&
-                typed.length <=
-                  line4End ? (
-                  <span
-                    aria-hidden="true"
-                    className="ml-[3px] inline-block align-middle"
-                    style={{
-                      width: 2,
-                      height: "1.1em",
-                      backgroundColor:
-                        "#D4AF37",
-                      animation:
-                        "cursor-blink 0.9s step-end infinite",
-                    }}
-                  />
-                ) : null}
-              </div>
+                    {phase === "typing" && isActive ? (
+                      <span
+                        aria-hidden="true"
+                        className="ml-[3px] inline-block align-middle"
+                        style={{
+                          width: 2,
+                          height: "1.05em",
+                          backgroundColor: "#D4AF37",
+                          animation:
+                            "cursor-blink 0.9s step-end infinite",
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           </div>
         ) : null}
@@ -1356,7 +1236,7 @@ export default function BureauIntroSection({
                 ref={videoRef}
                 src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
                 playsInline
-                autoPlay={!isWeChat}
+                autoPlay={!needsTapToPlay}
                 preload="auto"
                 controls={false}
                 onEnded={
@@ -1385,21 +1265,15 @@ export default function BureauIntroSection({
               />
 
               {/* ==================================================
-                  ★ 微信播放按钮
-                  
-                  更简洁、更高级：
-                  半透明玻璃圆环
-                  金色细线
-                  极简三角播放符号
-                  不再像普通视频播放器
+                  ★ 点击播放按钮（微信 / 移动设备通用）
                  ================================================== */}
-              {isWeChat &&
-              !wechatVideoStarted &&
+              {needsTapToPlay &&
+              !videoStarted &&
               !videoError ? (
                 <button
                   type="button"
                   onClick={
-                    startWechatVideo
+                    startVideo
                   }
                   aria-label="点击播放视频"
                   className="absolute inset-0 z-30 flex items-center justify-center"
@@ -1601,10 +1475,10 @@ export default function BureauIntroSection({
               ) : null}
 
               {/* ==================================================
-                  微信播放后的加载
+                  播放后的加载（微信 / 移动设备）
                  ================================================== */}
-              {isWeChat &&
-              wechatVideoStarted &&
+              {needsTapToPlay &&
+              videoStarted &&
               videoLoading &&
               !videoError ? (
                 <div
@@ -1650,9 +1524,9 @@ export default function BureauIntroSection({
               ) : null}
 
               {/* ==================================================
-                  非微信加载
+                  非微信/桌面端加载
                  ================================================== */}
-              {!isWeChat &&
+              {!needsTapToPlay &&
               videoLoading &&
               !videoError ? (
                 <div
@@ -1681,8 +1555,6 @@ export default function BureauIntroSection({
 
               {/* ==================================================
                   播放异常
-                  
-                  不写“微信视频播放失败”
                  ================================================== */}
               {videoError ? (
                 <div
@@ -2267,7 +2139,7 @@ export default function BureauIntroSection({
           }
         }
 
-        /* 微信播放按钮轻微呼吸 */
+        /* 微信/移动端播放按钮轻微呼吸 */
         @keyframes wechat-play-pulse {
           0%,
           100% {
@@ -2286,10 +2158,6 @@ export default function BureauIntroSection({
         }
 
         @media (max-width: 480px) {
-          /*
-           * 小屏幕再稍微收紧顶部/底部空间，
-           * 让真正的内容中心落在手机视觉中心。
-           */
           section {
             min-height: 100svh;
           }
