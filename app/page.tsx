@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import BureauIntroSection from "@/components/feline/BureauIntroSection"
 import HeroSection from "@/components/feline/HeroSection"
 import SpeciesSection from "@/components/feline/SpeciesSection"
 import PersonalitySection from "@/components/feline/PersonalitySection"
@@ -444,7 +445,15 @@ export default function FelineArchivePage() {
         className="relative min-h-screen overflow-x-hidden"
         style={{ fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#FAF7F5" }}
       >
-        <HeroSection scrollY={scrollY} onEggTrigger={() => {}} />
+        <BureauIntroSection />
+        <HeroSection onEggTrigger={() => setVideoModal({
+          title: "情报局 · 深层档案解密",
+          subtitle: "CLASSIFIED INTEL VIDEO",
+          description: "情报局猫探长专属寄语，点击即可解锁深层情报。",
+          videoSrc: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          posterSrc: "/KWINmanmiao.jpg",
+          accent: "#D4AF37",
+        })} scrollY={scrollY} />
         <SpeciesSection />
         <PersonalitySection
         onOpenVideo={(personality) =>
@@ -500,20 +509,20 @@ export default function FelineArchivePage() {
             </div>
 
             <h2
-            style={{
-              fontFamily: "var(--font-serif), serif",
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
-              color: "#1C1C1E",
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              textAlign: "center",
+              style={{
+                fontFamily: "var(--font-serif), serif",
+                fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                color: "#1C1C1E",
+                fontWeight: 700,
+                letterSpacing: "0.04em",
+                textAlign: "center",
               }}
-              >
-                情报交换区
-              </h2>
-              
-              {/* 新增：八年寄语段落 */}
-              <p
+            >
+              情报交换区
+            </h2>
+
+            {/* 八年寄语 */}
+            <p
               className="mt-4 mx-auto max-w-2xl"
               style={{
                 fontFamily: "var(--font-sans), sans-serif",
@@ -522,31 +531,31 @@ export default function FelineArchivePage() {
                 color: "#8E8E93",
                 lineHeight: 1.9,
                 textAlign: "center",
-                }}
-                >
-                  八年，是丈量一段时光的刻度。
-                  <br />
-                  从初见微光，至如今星河。
-                  <br />
-                  我们陪他走过四季，他陪我们见证成长。
-                  <br />
-                  八年很长，长到足够让一颗星星发光；
-                  <br />
-                  八年很短，短到仿佛昨日刚刚相遇。
-                  <br />
-                  这一次，我们共同执笔，
-                  <br />
-                  将藏在时光里的偏爱，
-                  <br />
-                  镌刻进各自生命的印记。
-                </p>
-                
-                <p
-                className="mt-3"
-                style={{ fontFamily: "var(--font-sans)", fontSize: "0.75rem", letterSpacing: "0.25em", color: "#8E8E93", textAlign: "center" }}
-                >
-                  无限流情报在此汇聚 · 侦探们的一手线报持续更新
-                </p>
+              }}
+            >
+              八年，是丈量一段时光的刻度。
+              <br />
+              从初见微光，至如今星河。
+              <br />
+              我们陪他走过四季，他陪我们见证成长。
+              <br />
+              八年很长，长到足够让一颗星星发光；
+              <br />
+              八年很短，短到仿佛昨日刚刚相遇。
+              <br />
+              这一次，我们共同执笔，
+              <br />
+              将藏在时光里的偏爱，
+              <br />
+              镌刻进各自生命的印记。
+            </p>
+
+            <p
+              className="mt-3"
+              style={{ fontFamily: "var(--font-sans)", fontSize: "0.75rem", letterSpacing: "0.25em", color: "#8E8E93", textAlign: "center" }}
+            >
+              无限流情报在此汇聚 · 侦探们的一手线报持续更新
+            </p>
 
             <div
               className="relative mx-auto mt-12 overflow-hidden"
