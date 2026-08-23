@@ -829,16 +829,8 @@ export default function BureauIntroSection({
     phase === "verifying" ||
     phase === "verified" ||
     phase === "done"
-
-  const showPersistentText =
-    (
-      phase === "starting" ||
-      phase === "verifying" ||
-      phase === "verified" ||
-      phase === "done"
-    ) &&
-    typed.length ===
-      fullText.length
+  // 不在视频播放后显示完整的开场文字（只保留身份核验和徽标）
+  const showPersistentText = false
 
   return (
     <section
