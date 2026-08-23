@@ -180,7 +180,7 @@ const introSegments = [
     marginTop: 4,
   },
   {
-    text: "🎯 侦查目标已锁定，请配合出示您的身份证明。",
+    text: "🎯 侦查目标已锁定，请配合出示您的身份证明",
     fontSize: "clamp(0.88rem, 3.6vw, 1.05rem)",
     fontWeight: 500,
     color: "#6F6266",
@@ -226,7 +226,7 @@ const introSegments = [
     marginTop: 14,
   },
   {
-    text: "🔘 [ 确认入局，推开情报站大门 ]",
+    text: "[ 确认入局，推开情报站大门 ]",
     fontSize: "clamp(0.92rem, 3.8vw, 1.1rem)",
     fontWeight: 700,
     color: "#B4483F",
@@ -288,13 +288,6 @@ export default function BureauIntroSection({
 
   // ============================================================
   // 微信 / 移动端浏览器检测
-  //
-  // ★ 修复说明：
-  // 移动端浏览器（iOS Safari、Android Chrome 等）和微信一样，
-  // 都会强制拦截"不经用户点击、直接自动播放且带声音"的视频，
-  // 之前只对微信做了"等待用户点击播放"的处理，非微信的手机浏览器
-  // 走的是自动播放分支，声音被浏览器静默拦截，导致"没有声音"。
-  // 这里把判定范围从"仅微信"扩大为"微信 或 移动设备"。
   // ============================================================
   useEffect(() => {
     if (typeof navigator === "undefined") {
@@ -444,9 +437,9 @@ export default function BureauIntroSection({
   }
 
   // ============================================================
-  // 视频播放
+  // ★★★ 视频播放（关键：桌面端带声音播放）★★★
   //
-  // 桌面端：尝试自动播放。
+  // 桌面端：先尝试带声音，浏览器阻止则自动静音播放。
   // 微信 / 移动设备：不自动播放，等待用户点击（保证带声音）。
   // ============================================================
   useEffect(() => {
@@ -485,9 +478,7 @@ export default function BureauIntroSection({
     }
 
     // ==========================================================
-    // 桌面浏览器
-    //
-    // 先尝试带声音，浏览器阻止则自动静音播放。
+    // ★★★ 桌面浏览器：带声音播放 ★★★
     // ==========================================================
     video.currentTime = 0
     video.muted = false
@@ -497,11 +488,13 @@ export default function BureauIntroSection({
     const playWithSound =
       async () => {
         try {
+          // 首先尝试带声音播放
           await video.play()
 
           setVideoLoading(false)
           setVideoError(false)
         } catch {
+          // 如果浏览器阻止带声音播放，则静音播放
           try {
             video.muted = true
 
@@ -610,6 +603,7 @@ export default function BureauIntroSection({
         return
       }
 
+      // 桌面端重新尝试带声音播放
       video.muted = false
 
       try {

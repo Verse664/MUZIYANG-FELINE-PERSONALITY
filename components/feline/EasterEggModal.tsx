@@ -213,6 +213,8 @@ export default function EasterEggModal({
                     const active = i < visibleCount
                     const system = isSystemLine(line)
                     const isFinalLine = /truth is/i.test(line)
+                    const normalizedLine = line.replace(/[「」]/g, "").trim()
+                    const isArchiveTitle = normalizedLine === "归档手札"
 
                     if (system) {
                       logIndex += 1
@@ -247,17 +249,20 @@ export default function EasterEggModal({
                         key={i}
                         className="text-center"
                         style={{
-                          fontFamily: "var(--font-serif), serif",
-                          fontStyle: isFinalLine ? "italic" : "normal",
-                          fontSize: isFinalLine ? "clamp(0.95rem, 2.2vw, 1.15rem)" : "clamp(1.02rem, 2.4vw, 1.25rem)",
-                          lineHeight: 1.9,
-                          letterSpacing: "0.05em",
-                          color: isFinalLine ? "#D4AF37" : "#F6DCE3",
-                          padding: isFinalLine ? "0.6rem 0 0" : "0.15rem 0",
+                          fontFamily: isArchiveTitle ? "var(--font-handwriting), var(--font-serif), serif" : "var(--font-serif), serif",
+                          fontStyle: isArchiveTitle ? "normal" : isFinalLine ? "italic" : "normal",
+                          fontSize: isArchiveTitle ? "clamp(1.4rem, 2.8vw, 1.9rem)" : isFinalLine ? "clamp(0.95rem, 2.2vw, 1.15rem)" : "clamp(1.02rem, 2.4vw, 1.25rem)",
+                          lineHeight: isArchiveTitle ? 1.7 : 1.9,
+                          letterSpacing: isArchiveTitle ? "0.08em" : "0.05em",
+                          color: isArchiveTitle ? "#D4AF37" : isFinalLine ? "#D4AF37" : "#F6DCE3",
+                          fontWeight: isArchiveTitle ? 700 : isFinalLine ? 600 : 500,
+                          padding: isArchiveTitle ? "0.8rem 0 0.5rem" : isFinalLine ? "0.6rem 0 0" : "0.15rem 0",
                           opacity: active ? 1 : 0,
                           transform: active ? "translateY(0)" : "translateY(8px)",
                           transition: "opacity 0.6s ease, transform 0.6s ease",
-                          textShadow: glitchActive && active && !isFinalLine ? "1px 0 rgba(244,166,184,0.5), -1px 0 rgba(111,227,217,0.35)" : "none",
+                          textShadow: isArchiveTitle
+                            ? "0 0 18px rgba(212,175,55,0.32), 0 0 8px rgba(212,175,55,0.18)"
+                            : glitchActive && active && !isFinalLine ? "1px 0 rgba(244,166,184,0.5), -1px 0 rgba(111,227,217,0.35)" : "none",
                         }}
                       >
                         {line}

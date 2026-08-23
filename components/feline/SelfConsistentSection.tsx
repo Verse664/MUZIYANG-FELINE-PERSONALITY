@@ -401,7 +401,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         {/* 开场：无框终端文字 */}
         <div className="mb-16">
           <TerminalText
-            lines={["最终观测报告生成中......", "权限确认：绝密档案解封"]}
+            lines={["【系统提示：最终观测报告生成中……】", "【权限确认：绝密档案解封】"]}
             visible={visible}
           />
         </div>
@@ -416,10 +416,9 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             letterSpacing: "0.06em",
           }}
         >
-          <span className="block">五份卷宗，五种模样。</span>
-          <span className="block">曼妙、温柔、捣蛋、担当、傲娇。</span>
-          <span className="block mt-5">拆开看，是五段互不相同的侧写；</span>
-          <span className="block">合起来看，却只指向同一个坐标。</span>
+          <span className="block">木经岁寒，拆卷宗以阅万千侧写；</span>
+          <span className="block">子夜微光，合坐标而定唯一归程；</span>
+          <span className="block">洋波入定，任猫格流转皆为此身。</span>
         </div>
 
         {/* 核心句 */}
@@ -433,7 +432,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
             fontWeight: 700,
           }}
         >
-          万千猫格，皆是洋洋。
+          MuZiyang · 木子洋
         </p>
 
         {/* 五色归档索引 */}
@@ -465,7 +464,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
           }}
         >
           <TerminalText
-            lines={["目标人物观测日志已永久封存.", "The only truth is MU ZIYANG."]}
+            lines={["【系统提示：目标人物观测日志已永久存档。】", "The only truth is MU ZIYANG."]}
             visible={closingVisible}
             showCursor
           />

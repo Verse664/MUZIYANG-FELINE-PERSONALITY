@@ -355,7 +355,7 @@ export default function PersonalitySection({ onOpenVideo }: PersonalitySectionPr
                   lineHeight: 1.12,
                 }}
               >
-                情报展区
+                行动影像情报公开
               </h2>
               <p
                 className="mt-4"
