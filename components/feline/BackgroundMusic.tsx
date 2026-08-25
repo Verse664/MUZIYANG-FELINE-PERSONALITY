@@ -20,16 +20,37 @@ export default function BackgroundMusic() {
     audio.crossOrigin = "anonymous"
     audioRef.current = audio
 
+    // ✅ 改进：更严格的视频播放检测
     const hasVideoPlaying = () => {
       return Array.from(document.querySelectorAll("video")).some((video) => {
-        return !video.paused && !video.ended && video.readyState >= 2
+        // 必须满足所有条件才算"真正在播放"
+        const isVisible = video.offsetParent !== null
+        const hasDuration = video.duration > 0
+        const isPlaying = !video.paused && !video.ended && video.readyState >= 2
+        const hasCurrentTime = video.currentTime > 0
+        
+        // ✅ 调试日志，帮助排查
+        if (video.readyState >= 2 && !video.paused) {
+          console.log("🎬 检测到视频状态:", {
+            isVisible,
+            hasDuration,
+            isPlaying,
+            hasCurrentTime,
+            src: video.src?.slice(-20)
+          })
+        }
+        
+        return isVisible && hasDuration && isPlaying && hasCurrentTime
       })
     }
 
     const tryPlayMusic = async () => {
       const currentAudio = audioRef.current
       if (!currentAudio) return
-      if (hasVideoPlaying()) return
+      if (hasVideoPlaying()) {
+        console.log("🎬 有视频在播放，跳过音乐")
+        return
+      }
       if (!userGestureRef.current) return
 
       try {
@@ -48,23 +69,19 @@ export default function BackgroundMusic() {
       void tryPlayMusic()
     }
 
-    // ✅ 统一的音乐恢复检查
     const checkAndResumeMusic = () => {
       const currentAudio = audioRef.current
       if (!currentAudio) return
       
-      // 如果有视频在播放，音乐不应该恢复
       if (hasVideoPlaying()) {
         console.log("🎬 检测到视频在播放，音乐保持暂停")
         return
       }
 
-      // 如果音乐本来就在播放，不需要操作
       if (!currentAudio.paused) {
         return
       }
 
-      // ✅ 如果音乐是暂停状态，且之前是因为视频而被暂停的，恢复播放
       if (wasPlayingBeforeVideoRef.current && userGestureRef.current) {
         wasPlayingBeforeVideoRef.current = false
         console.log("🎵 检测到视频已关闭，恢复背景音乐")
@@ -91,26 +108,20 @@ export default function BackgroundMusic() {
         return
       }
 
-      // pause / ended：视频停下来了
       if (event.type === "pause" || event.type === "ended") {
         console.log("🎬 视频暂停/结束事件触发")
-        // 延迟一帧检查，确保视频状态已更新
         requestAnimationFrame(() => {
           checkAndResumeMusic()
         })
       }
     }
 
-    // ✅ 新增：监听 DOM 变化，检测视频元素被移除
     const handleDOMChange = () => {
-      // 检查当前是否有视频在播放
       if (!hasVideoPlaying()) {
-        // 没有视频播放了，尝试恢复音乐
         checkAndResumeMusic()
       }
     }
 
-    // ✅ 使用 MutationObserver 监听视频元素的变化
     const setupMutationObserver = () => {
       const observer = new MutationObserver(() => {
         handleDOMChange()
@@ -124,11 +135,10 @@ export default function BackgroundMusic() {
       return observer
     }
 
-    // ✅ 定时轮询检查（兜底方案，防止事件遗漏）
     const startVideoCheckInterval = () => {
       videoCheckIntervalRef.current = setInterval(() => {
         handleDOMChange()
-      }, 500) // 每500ms检查一次
+      }, 500)
     }
 
     const handleAudioError = () => {
@@ -150,10 +160,7 @@ export default function BackgroundMusic() {
     document.addEventListener("ended", handleVideoLifecycle, true)
     audio.addEventListener("error", handleAudioError)
 
-    // ✅ 设置 MutationObserver
     const observer = setupMutationObserver()
-
-    // ✅ 启动定时轮询
     startVideoCheckInterval()
 
     // 页面加载完成后尝试自动播放
@@ -161,16 +168,20 @@ export default function BackgroundMusic() {
       requestAnimationFrame(() => {
         const currentAudio = audioRef.current
         if (!currentAudio) return
-        if (hasVideoPlaying()) return
+        if (hasVideoPlaying()) {
+          console.log("🎬 有视频在播放，跳过自动播放")
+          return
+        }
 
+        console.log("🎵 尝试自动播放...")
         currentAudio.muted = false
         currentAudio.play()
           .then(() => {
             console.log("✅ 背景音乐自动播放成功")
             userGestureRef.current = true
           })
-          .catch(() => {
-            console.log("⏳ 自动播放被阻止，等待用户交互")
+          .catch((err) => {
+            console.log("⏳ 自动播放被阻止:", err.name)
           })
       })
     }
@@ -182,7 +193,6 @@ export default function BackgroundMusic() {
     }
 
     return () => {
-      // 清理事件监听
       window.removeEventListener("load", attemptAutoPlay)
       document.removeEventListener("pointerdown", enableMusic)
       document.removeEventListener("keydown", enableMusic)
@@ -192,16 +202,13 @@ export default function BackgroundMusic() {
       document.removeEventListener("ended", handleVideoLifecycle, true)
       audio.removeEventListener("error", handleAudioError)
 
-      // 清理定时器
       if (videoCheckIntervalRef.current) {
         clearInterval(videoCheckIntervalRef.current)
         videoCheckIntervalRef.current = null
       }
 
-      // 清理 MutationObserver
       observer.disconnect()
 
-      // 清理音频
       audio.pause()
       audio.src = ""
       audioRef.current = null
@@ -216,7 +223,11 @@ export default function BackgroundMusic() {
 
     if (currentAudio.paused) {
       const hasVideoPlaying = Array.from(document.querySelectorAll("video")).some((video) => {
-        return !video.paused && !video.ended && video.readyState >= 2
+        const isVisible = video.offsetParent !== null
+        const hasDuration = video.duration > 0
+        const isPlaying = !video.paused && !video.ended && video.readyState >= 2
+        const hasCurrentTime = video.currentTime > 0
+        return isVisible && hasDuration && isPlaying && hasCurrentTime
       })
 
       if (hasVideoPlaying) {
@@ -230,7 +241,6 @@ export default function BackgroundMusic() {
       try {
         await currentAudio.play()
         console.log("🎵 手动播放音乐")
-        // ✅ 如果用户手动播放了，清除之前的状态标记
         wasPlayingBeforeVideoRef.current = true
       } catch (error) {
         console.log("⚠️ 手动播放失败")
@@ -238,10 +248,8 @@ export default function BackgroundMusic() {
       return
     }
 
-    // 暂停音乐
     currentAudio.pause()
     console.log("⏸️ 手动暂停音乐")
-    // ✅ 用户手动暂停，清除标记
     wasPlayingBeforeVideoRef.current = false
   }
 
