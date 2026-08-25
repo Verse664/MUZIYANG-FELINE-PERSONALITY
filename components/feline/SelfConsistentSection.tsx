@@ -376,7 +376,7 @@ export default function SelfConsistentSection({ onEggTrigger }: SelfConsistentSe
         <div className="mb-6 flex items-center justify-center gap-5">
           <span style={{ flex: 1, maxWidth: 70, height: "0.5px", background: "linear-gradient(90deg, transparent, #D4AF37)", opacity: 0.5 }} />
           <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.58rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
-            BUREAU FILE · 04 · FINAL SEAL
+            BUREAU FILE · 03 · FINAL SEAL
           </span>
           <span style={{ flex: 1, maxWidth: 70, height: "0.5px", background: "linear-gradient(90deg, #D4AF37, transparent)", opacity: 0.5 }} />
         </div>

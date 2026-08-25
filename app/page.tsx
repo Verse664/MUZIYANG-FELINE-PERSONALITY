@@ -498,9 +498,12 @@ export default function FelineArchivePage() {
             "【系统提示：最终观测报告生成中……】",
             "【权限确认：绝密档案解封】",
             "「归档手札」",
-            "强大却不凌厉，成熟仍存赤子之心",
-            "以最真实的自我，诠释着温柔抵抗世界的力量",
-            "愿这份鲜活与真诚，能化作你人生路上最长情的陪伴",
+            "强大却不凌厉,",
+            "成熟仍存赤子之心;",
+            "以最真实的自我，",
+            "诠释着温柔抵抗世界的力量;",
+            "愿这份鲜活与真诚,",
+            "能化作你人生路上最长情的陪伴。",
             "【系统提示：目标人物观测日志已永久存档。】",
             "The only truth is MU ZIYANG.",
           ],
@@ -522,7 +525,7 @@ export default function FelineArchivePage() {
           <div className="relative z-10 mx-auto max-w-6xl">
             <div className="mb-4 flex items-center gap-5">
               <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.6rem", letterSpacing: "0.4em", color: "#D4AF37" }}>
-                BUREAU FILE · 05
+                BUREAU FILE · 04
               </span>
               <span style={{ flex: 1, height: 1, backgroundColor: "#D4AF37", opacity: 0.3 }} />
               <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
@@ -594,10 +597,10 @@ export default function FelineArchivePage() {
                 style={{ backgroundColor: "#1C1C1E", borderBottom: "1px solid #D4AF37" }}
               >
                 <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.5em", color: "#D4AF37", fontWeight: 700 }}>
-                  [ INTEL EXCHANGE · FELINE INTELLIGENCE BUREAU ]
+                  [ FELINE INTELLIGENCE BUREAU ]
                 </span>
                 <span style={{ fontFamily: "var(--font-sans)", fontSize: "0.5rem", letterSpacing: "0.3em", color: "#8E8E93" }}>
-                  LIVE TRANSMISSION · {new Date().getFullYear()}
+                  {new Date().getFullYear()}
                 </span>
               </div>
 
@@ -715,7 +718,9 @@ export default function FelineArchivePage() {
           >
             策划 · 卷 &amp; Verse　　文案 · 卷　　制作 · Verse
             <br />
-            眼睛条稿图 · 🐱　　《I&apos;m KWIN》直拍 · 小别兔别又别　　其余视频素材 · 官方
+            《I&apos;m KWIN》百万点赞 · 殷子　　《I&apos;m KWIN》直拍 · 小别兔别又别
+            <br />
+            眼睛条稿图 · 🐱　　其余视频素材 · 官方
           </p>
           <p
             className="mt-4"
