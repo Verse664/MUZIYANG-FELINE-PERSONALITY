@@ -20,25 +20,19 @@ export default function BackgroundMusic() {
     audio.crossOrigin = "anonymous"
     audioRef.current = audio
 
-    // ✅ 改进：更严格的视频播放检测
+    // ✅ 修复：增加有效 src 检查
     const hasVideoPlaying = () => {
       return Array.from(document.querySelectorAll("video")).some((video) => {
-        // 必须满足所有条件才算"真正在播放"
+        // ✅ 必须有有效的 src（排除空 src 和 blob: 临时链接）
+        const hasValidSrc = video.src && video.src.length > 0 && !video.src.startsWith('blob:')
+        if (!hasValidSrc) {
+          return false
+        }
+        
         const isVisible = video.offsetParent !== null
         const hasDuration = video.duration > 0
         const isPlaying = !video.paused && !video.ended && video.readyState >= 2
         const hasCurrentTime = video.currentTime > 0
-        
-        // ✅ 调试日志，帮助排查
-        if (video.readyState >= 2 && !video.paused) {
-          console.log("🎬 检测到视频状态:", {
-            isVisible,
-            hasDuration,
-            isPlaying,
-            hasCurrentTime,
-            src: video.src?.slice(-20)
-          })
-        }
         
         return isVisible && hasDuration && isPlaying && hasCurrentTime
       })
@@ -96,6 +90,13 @@ export default function BackgroundMusic() {
       const currentAudio = audioRef.current
       if (!currentAudio) return
 
+      // ✅ 忽略没有有效 src 的视频
+      const hasValidSrc = target.src && target.src.length > 0 && !target.src.startsWith('blob:')
+      if (!hasValidSrc) {
+        console.log("🎬 视频没有有效 src，忽略事件")
+        return
+      }
+
       if (event.type === "play") {
         if (!currentAudio.paused) {
           wasPlayingBeforeVideoRef.current = true
@@ -151,7 +152,6 @@ export default function BackgroundMusic() {
       }
     }
 
-    // 全局事件监听
     document.addEventListener("pointerdown", enableMusic, { passive: true })
     document.addEventListener("keydown", enableMusic, { passive: true })
     document.addEventListener("touchstart", enableMusic, { passive: true })
@@ -163,7 +163,6 @@ export default function BackgroundMusic() {
     const observer = setupMutationObserver()
     startVideoCheckInterval()
 
-    // 页面加载完成后尝试自动播放
     const attemptAutoPlay = () => {
       requestAnimationFrame(() => {
         const currentAudio = audioRef.current
@@ -223,6 +222,9 @@ export default function BackgroundMusic() {
 
     if (currentAudio.paused) {
       const hasVideoPlaying = Array.from(document.querySelectorAll("video")).some((video) => {
+        const hasValidSrc = video.src && video.src.length > 0 && !video.src.startsWith('blob:')
+        if (!hasValidSrc) return false
+        
         const isVisible = video.offsetParent !== null
         const hasDuration = video.duration > 0
         const isPlaying = !video.paused && !video.ended && video.readyState >= 2
