@@ -20,14 +20,17 @@ export default function BackgroundMusic() {
     audio.crossOrigin = "anonymous"
     audioRef.current = audio
 
-    // ✅ 修复：增加有效 src 检查
+    // ✅ 检查视频是否有有效 src（支持 http、blob、data）
+    const hasValidSrc = (video: HTMLVideoElement) => {
+      const src = video.src || video.getAttribute('src')
+      if (!src || src.length === 0) return false
+      // 允许 http、https、blob、data 协议
+      return src.startsWith('http') || src.startsWith('blob:') || src.startsWith('data:')
+    }
+
     const hasVideoPlaying = () => {
       return Array.from(document.querySelectorAll("video")).some((video) => {
-        // ✅ 必须有有效的 src（排除空 src 和 blob: 临时链接）
-        const hasValidSrc = video.src && video.src.length > 0 && !video.src.startsWith('blob:')
-        if (!hasValidSrc) {
-          return false
-        }
+        if (!hasValidSrc(video)) return false
         
         const isVisible = video.offsetParent !== null
         const hasDuration = video.duration > 0
@@ -90,12 +93,17 @@ export default function BackgroundMusic() {
       const currentAudio = audioRef.current
       if (!currentAudio) return
 
-      // ✅ 忽略没有有效 src 的视频
-      const hasValidSrc = target.src && target.src.length > 0 && !target.src.startsWith('blob:')
-      if (!hasValidSrc) {
+      // ✅ 忽略没有有效 src 的视频（但 blob: 是有效的）
+      if (!hasValidSrc(target)) {
         console.log("🎬 视频没有有效 src，忽略事件")
         return
       }
+
+      console.log(`🎬 视频事件: ${event.type}`, {
+        src: target.src?.slice(-30),
+        paused: target.paused,
+        readyState: target.readyState
+      })
 
       if (event.type === "play") {
         if (!currentAudio.paused) {
@@ -222,8 +230,9 @@ export default function BackgroundMusic() {
 
     if (currentAudio.paused) {
       const hasVideoPlaying = Array.from(document.querySelectorAll("video")).some((video) => {
-        const hasValidSrc = video.src && video.src.length > 0 && !video.src.startsWith('blob:')
-        if (!hasValidSrc) return false
+        const src = video.src || video.getAttribute('src')
+        if (!src || src.length === 0) return false
+        if (!src.startsWith('http') && !src.startsWith('blob:') && !src.startsWith('data:')) return false
         
         const isVisible = video.offsetParent !== null
         const hasDuration = video.duration > 0
