@@ -9,6 +9,7 @@ import SelfConsistentSection from "@/components/feline/SelfConsistentSection"
 import EasterEggModal from "@/components/feline/EasterEggModal"
 import FilmGrainOverlay from "@/components/feline/FilmGrainOverlay"
 import CustomCursor from "@/components/feline/CustomCursor"
+import BackgroundMusic from "@/components/feline/BackgroundMusic"
 
 // 画布尺寸
 const CLOUD_VB_W = 900
@@ -463,6 +464,7 @@ export default function FelineArchivePage() {
     <>
       <CustomCursor />
       <FilmGrainOverlay />
+      <BackgroundMusic />
       <main
         className="relative min-h-screen overflow-x-hidden"
         style={{ fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#FAF7F5" }}
