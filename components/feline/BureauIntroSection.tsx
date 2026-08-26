@@ -1220,7 +1220,7 @@ export default function BureauIntroSection({
             >
               <video
                 ref={videoRef}
-                src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/baiwan-25s-audio.mp4"
+                src="https://my-video-bucket-1458721399.cos.ap-nanjing.myqcloud.com/videos/v1-universal.mp4"
                 playsInline
                 autoPlay={!needsTapToPlay}
                 preload="auto"
